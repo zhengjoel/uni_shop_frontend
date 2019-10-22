@@ -1,0 +1,95 @@
+import Vue from 'vue'
+import store from './store'
+import App from './App'
+
+import Json from './Json' //测试用数据
+/**
+ *  因工具函数属于公司资产, 所以直接在Vue实例挂载几个常用的函数
+ *  所有测试用数据均存放于根目录json.js
+ *  
+ *  css部分使用了App.vue下的全局样式和iconfont图标，有需要图标库的可以留言。
+ *  示例使用了uni.scss下的变量, 除变量外已尽量移除特有语法,可直接替换为其他预处理器使用
+ */
+const msg = (title, duration=1500, mask=false, icon='none')=>{
+	//统一提示方便全局修改
+	if(Boolean(title) === false){
+		return;
+	}
+	uni.showToast({
+		title,
+		duration,
+		mask,
+		icon
+	});
+}
+const json = type=>{
+	//模拟异步请求数据
+	return new Promise(resolve=>{
+		setTimeout(()=>{
+			resolve(Json[type]);
+		}, 500)
+	})
+}
+
+const prePage = ()=>{
+	let pages = getCurrentPages();
+	let prePage = pages[pages.length - 2];
+	// #ifdef H5
+	return prePage;
+	// #endif
+	return prePage.$vm;
+}
+
+//检查有没有登录
+const checkLogin = () => {
+	return new Promise(resolve=>{
+		if(Vue.prototype.$store.state.hasLogin == false){
+			uni.showModal({
+				title:'温馨提示',
+				content:'你还没，请先登录',
+				success(res) {
+					if(res.confirm){
+						uni.navigateTo({
+							url:'/pages/public/login'
+						})
+					}
+					resolve(false);
+				}
+			})
+		}else{
+			resolve(true);
+		}
+	});
+}
+
+//同步网络请求
+const request = (url,method = 'GET',data = {}) => {
+	return new Promise(resolve => {
+		uni.request({
+			url:Vue.prototype.$unishow + url,
+			method:method,
+			data:data,
+			success(res) {
+				resolve(res);
+			},
+			fail(res) {
+				resolve(res);
+			}
+		})
+	})
+}
+
+Vue.config.productionTip = false
+Vue.prototype.$fire = new Vue();
+Vue.prototype.$store = store;
+Vue.prototype.$api = {msg, json, prePage,checkLogin,request};
+Vue.prototype.$site = "http://t.fastadmin.com:8888";
+Vue.prototype.$cdn = "http://t.fastadmin.com:8888";
+Vue.prototype.$unishow = "http://t.fastadmin.com:8888/addons/unishop";
+
+App.mpType = 'app'
+
+const app = new Vue({
+    ...App
+})
+app.$mount()
