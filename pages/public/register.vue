@@ -34,10 +34,20 @@
 						@confirm="toLogin"
 					/>
 				</view>
+				<view class="input-item">
+					<text class="tit">验证码</text>
+					<input 
+						type="text" 
+						:value="mobile" 
+						placeholder="请输入验证码"
+						data-key="mobile"
+						@input="inputChange"
+					/>
+				</view>
 			</view>
 			<button class="confirm-btn" @click="toLogin" :disabled="logining">登录</button>
 			<view class="forget-section">
-				<view><label @click="register('forget')">忘记密码</label> - <label @click="register('register')">立马注册</label></view>
+
 			</view>
 		</view>
 	</view>
@@ -56,8 +66,12 @@
 				logining: false
 			}
 		},
-		onLoad(){
-			
+		onLoad(action){
+			if(action == 'register'){
+				
+			}else{
+				
+			}
 		},
 		methods: {
 			...mapMutations(['login']),
@@ -100,9 +114,14 @@
 				})
 				
 			},
-			register(action){
+			forget(){
 				uni.navigateTo({
-					url:'./register?action='+action
+					url:'./forget'
+				})
+			},
+			register(){
+				uni.navigateTo({
+					url:'./forget'
 				})
 			}
 		},

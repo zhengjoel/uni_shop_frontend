@@ -87,6 +87,7 @@
 
 <script>
 	import share from '@/components/share';
+	
 	export default {
 		components: {
 			share

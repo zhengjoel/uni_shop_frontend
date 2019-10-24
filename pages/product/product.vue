@@ -123,6 +123,19 @@
 		</view>
 		
 		<!-- 领取优惠券-模态层弹窗 -->
+		<view
+			class="popup spec" 
+			:class="couponClass"
+			@touchmove.stop.prevent="stopPrevent"
+			@click="toggleCoupon"
+		>
+			<!-- 遮罩层 -->
+			<view class="mask"></view>
+			<view class="layer attr-content" @click.stop="stopPrevent">
+				<coupon v-for="(item, index) in product.coupon" :key="index" v-bind:item="item" theme="#ff0000"></coupon>
+				<button class="btn" @click="toggleCoupon">收起</button>
+			</view>
+		</view>
 		
 		<!-- 规格-模态层弹窗 -->
 		<view 
@@ -177,9 +190,12 @@
 <script>
 	import {mapGetters} from 'vuex';
 	import share from '@/components/share';
+	import coupon from '@/components/coolc-coupon/coolc-coupon';
+	
 	export default{
 		components: {
-			share
+			share,
+			coupon
 		},
 		computed:{
 			...mapGetters(['userInfo','hasLogin']),
@@ -219,7 +235,36 @@
 				specList: [],
 				specChildList: [],
 				specTableList:[],
-				product:{}
+				product:{},
+				coupon:[{
+					list: [{
+						url: "/pages/brand/index/id/1",
+						money: "150",
+						title: "满2000减150元",
+						ticket: "YMC_5c929fbf47235",
+						seller_name: "百达翡丽官方旗舰店",
+						end_time: "2019-04-20 01:51:20",
+						state: "1"
+					},
+					{
+						url: "/pages/brand/index/id/1",
+						money: "50",
+						title: "满1000减50元",
+						ticket: "YMC_5c929fbf47235",
+						seller_name: "百达翡丽官方旗舰店",
+						end_time: "2019-04-20 01:51:20",
+						state: "1"
+					},
+					{
+						url: "/pages/brand/index/id/1",
+						money: "50",
+						title: "满1000减50元",
+						ticket: "YMC_5c929fbf47235",
+						seller_name: "百达翡丽官方旗舰店",
+						end_time: "2019-04-20 01:51:20",
+						state: "1"
+					}]
+				}]
 			};
 		},
 		async onLoad(options){
@@ -273,13 +318,13 @@
 		methods:{
 			//领取优惠券开关
 			toggleCoupon(){
-				if(this.specClass === 'show'){
-					this.specClass = 'hide';
+				if(this.couponClass === 'show'){
+					this.couponClass = 'hide';
 					setTimeout(() => {
-						this.specClass = 'none';
+						this.couponClass = 'none';
 					}, 250);
-				}else if(this.specClass === 'none'){
-					this.specClass = 'show';
+				}else if(this.couponClass === 'none'){
+					this.couponClass = 'show';
 				}
 			},
 			//规格弹窗开关
