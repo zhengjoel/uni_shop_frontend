@@ -39,7 +39,7 @@
 						type="text" 
 						:value="captcha" 
 						placeholder="请输入验证码"
-						data-key="mobile"
+						data-key="captcha"
 						@input="inputChange"
 					/>
 					<button class="get_captcha" @click="getCaptcha">{{get_captcha}}</button>
@@ -91,6 +91,7 @@
 					num--;
 					that.get_captcha = num + ' S';
 					if(num == 0){
+						that.get_captcha = '获取验证码'
 						clearInterval(intervalId);
 					}
 				}, 1000);
