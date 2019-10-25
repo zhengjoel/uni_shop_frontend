@@ -1,13 +1,12 @@
 <template>
 	<view class="container">
-		<view class="left-bottom-sign"></view>
 		<view class="back-btn yticon icon-zuojiantou-up" @click="navBack"></view>
-		<view class="right-top-sign"></view>
+		
 		<!-- 设置白色背景防止软键盘把下部绝对定位元素顶上来盖住输入框等 -->
 		<view class="wrapper">
-			<view class="left-top-sign">LOGIN</view>
+			<view class="left-top-sign">{{desc}}</view>
 			<view class="welcome">
-				欢迎回来！
+				{{desc}}
 			</view>
 			<view class="input-content">
 				<view class="input-item">
@@ -38,14 +37,17 @@
 					<text class="tit">验证码</text>
 					<input 
 						type="text" 
-						:value="mobile" 
+						:value="captcha" 
 						placeholder="请输入验证码"
 						data-key="mobile"
 						@input="inputChange"
 					/>
+					<button class="get_captcha" @click="getCaptcha">{{get_captcha}}</button>
 				</view>
 			</view>
-			<button class="confirm-btn" @click="toLogin" :disabled="logining">登录</button>
+			<button class="confirm-btn" @click="toLogin" :disabled="logining">
+				{{status}}
+			</button>
 			<view class="forget-section">
 
 			</view>
@@ -63,18 +65,36 @@
 			return {
 				mobile: '',
 				password: '',
-				logining: false
+				captcha:'',
+				logining: false,
+				status: '',
+				desc: '',
+				get_captcha: '获取验证码'
 			}
 		},
-		onLoad(action){
+		onLoad(action = 'register'){
 			if(action == 'register'){
-				
+				this.status = '立即注册';
+				this.desc = '注册账号'
 			}else{
-				
+				this.status = '确认修改';
+				this.desc = '修改密码'
 			}
 		},
 		methods: {
 			...mapMutations(['login']),
+			getCaptcha(){
+				let that = this;
+				let num = 60;
+				that.get_captcha = num + ' S';
+				let intervalId = setInterval(function(){
+					num--;
+					that.get_captcha = num + ' S';
+					if(num == 0){
+						clearInterval(intervalId);
+					}
+				}, 1000);
+			},
 			inputChange(e){
 				const key = e.currentTarget.dataset.key;
 				this[key] = e.detail.value;
@@ -162,39 +182,7 @@
 		position:relative;
 		left: -16upx;
 	}
-	.right-top-sign{
-		position:absolute;
-		top: 80upx;
-		right: -30upx;
-		z-index: 95;
-		&:before, &:after{
-			display:block;
-			content:"";
-			width: 400upx;
-			height: 80upx;
-			background: #b4f3e2;
-		}
-		&:before{
-			transform: rotate(50deg);
-			border-radius: 0 50px 0 0;
-		}
-		&:after{
-			position: absolute;
-			right: -198upx;
-			top: 0;
-			transform: rotate(-50deg);
-			border-radius: 50px 0 0 0;
-			/* background: pink; */
-		}
-	}
-	.left-bottom-sign{
-		position:absolute;
-		left: -270upx;
-		bottom: -320upx;
-		border: 100upx solid #d0d1fd;
-		border-radius: 50%;
-		padding: 180upx;
-	}
+	
 	.welcome{
 		position:relative;
 		left: 50upx;
@@ -216,6 +204,7 @@
 		height: 120upx;
 		border-radius: 4px;
 		margin-bottom: 50upx;
+		position: relative;
 		&:last-child{
 			margin-bottom: 0;
 		}
@@ -230,7 +219,18 @@
 			font-size: $font-base + 2upx;
 			color: $font-color-dark;
 			width: 100%;
-		}	
+		}
+		.get_captcha {
+			position: absolute;
+			right: 0;
+			display: block;
+			width: 40%;
+			background: $uni-color-primary;
+			color: #fff;
+			text-align: center;
+			line-height: 76upx;
+			border-radius: 50upx;
+		}
 	}
 
 	.confirm-btn{
@@ -268,4 +268,5 @@
 			margin-left: 10upx;
 		}
 	}
+	
 </style>
