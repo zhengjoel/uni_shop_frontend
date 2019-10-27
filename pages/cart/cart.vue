@@ -99,6 +99,11 @@
 		onLoad(){
 			this.loadData();
 		},
+		async onShow(){
+			let carts = await this.$api.request('/cart');
+			console.log('cart');
+			console.log(carts);
+		},
 		watch:{
 			//显示空白页
 			cartList(e){

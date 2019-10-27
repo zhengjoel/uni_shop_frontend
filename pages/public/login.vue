@@ -77,28 +77,10 @@
 					account,
 					password
 				};
-				var that = this;
-				//const result = await this.$api.json('userInfo');
-				uni.request({
-					url: that.$URL + "/workers/login", 
-					method:'POST',
-					data:sendData,
-					header:{ 
-						'content-type': 'application/x-www-form-urlencoded'
-					}
-				}).then(data => {//data为一个数组，数组第一项为错误信息，第二项为返回数据
-					var [error, res]  = data; 
-					console.log(res.data);
-					//登陆成功
-					if(res.data.code == 1){
-						that.login(res.data.data.userinfo);
-						uni.navigateBack(); 
-					}else{
-						that.$api.msg(res.data.msg);
-						that.logining = false;
-					}
-				})
-				
+				let res = await this.$api.request('/user/login', 'POST', sendData)
+				this.login(res.userinfo);
+				this.logining = true;
+				uni.navigateBack();
 			},
 			register(action){
 				uni.navigateTo({

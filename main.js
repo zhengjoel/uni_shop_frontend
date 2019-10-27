@@ -10,9 +10,9 @@ import Json from './Json' //测试用数据
  *  css部分使用了App.vue下的全局样式和iconfont图标，有需要图标库的可以留言。
  *  示例使用了uni.scss下的变量, 除变量外已尽量移除特有语法,可直接替换为其他预处理器使用
  */
-const msg = (title, duration=1500, mask=false, icon='none')=>{
+const msg = (title, duration = 1500, mask = false, icon = 'none') => {
 	//统一提示方便全局修改
-	if(Boolean(title) === false){
+	if (Boolean(title) === false) {
 		return;
 	}
 	uni.showToast({
@@ -22,16 +22,16 @@ const msg = (title, duration=1500, mask=false, icon='none')=>{
 		icon
 	});
 }
-const json = type=>{
+const json = type => {
 	//模拟异步请求数据
-	return new Promise(resolve=>{
-		setTimeout(()=>{
+	return new Promise(resolve => {
+		setTimeout(() => {
 			resolve(Json[type]);
 		}, 500)
 	})
 }
 
-const prePage = ()=>{
+const prePage = () => {
 	let pages = getCurrentPages();
 	let prePage = pages[pages.length - 2];
 	// #ifdef H5
@@ -42,38 +42,68 @@ const prePage = ()=>{
 
 //检查有没有登录
 const checkLogin = () => {
-	return new Promise(resolve=>{
-		if(Vue.prototype.$store.state.hasLogin == false){
+	return new Promise(resolve => {
+		if (Vue.prototype.$store.state.hasLogin == false) {
 			uni.showModal({
-				title:'温馨提示',
-				content:'你还没，请先登录',
+				title: '温馨提示',
+				content: '你还没，请先登录',
 				success(res) {
-					if(res.confirm){
+					if (res.confirm) {
 						uni.navigateTo({
-							url:'/pages/public/login'
+							url: '/pages/public/login'
 						})
 					}
-					resolve(false);
+					resolve();
 				}
 			})
-		}else{
+		} else {
 			resolve(true);
 		}
 	});
 }
 
 //同步网络请求
-const request = (url,method = 'GET',data = {}) => {
-	return new Promise(resolve => {
+const request = (url, method = 'GET', data = {}) => {
+	let header = {
+		'content-type': 'application/x-www-form-urlencoded',
+	};
+	if (Vue.prototype.$store.state.userInfo.token) {
+		let token = Vue.prototype.$store.state.userInfo.token;
+		header.token = token;
+	}
+	return new Promise((resolve, reject) => {
+		msg('加载中...')
 		uni.request({
-			url:Vue.prototype.$unishow + url,
-			method:method,
-			data:data,
+			url: Vue.prototype.$unishow + url,
+			method: method,
+			header: header,
+			data: data,
 			success(res) {
-				resolve(res);
+				console.log(res);
+				if (res.hasOwnProperty('data')) {
+					if (res.data.hasOwnProperty('code') && res.data.code == 1) {
+						if (res.data.msg) {
+							msg(res.data.msg);
+						} else {
+							uni.hideToast();
+						}
+						resolve(res.data.data);
+					} else {
+						if (res.data.hasOwnProperty('msg')) {
+							msg(res.data.msg)
+						} else {
+							msg('不能识别数据');
+						}
+						reject(false);
+					}
+				} else {
+					msg('不能识别数据');
+					reject(false);
+				}
 			},
 			fail(res) {
-				resolve(res);
+				msg('网络错误');
+				reject(false);
 			}
 		})
 	})
@@ -82,7 +112,13 @@ const request = (url,method = 'GET',data = {}) => {
 Vue.config.productionTip = false
 Vue.prototype.$fire = new Vue();
 Vue.prototype.$store = store;
-Vue.prototype.$api = {msg, json, prePage,checkLogin,request};
+Vue.prototype.$api = {
+	msg,
+	json,
+	prePage,
+	checkLogin,
+	request
+};
 Vue.prototype.$site = "http://t.fastadmin.com:8888";
 Vue.prototype.$cdn = "http://t.fastadmin.com:8888";
 Vue.prototype.$unishow = "http://t.fastadmin.com:8888/addons/unishop";
@@ -90,6 +126,6 @@ Vue.prototype.$unishow = "http://t.fastadmin.com:8888/addons/unishop";
 App.mpType = 'app'
 
 const app = new Vue({
-    ...App
+	...App
 })
 app.$mount()
