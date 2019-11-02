@@ -70,9 +70,12 @@
 			this.minDisabled = this.isMin;
 		},
 		computed: {
-
+			
 		},
 		watch: {
+			value(number){
+				this.inputValue = number;
+			},
 			inputValue(number) {
 				const data = {
 					number: number,

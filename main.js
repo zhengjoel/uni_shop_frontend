@@ -62,6 +62,21 @@ const checkLogin = () => {
 	});
 }
 
+//深拷贝
+const deepCopy = (p, c) => {
+	var c = c || {};
+	for (var i in p) {
+		if (typeof p[i] === "object") {
+			c[i] = (p[i].constructor === Array) ? [] : {};
+			deepCopy(p[i], c[i])
+		} else {
+			c[i] = p[i]
+		}
+	}
+	return c;
+}
+
+
 //同步网络请求
 const request = (url, method = 'GET', data = {}) => {
 	let header = {
@@ -71,7 +86,7 @@ const request = (url, method = 'GET', data = {}) => {
 		let token = Vue.prototype.$store.state.userInfo.token;
 		header.token = token;
 	}
-	return new Promise((resolve, reject) => {
+	return new Promise(resolve => {
 		msg('加载中...')
 		uni.request({
 			url: Vue.prototype.$unishow + url,
@@ -92,18 +107,18 @@ const request = (url, method = 'GET', data = {}) => {
 						if (res.data.hasOwnProperty('msg')) {
 							msg(res.data.msg)
 						} else {
-							msg('不能识别数据');
+							msg('返回参数错误');
 						}
-						reject(false);
+						resolve(false);
 					}
 				} else {
 					msg('不能识别数据');
-					reject(false);
+					resolve(false);
 				}
 			},
 			fail(res) {
 				msg('网络错误');
-				reject(false);
+				resolve(false);
 			}
 		})
 	})
@@ -117,7 +132,8 @@ Vue.prototype.$api = {
 	json,
 	prePage,
 	checkLogin,
-	request
+	request,
+	deepCopy
 };
 Vue.prototype.$site = "http://t.fastadmin.com:8888";
 Vue.prototype.$cdn = "http://t.fastadmin.com:8888";

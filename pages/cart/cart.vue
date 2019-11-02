@@ -16,62 +16,34 @@
 			<!-- 列表 -->
 			<view class="cart-list">
 				<block v-for="(item, index) in cartList" :key="item.id">
-					<view
-						class="cart-item" 
-						:class="{'b-b': index!==cartList.length-1}"
-					>
+					<view class="cart-item" :class="{'b-b': index!==cartList.length-1}">
 						<view class="image-wrapper">
-							<image :src="item.image" 
-								:class="[item.loaded]"
-								mode="aspectFill" 
-								lazy-load 
-								@load="onImageLoad('cartList', index)" 
-								@error="onImageError('cartList', index)"
-							></image>
-							<view 
-								class="yticon icon-xuanzhong2 checkbox"
-								:class="{checked: item.checked}"
-								@click="check('item', index)"
-							></view>
+							<image :src="$cdn + item.image" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)"
+							 @error="onImageError('cartList', index)"></image>
+							<view class="yticon icon-xuanzhong2 checkbox" :class="{checked: item.choose}" @click="check('item', index)"></view>
 						</view>
 						<view class="item-right">
 							<text class="clamp title">{{item.title}}</text>
-							<text class="attr">{{item.attr_val}}</text>
-							<text class="price">¥{{item.price}}</text>
-							<uni-number-box 
-								class="step"
-								:min="1" 
-								:max="item.stock"
-								:value="item.number>item.stock?item.stock:item.number"
-								:isMax="item.number>=item.stock?true:false"
-								:isMin="item.number===1"
-								:index="index"
-								@eventChange="numberChange"
-							></uni-number-box>
+							<text class="attr">{{item.spec}}</text>
+							<text class="price">￥{{item.nowPrice}} <text style="color:red"> {{cartPrice(item.oldPrice, item.nowPrice)}}</text></text>
+							<uni-number-box class="step" :min="1" :max="item.stock" :value="cartList[index].number"
+							 :isMax="item.number>=item.stock?true:false" :isMin="item.number===1" :index="index" @eventChange="numberChange"></uni-number-box>
 						</view>
 						<text class="del-btn yticon icon-fork" @click="deleteCartItem(index)"></text>
+						<text class="invalid" v-if="item.isset == false">失效</text>
 					</view>
 				</block>
 			</view>
 			<!-- 底部菜单栏 -->
 			<view class="action-section">
 				<view class="checkbox">
-					<image 
-						:src="allChecked?'/static/selected.png':'/static/select.png'" 
-						mode="aspectFit"
-						@click="check('all')"
-					></image>
-					<view class="clear-btn" :class="{show: allChecked}" @click="clearCart">
+					<image :src="allChoose?'/static/selected.png':'/static/select.png'" mode="aspectFit" @click="check('all')"></image>
+					<view class="clear-btn" :class="{show: allChoose}" @click="clearCart">
 						清空
 					</view>
 				</view>
 				<view class="total-box">
 					<text class="price">¥{{total}}</text>
-					<text class="coupon">
-						已优惠
-						<text>74.35</text>
-						元
-					</text>
 				</view>
 				<button type="primary" class="no-border confirm-btn" @click="createOrder">去结算</button>
 			</view>
@@ -91,41 +63,41 @@
 		data() {
 			return {
 				total: 0, //总价格
-				allChecked: false, //全选状态  true|false
+				allChoose: false, //全选状态  true|false
 				empty: false, //空白页现实  true|false
 				cartList: [],
 			};
 		},
-		onLoad(){
-			this.loadData();
+		onLoad() {
+			
 		},
-		async onShow(){
-			let carts = await this.$api.request('/cart');
-			console.log('cart');
-			console.log(carts);
+		async onShow() {
+			this.cartList = await this.$api.request('/cart');
+			this.calcTotal();
 		},
-		watch:{
+		watch: {
 			//显示空白页
-			cartList(e){
-				let empty = e.length === 0 ? true: false;
-				if(this.empty !== empty){
+			cartList(e) {
+				let empty = e.length === 0 ? true : false;
+				if (this.empty !== empty) {
 					this.empty = empty;
 				}
 			}
 		},
-		computed:{
+		computed: {
 			...mapState(['hasLogin'])
 		},
 		methods: {
-			//请求数据
-			async loadData(){
-				let list = await this.$api.json('cartList'); 
-				let cartList = list.map(item=>{
-					item.checked = true;
-					return item;
-				});
-				this.cartList = cartList;
-				this.calcTotal();  //计算总价
+			cartPrice(oldPrice, nowPrice) {
+				let string = '';
+				if (oldPrice < nowPrice) {
+					let number = (nowPrice - oldPrice).toFixed(2);
+					string = ' ↑涨价 ' + number + '元';
+				} else if (oldPrice > nowPrice) {
+					let number = (oldPrice - nowPrice).toFixed(2);
+					string = ' ↓降价 ' + number + '元';
+				}
+				return string;
 			},
 			//监听image加载完成
 			onImageLoad(key, index) {
@@ -135,76 +107,134 @@
 			onImageError(key, index) {
 				this[key][index].image = '/static/errorImage.jpg';
 			},
-			navToLogin(){
+			navToLogin() {
 				uni.navigateTo({
 					url: '/pages/public/login'
 				})
 			},
-			 //选中状态处理
-			check(type, index){
-				if(type === 'item'){
-					this.cartList[index].checked = !this.cartList[index].checked;
-				}else{
-					const checked = !this.allChecked
-					const list = this.cartList;
-					list.forEach(item=>{
-						item.checked = checked;
+			//选中状态处理
+			async check(type, index) {
+				let trueArr = [];
+				let falseArr = [];
+				let oldChoose = [];
+				const list = this.cartList;
+				//保存旧的数据
+				list.forEach(item => {
+					if(item.choose){
+						oldChoose.push(item.cart_id);
+					}
+				})
+				
+				//本地处理
+				if (type === 'item') {
+					this.cartList[index].choose = !this.cartList[index].choose;
+					if (this.cartList[index].choose) {
+						trueArr.push(this.cartList[index].cart_id);
+					} else {
+						falseArr.push(this.cartList[index].cart_id);
+					}
+				} else {
+					const choose = !this.allChoose
+					list.forEach(item => {
+						item.choose = choose;
+						if (choose) {
+							trueArr.push(item.cart_id);
+						} else {
+							falseArr.push(item.cart_id);
+						}
 					})
-					this.allChecked = checked;
+					this.allChoose = choose;
 				}
 				this.calcTotal(type);
+				
+				//远程处理
+				let result = await this.$api.request('/cart/choose_change', 'POST', {trueArr,falseArr});
+				if (!result) {
+					//恢复原来勾选的状态
+					list.forEach(item => {
+						if (oldChoose.indexOf(item.cart_id) >= 0) {
+							item.choose = 1;
+						} else {
+							item.choose = 0;
+						}
+					})
+					this.calcTotal(type);
+				}
+				
 			},
 			//数量
-			numberChange(data){
-				this.cartList[data.index].number = data.number;
+			async numberChange(data) {
+				let oldNumber = this.cartList[data.index].number;
+				let newNumber = data.number;
+				this.cartList[data.index].number = newNumber;
 				this.calcTotal();
+				
+				let cart_id = this.cartList[data.index].cart_id;
+				let result = await this.$api.request('/cart/number_change?id='+cart_id, 'GET', {number:newNumber});
+				if (!result) {
+					this.cartList[data.index].number = oldNumber;
+					this.calcTotal();
+				}
+				
 			},
 			//删除
-			deleteCartItem(index){
+			deleteCartItem(index) {
 				let list = this.cartList;
 				let row = list[index];
 				let id = row.id;
+				
+				uni.showModal({
+					content: '确认删除 ' + list[index].title + '？' ,
+					success: async (e) => {
+						if (e.confirm) {
+							let tempCart = this.cartList.splice(index, 1);
+							this.calcTotal();
+							
+							let result = await this.$api.request('/cart/delete?id='+id);
+							if (!result) {
+								
+							}
+						}
+					}
+				})
 
-				this.cartList.splice(index, 1);
-				this.calcTotal();
-				uni.hideLoading();
 			},
 			//清空
-			clearCart(){
+			clearCart() {
 				uni.showModal({
 					content: '清空购物车？',
-					success: (e)=>{
-						if(e.confirm){
+					success: (e) => {
+						if (e.confirm) {
 							this.cartList = [];
 						}
 					}
 				})
 			},
 			//计算总价
-			calcTotal(){
+			calcTotal() {
 				let list = this.cartList;
-				if(list.length === 0){
+				if (list.length === 0) {
 					this.empty = true;
 					return;
 				}
 				let total = 0;
-				let checked = true;
-				list.forEach(item=>{
-					if(item.checked === true){
-						total += item.price * item.number;
-					}else if(checked === true){
-						checked = false;
+				let choose = true;
+				list.forEach(item => {
+					if (item.choose == 1) {
+						total += item.nowPrice * item.number;
+					} else if (choose === true) {
+						choose = false;
 					}
 				})
-				this.allChecked = checked;
+				this.allChoose = choose;
 				this.total = Number(total.toFixed(2));
 			},
 			//创建订单
-			createOrder(){
+			createOrder() {
 				let list = this.cartList;
 				let goodsData = [];
-				list.forEach(item=>{
-					if(item.checked){
+				list.forEach(item => {
+					if (item.choose) {
 						goodsData.push({
 							attr_val: item.attr_val,
 							number: item.number
@@ -224,123 +254,154 @@
 </script>
 
 <style lang='scss'>
-	.container{
+	.container {
 		padding-bottom: 134upx;
+
 		/* 空白页 */
-		.empty{
-			position:fixed;
+		.empty {
+			position: fixed;
 			left: 0;
-			top:0;
+			top: 0;
 			width: 100%;
 			height: 100vh;
-			padding-bottom:100upx;
-			display:flex;
+			padding-bottom: 100upx;
+			display: flex;
 			justify-content: center;
 			flex-direction: column;
-			align-items:center;
+			align-items: center;
 			background: #fff;
-			image{
+
+			image {
 				width: 240upx;
 				height: 160upx;
-				margin-bottom:30upx;
+				margin-bottom: 30upx;
 			}
-			.empty-tips{
-				display:flex;
+
+			.empty-tips {
+				display: flex;
 				font-size: $font-sm+2upx;
 				color: $font-color-disabled;
-				.navigator{
+
+				.navigator {
 					color: $uni-color-primary;
 					margin-left: 16upx;
 				}
 			}
 		}
 	}
+
 	/* 购物车列表项 */
-	.cart-item{
-		display:flex;
-		position:relative;
-		padding:30upx 40upx;
-		.image-wrapper{
+	.cart-item {
+		display: flex;
+		position: relative;
+		padding: 30upx 40upx;
+
+		.image-wrapper {
 			width: 230upx;
 			height: 230upx;
 			flex-shrink: 0;
-			position:relative;
-			image{
-				border-radius:8upx;
+			position: relative;
+
+			image {
+				border-radius: 8upx;
 			}
 		}
-		.checkbox{
-			position:absolute;
-			left:-16upx;
+
+		.checkbox {
+			position: absolute;
+			left: -16upx;
 			top: -16upx;
 			z-index: 8;
 			font-size: 44upx;
 			line-height: 1;
 			padding: 4upx;
 			color: $font-color-disabled;
-			background:#fff;
+			background: #fff;
 			border-radius: 50px;
 		}
-		.item-right{
-			display:flex;
+
+		.item-right {
+			display: flex;
 			flex-direction: column;
 			flex: 1;
 			overflow: hidden;
-			position:relative;
+			position: relative;
 			padding-left: 30upx;
-			.title,.price{
-				font-size:$font-base + 2upx;
+
+			.title,
+			.price {
+				font-size: $font-base + 2upx;
 				color: $font-color-dark;
 				height: 40upx;
 				line-height: 40upx;
 			}
-			.attr{
+
+			.attr {
 				font-size: $font-sm + 2upx;
 				color: $font-color-light;
 				height: 50upx;
 				line-height: 50upx;
 			}
-			.price{
+
+			.price {
 				height: 50upx;
-				line-height:50upx;
+				line-height: 50upx;
 			}
 		}
-		.del-btn{
-			padding:4upx 10upx;
-			font-size:34upx; 
+
+		.del-btn {
+			padding: 4upx 10upx;
+			font-size: 34upx;
 			height: 50upx;
 			color: $font-color-light;
 		}
+
+		.invalid {
+			position: absolute;
+			right: 0;
+			bottom: 0;
+			background: #999999;
+			color: #ffffff;
+			padding: 6upx 12upx;
+			border-radius: 10upx;
+			font-size: 26upx;
+			margin-right: 50upx;
+			margin-bottom: 32upx;
+		}
 	}
+
 	/* 底部栏 */
-	.action-section{
+	.action-section {
 		/* #ifdef H5 */
-		margin-bottom:100upx;
+		margin-bottom: 100upx;
 		/* #endif */
-		position:fixed;
+		position: fixed;
 		left: 30upx;
-		bottom:30upx;
+		bottom: 30upx;
 		z-index: 95;
 		display: flex;
 		align-items: center;
 		width: 690upx;
 		height: 100upx;
 		padding: 0 30upx;
-		background: rgba(255,255,255,.9);
-		box-shadow: 0 0 20upx 0 rgba(0,0,0,.5);
+		background: rgba(255, 255, 255, .9);
+		box-shadow: 0 0 20upx 0 rgba(0, 0, 0, .5);
 		border-radius: 16upx;
-		.checkbox{
-			height:52upx;
-			position:relative;
-			image{
+
+		.checkbox {
+			height: 52upx;
+			position: relative;
+
+			image {
 				width: 52upx;
 				height: 100%;
-				position:relative;
+				position: relative;
 				z-index: 5;
 			}
 		}
-		.clear-btn{
-			position:absolute;
+
+		.clear-btn {
+			position: absolute;
 			left: 26upx;
 			top: 0;
 			z-index: 4;
@@ -351,33 +412,31 @@
 			font-size: $font-base;
 			color: #fff;
 			background: $font-color-disabled;
-			border-radius:0 50px 50px 0;
+			border-radius: 0 50px 50px 0;
 			opacity: 0;
 			transition: .2s;
-			&.show{
+
+			&.show {
 				opacity: 1;
 				width: 120upx;
 			}
 		}
-		.total-box{
+
+		.total-box {
 			flex: 1;
-			display:flex;
+			display: flex;
 			flex-direction: column;
-			text-align:right;
+			text-align: right;
 			padding-right: 40upx;
-			.price{
+
+			.price {
 				font-size: $font-lg;
 				color: $font-color-dark;
 			}
-			.coupon{
-				font-size: $font-sm;
-				color: $font-color-light;
-				text{
-					color: $font-color-dark;
-				}
-			}
+
 		}
-		.confirm-btn{
+
+		.confirm-btn {
 			padding: 0 38upx;
 			margin: 0;
 			border-radius: 100px;
@@ -388,9 +447,10 @@
 			box-shadow: 1px 2px 5px rgba(217, 60, 93, 0.72)
 		}
 	}
+
 	/* 复选框选中状态 */
 	.action-section .checkbox.checked,
-	.cart-item .checkbox.checked{
+	.cart-item .checkbox.checked {
 		color: $uni-color-primary;
 	}
 </style>
