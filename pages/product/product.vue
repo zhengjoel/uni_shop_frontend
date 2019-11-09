@@ -328,10 +328,17 @@
 					}
 				}
 			},
-			buy() {
-				uni.navigateTo({
-					url: `/pages/order/createOrder`
-				})
+			async buy() {
+				let is_login = await this.$api.checkLogin();
+				if (is_login) {
+					let spec = '';
+					if (this.product.specStatus == 1) {
+						spec = this.specSelected.join(',');
+					}
+					uni.navigateTo({
+						url: `/pages/order/createOrder?id=${this.product.id}&spec=${spec}`
+					});
+				}
 			},
 			stopPrevent() {},
 			//添加购物车

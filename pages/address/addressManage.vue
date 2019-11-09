@@ -16,13 +16,13 @@
 			<text class="yticon icon-shouhuodizhi"></text>
 		</view>
 		<view class="row b-b"> 
-			<text class="tit">门牌号</text>
-			<input class="input" type="text" v-model="addressData.area" placeholder="楼号、门牌" placeholder-class="placeholder" />
+			<text class="tit">详细</text>
+			<input class="input" type="text" v-model="addressData.area" placeholder="详细地址,楼号" placeholder-class="placeholder" />
 		</view>
 		
 		<view class="row default-row">
 			<text class="tit">设为默认</text>
-			<switch :checked="addressData.defaule" color="#fa436a" @change="switchChange" />
+			<switch :checked="addressData.is_default" color="#fa436a" @change="switchChange" />
 		</view>
 		<button class="add-btn" @click="confirm">提交</button>
 	</view>
@@ -37,8 +37,10 @@
 					mobile: '',
 					addressName: '在地图选择',
 					address: '',
+					lng: 0,
+					lat: 0,
 					area: '',
-					default: false
+					is_default: false
 				}
 			}
 		},
@@ -56,13 +58,16 @@
 		},
 		methods: {
 			switchChange(e){
-				this.addressData.default = e.detail;
+				this.addressData.is_default = e.detail.value;
 			},
 			
 			//地图选择地址
 			chooseLocation(){
 				uni.chooseLocation({
 					success: (data)=> {
+						//console.log(data)
+						this.addressData.lng = data.latitude;
+						this.addressData.lat = data.longitude;
 						this.addressData.addressName = data.name;
 						this.addressData.address = data.name;
 					}
@@ -70,8 +75,9 @@
 			},
 			
 			//提交
-			confirm(){
-				let data = this.addressData;
+			async confirm(){
+				//Deep Clone
+				let data = JSON.parse(JSON.stringify(this.addressData));
 				if(!data.name){
 					this.$api.msg('请填写收货人姓名');
 					return;
@@ -85,16 +91,19 @@
 					return;
 				}
 				if(!data.area){
-					this.$api.msg('请填写门牌号信息');
+					this.$api.msg('请填详细地址信息');
 					return;
 				}
-				
-				//this.$api.prePage()获取上一页实例，可直接调用上页所有数据和方法，在App.vue定义
-				this.$api.prePage().refreshList(data, this.manageType);
-				this.$api.msg(`地址${this.manageType=='edit' ? '修改': '添加'}成功`);
-				setTimeout(()=>{
-					uni.navigateBack()
-				}, 800)
+				console.log(data.is_default);
+				data.is_default = data.is_default == true ? 1 : 0;
+				let action = this.manageType=='edit' ? 'edit' : 'add';
+				let result = await this.$api.request('/address/'+action, 'POST', data);
+				if (result) {
+					this.$api.prePage().refreshList(data, this.manageType);
+					setTimeout(()=>{
+						uni.navigateBack()
+					}, 800)
+				}				
 			},
 		}
 	}

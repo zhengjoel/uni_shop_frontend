@@ -181,18 +181,16 @@
 			deleteCartItem(index) {
 				let list = this.cartList;
 				let row = list[index];
-				let id = row.id;
+				let id = row.cart_id;
 				
 				uni.showModal({
 					content: '确认删除 ' + list[index].title + '？' ,
 					success: async (e) => {
 						if (e.confirm) {
-							let tempCart = this.cartList.splice(index, 1);
-							this.calcTotal();
-							
 							let result = await this.$api.request('/cart/delete?id='+id);
-							if (!result) {
-								
+							if (result) {
+								let tempCart = this.cartList.splice(index, 1);
+								this.calcTotal();
 							}
 						}
 					}

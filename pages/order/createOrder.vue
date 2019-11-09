@@ -4,13 +4,14 @@
 		<navigator url="/pages/address/address?source=1" class="address-section">
 			<view class="order-content">
 				<text class="yticon icon-shouhuodizhi"></text>
-				<view class="cen">
+				<view class="cen" v-if="addressData.name">
 					<view class="top">
 						<text class="name">{{addressData.name}}</text>
 						<text class="mobile">{{addressData.mobile}}</text>
 					</view>
 					<text class="address">{{addressData.address}} {{addressData.area}}</text>
 				</view>
+				<view class="cen" v-else>请选择收货地址</view>
 				<text class="yticon icon-you"></text>
 			</view>
 
@@ -18,30 +19,22 @@
 		</navigator>
 
 		<view class="goods-section">
-			<view class="g-header b-b">
+			<!-- 第二版本加商户 -->
+			<!-- <view class="g-header b-b">
 				<image class="logo" src="http://duoduo.qibukj.cn/./Upload/Images/20190321/201903211727515.png"></image>
 				<text class="name">西城小店铺</text>
-			</view>
+			</view> -->
 			<!-- 商品列表 -->
 			<view class="g-item">
-				<image src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=756705744,3505936868&fm=11&gp=0.jpg"></image>
+				<image src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1620020012,789258862&fm=26&gp=0.jpg"></image>
 				<view class="right">
 					<text class="title clamp">古黛妃 短袖t恤女夏装2019新款</text>
 					<text class="spec">春装款 L</text>
 					<view class="price-box">
 						<text class="price">￥17.8</text>
-						<text class="number">x 1</text>
-					</view>
-				</view>
-			</view>
-			<view class="g-item">
-				<image src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1620020012,789258862&fm=26&gp=0.jpg"></image>
-				<view class="right">
-					<text class="title clamp">韩版于是洞洞拖鞋 夏季浴室防滑简约居家【新人专享，限选意见】</text>
-					<text class="spec">春装款 L</text>
-					<view class="price-box">
-						<text class="price">￥17.8</text>
-						<text class="number">x 1</text>
+						<!-- <text class="number">x 1</text> -->
+						<uni-number-box class="step" :min="1" :max="10" :value="10"
+						 :isMax="true?true:false" :isMin="1===1" :index="1" @eventChange="numberChange"></uni-number-box>
 					</view>
 				</view>
 			</view>
@@ -59,13 +52,14 @@
 				</text>
 				<text class="cell-more wanjia wanjia-gengduo-d"></text>
 			</view>
-			<view class="yt-list-cell b-b">
+			<!-- 第二版本加多商户 -->
+			<!-- <view class="yt-list-cell b-b">
 				<view class="cell-icon hb">
 					减
 				</view>
 				<text class="cell-tit clamp">商家促销</text>
 				<text class="cell-tip disabled">暂无可用优惠</text>
-			</view>
+			</view> -->
 		</view>
 		<!-- 金额明细 -->
 		<view class="yt-list">
@@ -124,7 +118,11 @@
 </template>
 
 <script>
+	import uniNumberBox from '@/components/uni-number-box.vue'
 	export default {
+		components: {
+			uniNumberBox
+		},
 		data() {
 			return {
 				maskState: 0, //优惠券面板显示状态
@@ -144,22 +142,21 @@
 						price: 15,
 					}
 				],
-				addressData: {
-					name: '许小星',
-					mobile: '13853989563',
-					addressName: '金九大道',
-					address: '山东省济南市历城区',
-					area: '149号',
-					default: false,
-				}
+				addressData: {}
 			}
 		},
 		onLoad(option){
-			//商品数据
-			//let data = JSON.parse(option.data);
-			//console.log(data);
+			this.getOrderCreate(option.id, option.spec);
 		},
 		methods: {
+			//获取创建订单信息
+			async getOrderCreate(product_id, spec = ''){
+				let data = await this.$api.request(`/order/create?id=${product_id}&spec=${spec}`);
+				if (data) {
+					this.addressData = data.address;
+					
+				}
+			},
 			//显示优惠券面板
 			toggleMask(type){
 				let timer = type === 'show' ? 10 : 300;
@@ -306,14 +303,19 @@
 				font-size: 32upx;
 				color: $font-color-dark;
 				padding-top: 10upx;
-
+				position: relative;
 				.price {
 					margin-bottom: 4upx;
+					
 				}
 				.number{
 					font-size: 26upx;
 					color: $font-color-base;
 					margin-left: 20upx;
+				}
+				.step {
+					left: unset;
+					right: 10upx;
 				}
 			}
 

@@ -3,7 +3,7 @@
 		<view class="list b-b" v-for="(item, index) in addressList" :key="index" @click="checkAddress(item)">
 			<view class="wrapper">
 				<view class="address-box">
-					<text v-if="item.default" class="tag">默认</text>
+					<text v-if="item.is_default" class="tag">默认</text>
 					<text class="address">{{item.addressName}} {{item.area}}</text>
 				</view>
 				<view class="u-box">
@@ -13,9 +13,6 @@
 			</view>
 			<text class="yticon icon-bianji" @click.stop="addAddress('edit', item)"></text>
 		</view>
-		<text style="display:block;padding: 16upx 30upx 10upx;lihe-height: 1.6;color: #fa436a;font-size: 24upx;">
-			重要：添加和修改地址回调仅增加了一条数据做演示，实际开发中将回调改为请求后端接口刷新一下列表即可
-		</text>
 		
 		<button class="add-btn" @click="addAddress('add')">新增地址</button>
 	</view>
@@ -27,21 +24,6 @@
 			return {
 				source: 0,
 				addressList: [
-					{
-						name: '刘晓晓',
-						mobile: '18666666666',
-						addressName: '贵族皇仕牛排(东城店)',
-						address: '北京市东城区',
-						area: 'B区',
-						default: true
-					},{
-						name: '刘大大',
-						mobile: '18667766666',
-						addressName: '龙回1区12号楼',
-						address: '山东省济南市历城区',
-						area: '西单元302',
-						default: false,
-					}
 				]
 			}
 		},
@@ -49,7 +31,17 @@
 			console.log(option.source);
 			this.source = option.source;
 		},
+		onShow(){
+			this.getList();
+		},
 		methods: {
+			//获取我的收货地址
+			async getList(){
+				let list = await this.$api.request('/address/all', 'POST', {page:1, pagesize:50});
+				if (list) {
+					this.addressList = list;
+				}
+			},
 			//选择地址
 			checkAddress(item){
 				if(this.source == 1){
