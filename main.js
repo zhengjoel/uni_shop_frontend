@@ -21,6 +21,9 @@ const msg = (title, duration = 1500, mask = false, icon = 'none') => {
 		mask,
 		icon
 	});
+	setTimeout(function(){
+		uni.hideToast();
+	},duration)
 }
 const json = type => {
 	//模拟异步请求数据

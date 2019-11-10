@@ -25,16 +25,16 @@
 				<text class="name">西城小店铺</text>
 			</view> -->
 			<!-- 商品列表 -->
-			<view class="g-item">
-				<image src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1620020012,789258862&fm=26&gp=0.jpg"></image>
+			<view class="g-item" v-for="(item, index) in product" :key="item.id">
+				<image :src="$cdn + item.image" mode="aspectFill"></image>
 				<view class="right">
-					<text class="title clamp">古黛妃 短袖t恤女夏装2019新款</text>
-					<text class="spec">春装款 L</text>
+					<text class="title clamp">{{item.title}}</text>
+					<view class="spec">{{item.spec ? "规格:" + item.spec : ""}} {{" 库存:"+item.stock}}</view>
 					<view class="price-box">
-						<text class="price">￥17.8</text>
+						<view class="price">￥{{item.sales_price}} <del class="market_price">￥{{item.market_price}}</del></view>
 						<!-- <text class="number">x 1</text> -->
-						<uni-number-box class="step" :min="1" :max="10" :value="10"
-						 :isMax="true?true:false" :isMin="1===1" :index="1" @eventChange="numberChange"></uni-number-box>
+						<uni-number-box class="step" :min="1" :max="item.stock" :value="item.number" :isMax="item.stock === item.number?true:false"
+						 :isMin="item.number===1" :index="index" @eventChange="numberChange"></uni-number-box>
 					</view>
 				</view>
 			</view>
@@ -48,7 +48,7 @@
 				</view>
 				<text class="cell-tit clamp">优惠券</text>
 				<text class="cell-tip active">
-					选择优惠券
+					{{useCouponIndex !== false ? couponList[useCouponIndex].title : '选择优惠券'}}
 				</text>
 				<text class="cell-more wanjia wanjia-gengduo-d"></text>
 			</view>
@@ -65,51 +65,59 @@
 		<view class="yt-list">
 			<view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">商品金额</text>
-				<text class="cell-tip">￥179.88</text>
+				<text class="cell-tip">￥{{price}}</text>
 			</view>
 			<view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">优惠金额</text>
-				<text class="cell-tip red">-￥35</text>
+				<text class="cell-tip red">-￥{{coupon_price}}</text>
+			</view>
+			<view class="yt-list-cell b-b">
+				<text class="cell-tit clamp">配送方式</text>
+				<text class="cell-tip">
+					<picker @change="bindPickerChange" range-key="name" :value="deliveryIndex" :range="deliveryList">
+						<view class="uni-input">{{deliveryList[deliveryIndex].name}}</view>
+					</picker>
+				</text>
 			</view>
 			<view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">运费</text>
-				<text class="cell-tip">免运费</text>
+				<text class="cell-tip">￥{{coupon_price}}</text>
 			</view>
 			<view class="yt-list-cell desc-cell">
 				<text class="cell-tit clamp">备注</text>
 				<input class="desc" type="text" v-model="desc" placeholder="请填写备注信息" placeholder-class="placeholder" />
 			</view>
 		</view>
-		
+
 		<!-- 底部 -->
 		<view class="footer">
 			<view class="price-content">
 				<text>实付款</text>
 				<text class="price-tip">￥</text>
-				<text class="price">475</text>
+				<text class="price">{{total}}</text>
 			</view>
 			<text class="submit" @click="submit">提交订单</text>
 		</view>
-		
+
 		<!-- 优惠券面板 -->
 		<view class="mask" :class="maskState===0 ? 'none' : maskState===1 ? 'show' : ''" @click="toggleMask">
 			<view class="mask-content" @click.stop.prevent="stopPrevent">
 				<!-- 优惠券页面，仿mt -->
-				<view class="coupon-item" v-for="(item,index) in couponList" :key="index">
-					<view class="con">
+				<view class="coupon-item" v-for="(item,index) in couponList" :key="index" :class="useCouponIndex === index ? 'selectCoupon' : ''">
+					<view class="con" v-on:click="useCoupon(index)">
 						<view class="left">
 							<text class="title">{{item.title}}</text>
-							<text class="time">有效期至2019-06-30</text>
+							<text class="time">有效期至{{item.endtime_text}}</text>
 						</view>
 						<view class="right">
-							<text class="price">{{item.price}}</text>
-							<text>满30可用</text>
+							<text class="price">{{item.value}}</text>
+							<text>满{{item.least}}可用</text>
 						</view>
-						
+
 						<view class="circle l"></view>
 						<view class="circle r"></view>
 					</view>
-					<text class="tips">限新用户使用</text>
+					<text class="tips">限一张使用</text>
 				</view>
 			</view>
 		</view>
@@ -118,7 +126,7 @@
 </template>
 
 <script>
-	import uniNumberBox from '@/components/uni-number-box.vue'
+	import uniNumberBox from '@/components/uni-number-box.vue';
 	export default {
 		components: {
 			uniNumberBox
@@ -128,56 +136,93 @@
 				maskState: 0, //优惠券面板显示状态
 				desc: '', //备注
 				payType: 1, //1微信 2支付宝
-				couponList: [
-					{
-						title: '新用户专享优惠券',
-						price: 5,
-					},
-					{
-						title: '庆五一发一波优惠券',
-						price: 10,
-					},
-					{
-						title: '优惠券优惠券优惠券优惠券',
-						price: 15,
-					}
-				],
-				addressData: {}
+				couponList: [],
+				useCouponIndex: false,
+				addressData: {},
+				product: [],
+				price: 0.00, //商品金额
+				coupon_price: 0.00, //优惠券金额
+				total: 0.00, //实付金额
+				deliveryList:[],
+				deliveryIndex:0
 			}
 		},
-		onLoad(option){
+		onLoad(option) {
 			this.getOrderCreate(option.id, option.spec);
 		},
 		methods: {
+			// 使用优惠券
+			useCoupon(index) {
+				if (this.useCouponIndex !== index) {
+					this.useCouponIndex = index;
+					this.coupon_price = this.couponList[index].value;
+					this.calcTotal();
+				} else {
+					this.useCouponIndex = false;
+				}
+			},
 			//获取创建订单信息
-			async getOrderCreate(product_id, spec = ''){
+			async getOrderCreate(product_id, spec = '') {
 				let data = await this.$api.request(`/order/create?id=${product_id}&spec=${spec}`);
 				if (data) {
 					this.addressData = data.address;
-					
+					this.product = data.product;
+					this.couponList = data.coupon;
+					this.deliveryList = data.delivery;
+					this.calcTotal();
 				}
 			},
 			//显示优惠券面板
-			toggleMask(type){
+			toggleMask(type) {
 				let timer = type === 'show' ? 10 : 300;
-				let	state = type === 'show' ? 1 : 0;
+				let state = type === 'show' ? 1 : 0;
 				this.maskState = 2;
-				setTimeout(()=>{
+				setTimeout(() => {
 					this.maskState = state;
 				}, timer)
 			},
-			numberChange(data) {
-				this.number = data.number;
-			},
-			changePayType(type){
+			changePayType(type) {
 				this.payType = type;
 			},
-			submit(){
+			submit() {
 				uni.redirectTo({
 					url: '/pages/money/pay'
 				})
 			},
-			stopPrevent(){}
+			stopPrevent() {},
+			//数量
+			async numberChange(data) {
+				let oldNumber = this.product[data.index].number;
+				let newNumber = data.number;
+				this.product[data.index].number = newNumber;
+				this.calcTotal();
+
+				//判断当前库存
+				let stock = this.product[data.index].stock;
+				if (newNumber > this.product[data.index].stock) {
+					this.product[data.index].number = stock;
+				}
+
+			},
+			//计算价格
+			calcTotal() {
+				let price = 0;
+				for (let i in this.product) {
+					price += (parseInt(this.product[i].sales_price) * this.product[i].number);
+				}
+				this.price = price.toFixed(2);
+
+				//检查当前优惠券是否满足使用条件
+				if (this.useCouponIndex === false || this.price >= this.couponList[this.useCouponIndex].least) {
+					this.total = price - this.coupon_price;
+				} else {
+					this.$api.msg('选中的优惠券不满足使用条件', 2000);
+					this.useCouponIndex = false; //取消选中的优惠券
+					this.coupon_price = 0; //设置优惠金额为0
+					this.total = price - this.coupon_price;
+				}
+
+			}
 		}
 	}
 </script>
@@ -276,15 +321,17 @@
 			image {
 				flex-shrink: 0;
 				display: block;
-				width: 140upx;
-				height: 140upx;
+				width: 160upx;
+				height: 160upx;
 				border-radius: 4upx;
 			}
 
 			.right {
+				height: 160upx;
 				flex: 1;
 				padding-left: 24upx;
 				overflow: hidden;
+				position: relative;
 			}
 
 			.title {
@@ -303,16 +350,23 @@
 				font-size: 32upx;
 				color: $font-color-dark;
 				padding-top: 10upx;
-				position: relative;
+
 				.price {
 					margin-bottom: 4upx;
-					
 				}
-				.number{
+
+				.market_price {
+					font-size: 26upx;
+					margin-left: 20upx;
+					color: red;
+				}
+
+				.number {
 					font-size: 26upx;
 					color: $font-color-base;
 					margin-left: 20upx;
 				}
+
 				.step {
 					left: unset;
 					right: 10upx;
@@ -324,6 +378,7 @@
 			}
 		}
 	}
+
 	.yt-list {
 		margin-top: 16upx;
 		background: #fff;
@@ -391,7 +446,8 @@
 			&.active {
 				color: $base-color;
 			}
-			&.red{
+
+			&.red {
 				color: $base-color;
 			}
 		}
@@ -408,31 +464,35 @@
 			color: $font-color-dark;
 		}
 	}
-	
+
 	/* 支付列表 */
-	.pay-list{
+	.pay-list {
 		padding-left: 40upx;
 		margin-top: 16upx;
 		background: #fff;
-		.pay-item{
+
+		.pay-item {
 			display: flex;
 			align-items: center;
 			padding-right: 20upx;
 			line-height: 1;
-			height: 110upx;	
+			height: 110upx;
 			position: relative;
 		}
-		.icon-weixinzhifu{
+
+		.icon-weixinzhifu {
 			width: 80upx;
 			font-size: 40upx;
 			color: #6BCC03;
 		}
-		.icon-alipay{
+
+		.icon-alipay {
 			width: 80upx;
 			font-size: 40upx;
 			color: #06B4FD;
 		}
-		.icon-xuanzhong2{
+
+		.icon-xuanzhong2 {
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -441,14 +501,15 @@
 			font-size: 40upx;
 			color: $base-color;
 		}
-		.tit{
+
+		.tit {
 			font-size: 32upx;
 			color: $font-color-dark;
 			flex: 1;
 		}
 	}
-	
-	.footer{
+
+	.footer {
 		position: fixed;
 		left: 0;
 		bottom: 0;
@@ -462,21 +523,25 @@
 		background-color: #fff;
 		z-index: 998;
 		color: $font-color-base;
-		box-shadow: 0 -1px 5px rgba(0,0,0,.1);
-		.price-content{
+		box-shadow: 0 -1px 5px rgba(0, 0, 0, .1);
+
+		.price-content {
 			padding-left: 30upx;
 		}
-		.price-tip{
+
+		.price-tip {
 			color: $base-color;
 			margin-left: 8upx;
 		}
-		.price{
+
+		.price {
 			font-size: 36upx;
 			color: $base-color;
 		}
-		.submit{
-			display:flex;
-			align-items:center;
+
+		.submit {
+			display: flex;
+			align-items: center;
 			justify-content: center;
 			width: 280upx;
 			height: 100%;
@@ -485,9 +550,9 @@
 			background-color: $base-color;
 		}
 	}
-	
+
 	/* 优惠券面板 */
-	.mask{
+	.mask {
 		display: flex;
 		align-items: flex-end;
 		position: fixed;
@@ -495,44 +560,53 @@
 		top: var(--window-top);
 		bottom: 0;
 		width: 100%;
-		background: rgba(0,0,0,0);
+		background: rgba(0, 0, 0, 0);
 		z-index: 9995;
 		transition: .3s;
-		
-		.mask-content{
+
+		.mask-content {
 			width: 100%;
 			min-height: 30vh;
 			max-height: 70vh;
 			background: #f3f3f3;
 			transform: translateY(100%);
 			transition: .3s;
-			overflow-y:scroll;
+			overflow-y: scroll;
 		}
-		&.none{
+
+		&.none {
 			display: none;
 		}
-		&.show{
-			background: rgba(0,0,0,.4);
-			
-			.mask-content{
+
+		&.show {
+			background: rgba(0, 0, 0, .4);
+
+			.mask-content {
 				transform: translateY(0);
 			}
 		}
 	}
 
+	/* 选中的优惠券 */
+	.selectCoupon {
+		border: 1upx solid red;
+	}
+
 	/* 优惠券列表 */
-	.coupon-item{
+	.coupon-item {
 		display: flex;
 		flex-direction: column;
 		margin: 20upx 24upx;
 		background: #fff;
-		.con{
+
+		.con {
 			display: flex;
 			align-items: center;
 			position: relative;
 			height: 120upx;
 			padding: 0 30upx;
-			&:after{
+
+			&:after {
 				position: absolute;
 				left: 0;
 				bottom: 0;
@@ -543,7 +617,8 @@
 				transform: scaleY(50%);
 			}
 		}
-		.left{
+
+		.left {
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
@@ -551,16 +626,19 @@
 			overflow: hidden;
 			height: 100upx;
 		}
-		.title{
+
+		.title {
 			font-size: 32upx;
 			color: $font-color-dark;
 			margin-bottom: 10upx;
 		}
-		.time{
+
+		.time {
 			font-size: 24upx;
 			color: $font-color-light;
 		}
-		.right{
+
+		.right {
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
@@ -569,21 +647,25 @@
 			color: $font-color-base;
 			height: 100upx;
 		}
-		.price{
+
+		.price {
 			font-size: 44upx;
 			color: $base-color;
-			&:before{
+
+			&:before {
 				content: '￥';
 				font-size: 34upx;
 			}
 		}
-		.tips{
+
+		.tips {
 			font-size: 24upx;
 			color: $font-color-light;
 			line-height: 60upx;
 			padding-left: 30upx;
 		}
-		.circle{
+
+		.circle {
 			position: absolute;
 			left: -6upx;
 			bottom: -10upx;
@@ -592,11 +674,11 @@
 			height: 20upx;
 			background: #f3f3f3;
 			border-radius: 100px;
-			&.r{
+
+			&.r {
 				left: auto;
 				right: -6upx;
 			}
 		}
 	}
-
 </style>

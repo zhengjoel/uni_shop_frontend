@@ -58,7 +58,7 @@
 			<view class="c-row b-b" v-if="product.salesly.length">
 				<text class="tit">促销活动</text>
 				<view class="con-list">
-					<text v-for="(item, index) in product.salesly">{{item.title}}</text>
+					<text v-for="item in product.salesly" :key="item.id">{{item.title}}</text>
 				</view>
 			</view>
 			<view class="c-row b-b" v-if="product.server">
@@ -224,12 +224,12 @@
 		},
 		async onLoad(options) {
 			let id = options.id;
-			this.product = await this.$api.request('/product/info?id=' + id, 'GET');
+			this.product = await this.$api.request(`/product/info?id=${id}`, 'GET');
 
 			this.favorite = this.product.favorite;
 			if (this.product.specStatus) {
-				let specList = JSON.parse(this.product.specList)
-				let specTableList = JSON.parse(this.product.specTableList)
+				let specList = this.product.spec_list;
+				let specTableList = this.product.spec_table_list;
 
 				let e = 1;
 				let ee = 1;
