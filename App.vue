@@ -3,30 +3,33 @@
 	 * vuex管理登陆状态，具体可以参考官方登陆模板示例
 	 */
 	import {
-		mapMutations
+		mapMutations,
+		mapState
 	} from 'vuex';
 	export default {
 		methods: {
-			...mapMutations(['login'])
+			...mapMutations(['login', 'logout']),
+			// 检查登录状态
+			async checkLogin() {
+				let user = uni.getStorageSync('userInfo');
+				if (user) {
+					this.login(user);
+				}
+				let result = await this.$api.request('/user/status');
+				if (!result) {
+					// 若没有登录则清空个人信息
+					this.logout();
+				}
+			}
 		},
 		onLaunch: function() {
-			let userInfo = uni.getStorageSync('userInfo') || '';
-			if(userInfo.id){
-				//更新登陆状态
-				uni.getStorage({
-					key: 'userInfo',
-					success: (res) => {
-						console.log('success',res)
-						this.login(res.data);
-					},
-					fail: (res) => {
-						console.log('fail',res)
-					}
-				});
-			}else{
-				//没有登陆状态
-			}
+			// 锁定屏幕竖向
+			// #ifdef APP-PLUS
+			plus.screen.lockOrientation('portrait-primary');
+			// #endif
 			
+			// 检查用户登录情况
+			this.checkLogin();
 		},
 		onShow: function() {
 			console.log('App Show')

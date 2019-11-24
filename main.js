@@ -56,7 +56,7 @@ const checkLogin = () => {
 							url: '/pages/public/login'
 						})
 					}
-					resolve();
+					resolve(false);
 				}
 			})
 		} else {

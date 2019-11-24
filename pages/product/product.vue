@@ -340,7 +340,6 @@
 					});
 				}
 			},
-			stopPrevent() {},
 			//添加购物车
 			async addCart() {
 				let is_login = await this.$api.checkLogin();
@@ -351,7 +350,8 @@
 					}
 					await this.$api.request('/cart/add?id=' + this.product.id + '&spec='+ spec);
 				}
-			}
+			},
+			stopPrevent() {}
 		},
 
 	}
