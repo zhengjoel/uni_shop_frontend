@@ -16,7 +16,7 @@
 		</view>
 		<view class="row b-b">
 			<text class="tit">详细</text>
-			<input class="input" type="text" v-model="addressData.area" placeholder="详细地址,楼号" placeholder-class="placeholder" />
+			<input class="input" type="text" v-model="addressData.address" placeholder="详细地址,楼号" placeholder-class="placeholder" />
 		</view>
 
 		<view class="row default-row">
@@ -41,14 +41,15 @@
 				addressData: {
 					name: '',
 					mobile: '',
-					addressName: '在地图选择',
 					address: '',
 					lng: 0,
 					lat: 0,
-					area: '',
+					province_id: 0,
+					city_id: 0,
+					area_id: 0,
 					is_default: false
 				},
-				pickerValueDefault: [0, 0, 0] ,//城市选择器默认值
+				pickerValueDefault: [0, 0, 0] ,//城市选择器默认值 省市区id
 				cityLebel:'请选择地区'
 			}
 		},
@@ -58,6 +59,11 @@
 				title = '编辑收货地址'
 
 				this.addressData = JSON.parse(option.data)
+				this.pickerValueDefault = [
+					this.addressData.province_id,
+					this.addressData.city_id,
+					this.addressData.area_id
+				];
 			}
 			this.manageType = option.type;
 			uni.setNavigationBarTitle({
@@ -65,20 +71,28 @@
 			})
 		},
 		methods: {
-			//城市选择器
+			// 城市选择器
 			showCityPicker() {
 				this.$refs.mpvueCityPicker.show();
 			},
+			// 城市选择器改变值
 			onChange(e) {
-				console.log(e);
+				// console.log('选择的值')
+				// console.log(e);
 			},
+			// 城市选择器关闭
 			onCancel(e) {
-				console.log(e);
+				//console.log(e);
 			},
+			// 城市选择器确定
 			onConfirm(e) {
 				console.log(e);
 				this.cityLebel = e.label;
 				this.pickerValueDefault = e.value;
+				
+				this.addressData.province_id = this.pickerValueDefault[0];
+				this.addressData.city_id = this.pickerValueDefault[1];
+				this.addressData.area_id = this.pickerValueDefault[2];
 			},
 			//默认地址
 			switchChange(e) {
@@ -97,10 +111,6 @@
 					return;
 				}
 				if (!data.address) {
-					this.$api.msg('请在地图选择所在位置');
-					return;
-				}
-				if (!data.area) {
 					this.$api.msg('请填详细地址信息');
 					return;
 				}
