@@ -72,7 +72,7 @@
 				<text class="cell-tip red">-￥{{coupon_price}}</text>
 			</view>
 			<view class="yt-list-cell b-b">
-				<text class="cell-tit clamp">配送方式</text>
+				<view class="cell-tit clamp">配送方式<text style="color:red">（查看详情）</text></view>
 				<text class="cell-tip">
 					<picker @change="bindPickerChange" range-key="name" :value="deliveryIndex" :range="deliveryList">
 						<view class="uni-input">{{deliveryList[deliveryIndex].name}}</view>
@@ -143,12 +143,17 @@
 				price: 0.00, //商品金额
 				coupon_price: 0.00, //优惠券金额
 				total: 0.00, //实付金额
-				deliveryList:[],
+				deliveryList: [],
 				deliveryIndex:0
 			}
 		},
 		onLoad(option) {
 			this.getOrderCreate(option.id, option.spec);
+		},
+		onShow() {
+			if (this.deliveryList.length > 0) {
+				// 检查当前地址是否存在于运费模板中
+			}
 		},
 		methods: {
 			// 使用优惠券
