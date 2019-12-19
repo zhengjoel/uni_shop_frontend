@@ -151,11 +151,20 @@
 			this.getOrderCreate(option.id, option.spec);
 		},
 		onShow() {
-			if (this.deliveryList.length > 0) {
+			if (this.addressData) {
 				// 检查当前地址是否存在于运费模板中
+				this.getDelivery();
 			}
 		},
 		methods: {
+			// 获取运费模板
+			async getDelivery(){
+				let delivery = this.$api.request('/order/getDelivery?city_id=' + this.addressData.city_id);
+				if (delivery) {
+					this.deliveryList = delivery;
+					this.deliveryIndex = 0;
+				}
+			},
 			// 使用优惠券
 			useCoupon(index) {
 				if (this.useCouponIndex !== index) {

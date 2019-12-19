@@ -71,16 +71,20 @@
 			async toLogin(){
 				this.logining = true;
 				const {mobile, password} = this;
-
 				const account = mobile;
 				const sendData = {
 					account,
 					password
 				};
 				let res = await this.$api.request('/user/login', 'POST', sendData)
-				this.login(res.userinfo);
-				this.logining = true;
-				uni.navigateBack();
+				if (res) {
+					this.login(res.userinfo);
+					this.logining = true;
+					uni.navigateBack();
+				} else {
+					this.logining = false;
+				}
+				
 			},
 			register(action){
 				uni.navigateTo({
