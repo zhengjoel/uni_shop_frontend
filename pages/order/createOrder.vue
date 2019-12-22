@@ -74,18 +74,18 @@
 			<view class="yt-list-cell b-b">
 				<view class="cell-tit clamp">配送方式<text style="color:red">（查看详情）</text></view>
 				<text class="cell-tip">
-					<picker @change="bindPickerChange" range-key="name" :value="deliveryIndex" :range="deliveryList">
+					<picker @change="deliveryChange" range-key="name" :value="deliveryIndex" :range="deliveryList">
 						<view class="uni-input">{{deliveryList[deliveryIndex].name}}</view>
 					</picker>
 				</text>
 			</view>
 			<view class="yt-list-cell b-b">
 				<text class="cell-tit clamp">运费</text>
-				<text class="cell-tip">￥{{coupon_price}}</text>
+				<text class="cell-tip">￥{{deliveryPrice}}</text>
 			</view>
 			<view class="yt-list-cell desc-cell">
 				<text class="cell-tit clamp">备注</text>
-				<input class="desc" type="text" v-model="desc" placeholder="请填写备注信息" placeholder-class="placeholder" />
+				<input class="desc" type="text" v-model="remark" placeholder="请填写备注信息" placeholder-class="placeholder" />
 			</view>
 		</view>
 
@@ -121,7 +121,6 @@
 				</view>
 			</view>
 		</view>
-
 	</view>
 </template>
 
@@ -134,7 +133,7 @@
 		data() {
 			return {
 				maskState: 0, //优惠券面板显示状态
-				desc: '', //备注
+				remark: '', //备注
 				payType: 1, //1微信 2支付宝
 				couponList: [],
 				useCouponIndex: false,
@@ -144,26 +143,47 @@
 				coupon_price: 0.00, //优惠券金额
 				total: 0.00, //实付金额
 				deliveryList: [],
-				deliveryIndex:0
+				deliveryIndex: 0,
+				deliveryPrice: 0.00,
+				productId: 0 ,// 产品id
+				spec: '' ,// 产品规格
+				cardIds: 0 // 购物车id列表
 			}
 		},
 		onLoad(option) {
+			this.saveOptionTodata(option);
 			this.getOrderCreate(option.id, option.spec);
 		},
 		onShow() {
-			if (this.addressData) {
+			if (this.addressData.hasOwnProperty('city_id')) {
 				// 检查当前地址是否存在于运费模板中
 				this.getDelivery();
 			}
 		},
 		methods: {
-			// 获取运费模板
-			async getDelivery(){
-				let delivery = this.$api.request('/order/getDelivery?city_id=' + this.addressData.city_id);
-				if (delivery) {
-					this.deliveryList = delivery;
-					this.deliveryIndex = 0;
+			// 保存参数到全局变量
+			saveOptionTodata(option){
+				if (option.hasOwnProperty('id')) {
+					this.productId = option.id;
 				}
+				if (option.hasOwnProperty('spec')) {
+					this.spec = option.spec;
+				}
+				if (option.hasOwnProperty('card_id')) {
+					this.cardIds = option.cardIds;
+				}
+			},
+			// 获取运费模板
+			async getDelivery() {
+				let delivery = await this.$api.request('/order/getDelivery?city_id=' + this.addressData.city_id);
+				this.deliveryList = delivery;
+				this.deliveryIndex = 0;
+				this.calcTotal();
+			},
+			// 选择运费模板
+			deliveryChange(e) {
+				this.deliveryIndex = e.detail.value;
+				this.calcTotal();
 			},
 			// 使用优惠券
 			useCoupon(index) {
@@ -199,9 +219,17 @@
 				this.payType = type;
 			},
 			submit() {
+				let data = {
+					product_id: this.productId,
+					spec: this.spec,
+					card_ids: this.cardIds,
+					number: this.product
+				};
+				
 				uni.redirectTo({
 					url: '/pages/money/pay'
 				})
+				
 			},
 			stopPrevent() {},
 			//数量
@@ -218,15 +246,18 @@
 				}
 
 			},
-			//计算价格
+			// 计算价格
 			calcTotal() {
 				let price = 0;
+				let number = 0; // 产品数量
+
 				for (let i in this.product) {
 					price += (parseInt(this.product[i].sales_price) * this.product[i].number);
+					number += this.product[i].number;
 				}
 				this.price = price.toFixed(2);
 
-				//检查当前优惠券是否满足使用条件
+				// 检查当前优惠券是否满足使用条件
 				if (this.useCouponIndex === false || this.price >= this.couponList[this.useCouponIndex].least) {
 					this.total = price - this.coupon_price;
 				} else {
@@ -236,6 +267,33 @@
 					this.total = price - this.coupon_price;
 				}
 
+				// 计算当前运费模板
+				// id: 29 运费模板id
+				// name: "购买2件以上包邮"  标题
+				// type: "quantity"  // 续重类型
+				// min: 2  // 至少购买量
+				// first: 1  // 首件数量
+				// first_fee: "0.00" // 首单价钱
+				// additional: 1  // 续件数量
+				// additional_fee: "0" // 续件价钱
+				let delivery = this.deliveryList[this.deliveryIndex];
+				let deliveryPrice = 0;
+				if (this.deliveryList[this.deliveryIndex].hasOwnProperty('id')) {
+					if (delivery.min > number) {
+						this.$api.msg('必须至少购买' + delivery.min + '件商品才能使用此配送方式', 6000)
+					} 
+					for (let i = 0; i < number; ) {
+						if (i === 0) {
+							deliveryPrice += parseInt(delivery.first_fee);
+							i += parseInt(delivery.first);
+						} else {
+							deliveryPrice += parseInt(delivery.additional_fee);
+							i += parseInt(delivery.additional);
+						}
+					}
+				}
+				this.deliveryPrice = deliveryPrice;
+				this.total += deliveryPrice;
 			}
 		}
 	}
