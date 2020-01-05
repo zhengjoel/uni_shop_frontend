@@ -40,7 +40,7 @@
 		</view> -->
 
 		<view class="c-list">
-			<view class="c-row b-b" @click="toggleSpec" v-if="product.specStatus">
+			<view class="c-row b-b" @click="toggleSpec" v-if="product.use_spec">
 				<text class="tit">购买类型</text>
 				<view class="con">
 					<text class="selected-text">
@@ -182,7 +182,7 @@
 				return this.specSelected.join(' ');
 			},
 			specProduct() {
-				if (this.product.specStatus == 1) {
+				if (this.product.use_spec == 1) {
 					let market_price = this.product.market_price;
 					let sales_price = this.product.sales_price;
 					let stock = this.product.stock;
@@ -227,7 +227,7 @@
 			this.product = await this.$api.request(`/product/info?id=${id}`, 'GET');
 
 			this.favorite = this.product.favorite;
-			if (this.product.specStatus) {
+			if (this.product.use_spec) {
 				let specList = this.product.spec_list;
 				let specTableList = this.product.spec_table_list;
 
@@ -332,7 +332,7 @@
 				let is_login = await this.$api.checkLogin();
 				if (is_login) {
 					let spec = '';
-					if (this.product.specStatus == 1) {
+					if (this.product.use_spec == 1) {
 						spec = this.specSelected.join(',');
 					}
 					uni.navigateTo({
@@ -345,7 +345,7 @@
 				let is_login = await this.$api.checkLogin();
 				if (is_login) {
 					let spec = '';
-					if(this.product.specStatus == 1) {
+					if(this.product.use_spec == 1) {
 						spec = this.specSelected.join(',');
 					}
 					await this.$api.request('/cart/add?id=' + this.product.id + '&spec='+ spec);

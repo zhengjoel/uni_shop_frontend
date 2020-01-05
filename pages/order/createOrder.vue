@@ -147,7 +147,6 @@
 				deliveryPrice: 0.00,
 				productId: 0 ,// 产品id
 				spec: '' ,// 产品规格
-				cardIds: 0 // 购物车id列表
 			}
 		},
 		onLoad(option) {
@@ -168,9 +167,6 @@
 				}
 				if (option.hasOwnProperty('spec')) {
 					this.spec = option.spec;
-				}
-				if (option.hasOwnProperty('card_id')) {
-					this.cardIds = option.cardIds;
 				}
 			},
 			// 获取运费模板
@@ -218,18 +214,24 @@
 			changePayType(type) {
 				this.payType = type;
 			},
-			submit() {
+			async submit() {
+				this.$api.msg('提交中...', 20000);
 				let data = {
 					product_id: this.productId,
 					spec: this.spec,
-					card_ids: this.cardIds,
-					number: this.product
+					number: this.product[0].number,
+					city_id: this.addressData.city_id ? this.addressData.city_id : '',
+					delivery_id: this.deliveryList[this.deliveryIndex].id ? this.deliveryList[this.deliveryIndex].id : '',
+					coupon_id: this.useCouponIndex && this.couponList[this.useCouponIndex].id ? this.couponList[this.useCouponIndex].id : ''
 				};
-				
-				uni.redirectTo({
-					url: '/pages/money/pay'
-				})
-				
+				let result = await this.$api.request('/order/submit', 'POST', data);
+				if (result) {
+					this.$api.msg('已提交', 2000);
+					return;
+					uni.redirectTo({
+						url: '/pages/money/pay'
+					})
+				}
 			},
 			stopPrevent() {},
 			//数量
