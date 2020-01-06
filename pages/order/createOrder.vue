@@ -222,7 +222,8 @@
 					number: this.product[0].number,
 					city_id: this.addressData.city_id ? this.addressData.city_id : '',
 					delivery_id: this.deliveryList[this.deliveryIndex].id ? this.deliveryList[this.deliveryIndex].id : '',
-					coupon_id: this.useCouponIndex && this.couponList[this.useCouponIndex].id ? this.couponList[this.useCouponIndex].id : ''
+					coupon_id: this.useCouponIndex && this.couponList[this.useCouponIndex].id ? this.couponList[this.useCouponIndex].id : '',
+					remark: this.remark
 				};
 				let result = await this.$api.request('/order/submit', 'POST', data);
 				if (result) {
@@ -285,7 +286,7 @@
 						this.$api.msg('必须至少购买' + delivery.min + '件商品才能使用此配送方式', 6000)
 					} 
 					for (let i = 0; i < number; ) {
-						if (i === 0) {
+						if (i === 0) { 
 							deliveryPrice += parseInt(delivery.first_fee);
 							i += parseInt(delivery.first);
 						} else {
