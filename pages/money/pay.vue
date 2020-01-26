@@ -7,18 +7,18 @@
 
 		<view class="pay-type-list">
 
-			<view class="type-item b-b" @click="changePayType(1)">
+			<view class="type-item b-b" @click="changePayType(1)" v-if="payTypeList.weixin">
 				<text class="icon yticon icon-weixinzhifu"></text>
 				<view class="con">
 					<text class="tit">微信支付</text>
-					<text>推荐使用微信支付</text>
+					<!-- <text>推荐使用微信支付</text> -->
 				</view>
 				<label class="radio">
 					<radio value="" color="#fa436a" :checked='payType == 1' />
 					</radio>
 				</label>
 			</view>
-			<view class="type-item b-b" @click="changePayType(2)">
+			<view class="type-item b-b" @click="changePayType(2)" v-if="payTypeList.alipay">
 				<text class="icon yticon icon-alipay"></text>
 				<view class="con">
 					<text class="tit">支付宝支付</text>
@@ -28,17 +28,17 @@
 					</radio>
 				</label>
 			</view>
-			<view class="type-item" @click="changePayType(3)">
+			<!-- <view class="type-item" @click="changePayType(3)">
 				<text class="icon yticon icon-erjiye-yucunkuan"></text>
 				<view class="con">
 					<text class="tit">预存款支付</text>
 					<text>可用余额 ¥198.5</text>
-				</view>
+				</view> 
 				<label class="radio">
 					<radio value="" color="#fa436a" :checked='payType == 3' />
 					</radio>
 				</label>
-			</view>
+			</view> -->
 		</view>
 		
 		<text class="mix-btn" @click="confirm">确认支付</text>
@@ -51,20 +51,40 @@
 		data() {
 			return {
 				payType: 1,
-				orderInfo: {}
+				orderInfo: {},
+				orderId:'',
+				payTypeList:{
+					weixin:false,
+					alipay:false
+				}
 			};
 		},
 		computed: {
 		
 		},
 		onLoad(options) {
-			
+			this.orderId = options.order_id;
+			this.getPayType();
 		},
-
 		methods: {
+			// 获取支付方式
+			async getPayType() {
+				let type = await this.$api.request('/pay/getPayType');
+				if (type) {
+					this.payTypeList = type;
+				}
+			},
 			//选择支付方式
 			changePayType(type) {
 				this.payType = type;
+				switch (type) {
+					case 1: // 微信支付
+						// 不用微信jsSdk
+						break;
+					case 2: // 支付宝支付
+					
+						break;
+				}
 			},
 			//确认支付
 			confirm: async function() {

@@ -67,12 +67,12 @@
         }
     },
     "h5" : {
-        "title" : "分销商城",
-        "domain" : "t.mix-mall.com",
+        "title" : "uni商城",
+        "domain" : "t.unishop.com",
         "router" : {
             "base" : "/h5/"
         },
-        "template" : "template.h5.tml",
+        "template" : "template.h5.html",
         "devServer" : {
             "disableHostCheck" : true,
             "https" : false

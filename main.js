@@ -89,6 +89,7 @@ const request = (url, method = 'GET', data = {}) => {
 		let token = Vue.prototype.$store.state.userInfo.token;
 		header.token = token;
 	}
+	data.platform = Vue.prototype.$platform;
 	return new Promise(resolve => {
 		msg('加载中...')
 		uni.request({
@@ -139,8 +140,29 @@ Vue.prototype.$api = {
 	deepCopy
 };
 Vue.prototype.$site = "http://t.fastadmin.com:8888";
-Vue.prototype.$cdn = "http://t.fastadmin.com:8888";
+Vue.prototype.$cdn = "http://t.fastadmin.com:8888"; // 图片路径
 Vue.prototype.$unishow = "http://t.fastadmin.com:8888/addons/unishop";
+
+// 目前平台
+// #ifdef APP-PLUS
+Vue.prototype.$platform = 'APP-PLUS';
+// #endif
+// #ifdef H5
+Vue.prototype.$platform = 'H5';
+// #endif
+// #ifdef MP-WEIXIN
+Vue.prototype.$platform = 'MP-WEIXIN';
+// #endif
+// #ifdef MP-ALIPAY
+Vue.prototype.$platform = 'MP-ALIPAY';
+// #endif
+// #ifdef MP-BAIDU
+Vue.prototype.$platform = 'MP-BAIDU';
+// #endif
+// #ifdef MP-TOUTIAO
+Vue.prototype.$platform = 'MP-TOUTIAO';
+// #endif
+
 
 App.mpType = 'app'
 

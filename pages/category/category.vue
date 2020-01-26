@@ -38,14 +38,7 @@
 			async loadData(){
 				var that = this;
 				//let list = await this.$api.json('cateList');
-				let list = await new Promise(resolve=>{
-					uni.request({
-						url:that.$mixshow + '/category/all',
-						success(res) {
-							resolve(res.data.data)
-						}
-					})
-				})
+				let list = await this.$api.request('/category/all');
 
 				list.forEach(item=>{
 					if(item.pid == 0){

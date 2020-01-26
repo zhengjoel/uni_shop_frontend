@@ -228,9 +228,8 @@
 				let result = await this.$api.request('/order/submit', 'POST', data);
 				if (result) {
 					this.$api.msg('已提交', 2000);
-					return;
 					uni.redirectTo({
-						url: '/pages/money/pay'
+						url: '/pages/money/pay?order_id='+ result.order_id
 					})
 				}
 			},
