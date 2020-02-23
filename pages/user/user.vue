@@ -37,7 +37,7 @@
 		>
 			<image class="arc" src="/static/arc.png"></image>
 			
-			<view class="tj-sction">
+			<!-- <view class="tj-sction">
 				<view class="tj-item">
 					<text class="num">128.8</text>
 					<text>余额</text>
@@ -50,22 +50,32 @@
 					<text class="num">20</text>
 					<text>积分</text>
 				</view>
-			</view>
+			</view> -->
 			<!-- 订单 -->
+			<view class="order-header">
+				<view class="title">我的订单</view>
+				<view class="item" @click="navTo('/pages/order/order?state=0')" >查看全部订单
+				<text class="yticon right icon-you"></text>
+			</view>
+			</view>
 			<view class="order-section">
-				<view class="order-item" @click="navTo('/pages/order/order?state=0')" hover-class="common-hover"  :hover-stay-time="50">
-					<text class="yticon icon-shouye"></text>
-					<text>全部订单</text>
-				</view>
 				<view class="order-item" @click="navTo('/pages/order/order?state=1')"  hover-class="common-hover" :hover-stay-time="50">
 					<text class="yticon icon-daifukuan"></text>
 					<text>待付款</text>
 				</view>
 				<view class="order-item" @click="navTo('/pages/order/order?state=2')" hover-class="common-hover"  :hover-stay-time="50">
+					<text class="yticon icon-shouye"></text>
+					<text>待发货</text>
+				</view>
+				<view class="order-item" @click="navTo('/pages/order/order?state=3')" hover-class="common-hover"  :hover-stay-time="50">
 					<text class="yticon icon-yishouhuo"></text>
 					<text>待收货</text>
 				</view>
 				<view class="order-item" @click="navTo('/pages/order/order?state=4')" hover-class="common-hover"  :hover-stay-time="50">
+					<text class="yticon icon-yishouhuo"></text>
+					<text>评价</text>
+				</view>
+				<view class="order-item" @click="navTo('/pages/order/order?state=5')" hover-class="common-hover"  :hover-stay-time="50">
 					<text class="yticon icon-shouhoutuikuan"></text>
 					<text>退款/售后</text>
 				</view>
@@ -318,11 +328,29 @@
 			margin-bottom: 8upx;
 		}
 	}
+	.order-header {
+		@extend %section;
+		padding: 28upx 0 0;
+		border-radius: 10upx 10upx 0 0;
+		margin-top: 20upx;
+		font-size: $font-base;
+		.title {
+			width: 50%;
+			color: $font-color-dark;
+			margin-left: 30upx;
+		}
+		.item {
+			width: 50%;
+			color:$font-color-base;
+			text-align: right;
+			margin-right: 8upx;
+		}
+	}
 	.order-section{
 		@extend %section;
+		border-radius: 0 0 10upx 10upx;
 		padding: 28upx 0;
-		margin-top: 20upx;
-		.order-item{
+		.order-item {
 			@extend %flex-center;
 			width: 120upx;
 			height: 120upx;

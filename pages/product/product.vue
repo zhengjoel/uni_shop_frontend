@@ -336,7 +336,7 @@
 						spec = this.specSelected.join(',');
 					}
 					uni.navigateTo({
-						url: `/pages/order/createOrder?id=${this.product.id}&spec=${spec}`
+						url: `/pages/order/createOrder?id=${this.product.product_id}&spec=${spec}`
 					});
 				}
 			},

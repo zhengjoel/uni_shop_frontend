@@ -106,7 +106,7 @@
 				//let list = await this.$api.json('cateList');
 				let list = await new Promise(resolve=>{
 					uni.request({
-						url:that.$mixshow + '/category/inlist?fid='+fid,
+						url:that.$unishow  + '/category/inlist?fid='+fid,
 						method:'GET',
 						success(res) {
 							if(res.data.code == 1){

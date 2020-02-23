@@ -89,7 +89,7 @@ const request = (url, method = 'GET', data = {}) => {
 		let token = Vue.prototype.$store.state.userInfo.token;
 		header.token = token;
 	}
-	data.platform = Vue.prototype.$platform;
+	header.platform = Vue.prototype.$platform;
 	return new Promise(resolve => {
 		msg('加载中...')
 		uni.request({
@@ -98,7 +98,7 @@ const request = (url, method = 'GET', data = {}) => {
 			header: header,
 			data: data,
 			success(res) {
-				console.log(res);
+				//console.log(res);
 				if (res.hasOwnProperty('data')) {
 					if (res.data.hasOwnProperty('code') && res.data.code == 1) {
 						if (res.data.msg) {
@@ -109,7 +109,7 @@ const request = (url, method = 'GET', data = {}) => {
 						resolve(res.data.data);
 					} else {
 						if (res.data.hasOwnProperty('msg')) {
-							msg(res.data.msg)
+							msg(res.data.msg);
 						} else {
 							msg('返回参数错误');
 						}

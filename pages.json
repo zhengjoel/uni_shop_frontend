@@ -177,6 +177,13 @@
 				"navigationBarTitleText": "商品列表"
 			}
         }
+		,{
+		    "path" : "pages/flash/list",
+		    "style" : {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "限时秒杀"
+			}
+		}
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

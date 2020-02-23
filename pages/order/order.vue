@@ -52,19 +52,22 @@
 							<image class="goods-img" :src="$cdn + goodsItem.image" mode="aspectFill"></image>
 							<view class="right">
 								<text class="title clamp">{{goodsItem.title}}</text>
-								<text class="attr-box">{{goodsItem.attr}}  x {{goodsItem.number}}</text>
+								<text class="attr-box">{{goodsItem.spec}} x {{goodsItem.number}}</text>
 								<text class="price">{{goodsItem.price}}</text>
 							</view>
 						</view>
 						
 						<view class="price-box">
 							共
-							<text class="num">7</text>
-							件商品 实付款
-							<text class="price">143.7</text>
+							<text class="num">{{quantity(item.products)}}</text>
+							件商品 合计
+							<text class="price">{{item.total_price}}</text>
+							
+							<text v-if="item.discount_price > 0">(已优惠￥{{item.discount_price}})</text>
+							<text v-if="item.delivery_price > 0">(含运费￥{{item.delivery_price}})</text>
 						</view>
 						<view class="action-box b-t" v-if="item.state != 9">
-							<button class="action-btn" @click="cancelOrder(item)">取消订单</button>
+							<button class="action-btn" @click="cancelOrder(item)" v-if="item.have_paid == 0">取消订单</button>
 							<button class="action-btn recom">立即支付</button>
 						</view>
 					</view>
@@ -93,33 +96,46 @@
 						state: 0,
 						text: '全部',
 						loadingType: 'more',
-						orderList: []
+						orderList: [],
+						page: 1
 					},
 					{
 						state: 1,
 						text: '待付款',
 						loadingType: 'more',
-						orderList: []
+						orderList: [],
+						page: 1
 					},
 					{
 						state: 2,
-						text: '待收货',
+						text: '待发货',
 						loadingType: 'more',
-						orderList: []
+						orderList: [],
+						page: 1
 					},
 					{
 						state: 3,
-						text: '待评价',
+						text: '待收货',
 						loadingType: 'more',
-						orderList: []
+						orderList: [],
+						page: 1
 					},
 					{
 						state: 4,
+						text: '评价',
+						loadingType: 'more',
+						orderList: [],
+						page: 1
+					},
+					{
+						state: 5,
 						text: '售后',
 						loadingType: 'more',
-						orderList: []
+						orderList: [],
+						page: 1
 					}
 				],
+				pageSize: 10
 			};
 		},
 		
@@ -137,9 +153,7 @@
 				this.loadData()
 			}
 			// #endif
-			
 		},
-		 
 		methods: {
 			//获取订单列表
 			async loadData(source){
@@ -156,48 +170,33 @@
 					//防止重复加载
 					return;
 				}
+				if (navItem.loadingType == 'noMore') {
+					//没有更多数据
+					return;
+				}
 				
 				navItem.loadingType = 'loading';
 				
-				let result = await this.$api.request('/order/getOrders', 'GET', {type: state});
+				let result = await this.$api.request('/order/getOrders', 'GET', {type: state, page: navItem.page, pagesize: this.pageSize});
 				if (result) {
 					console.log(result)
+					if (result.length >= this.pageSize) {
+						//判断是否还有数据， 有改为 more， 没有改为noMore
+						navItem.loadingType = 'more';
+					} else {
+						navItem.loadingType = 'noMore';
+					}
+					// 页数加一
+					navItem.page++;
 					result.forEach(item=>{
-						item = Object.assign(item, this.orderStateExp(state));
-						item.state = state;
+						item = Object.assign(item, this.orderStateExp(item.state));
 						navItem.orderList.push(item);
 					});
 					//loaded新字段用于表示数据加载完毕，如果为空可以显示空白页
 					this.$set(navItem, 'loaded', true);
-					
-					//判断是否还有数据， 有改为 more， 没有改为noMore 
-					navItem.loadingType = 'more';
 				}
-			// 	return;
-				
-			// 	setTimeout(()=>{ 
-			// 		let orderList = Json.orderList.filter(item=>{
-			// 			//添加不同状态下订单的表现形式
-			// 			item = Object.assign(item, this.orderStateExp(item.state));
-			// 			//演示数据所以自己进行状态筛选
-			// 			if(state === 0){
-			// 				//0为全部订单
-			// 				return item;
-			// 			}
-			// 			return item.state === state
-			// 		});
-			// 		orderList.forEach(item=>{
-			// 			navItem.orderList.push(item);
-			// 		})
-			
-			// 		//loaded新字段用于表示数据加载完毕，如果为空可以显示空白页
-			// 		this.$set(navItem, 'loaded', true);
-					
-			// 		//判断是否还有数据， 有改为 more， 没有改为noMore 
-			// 		navItem.loadingType = 'more';
-			// 	}, 600);	
 			}, 
-
+			
 			//swiper 切换
 			changeTab(e){
 				this.tabCurrentIndex = e.target.current;
@@ -209,16 +208,43 @@
 			},
 			//删除订单
 			deleteOrder(index){
-				uni.showLoading({
-					title: '请稍后'
-				})
-				setTimeout(()=>{
+				let order_id = this.navList[this.tabCurrentIndex].orderList[index].order_id;
+				let result = this.$api.request('/order/deleteOrder?order_id=' + order_id)
+				if (result) {
 					this.navList[this.tabCurrentIndex].orderList.splice(index, 1);
-					uni.hideLoading();
-				}, 600)
+				}
 			},
 			//取消订单
 			cancelOrder(item){
+				let that = this;
+				uni.showModal({
+					title:'确认删除订单',
+					content:'删除之后不可恢复',
+					async success(res) {
+						if (res.confirm) {
+							let result = await that.$api.request('/order/cancelOrder?order_id=' + item.order_id);
+							if (result) {
+								let {stateTip, stateTipColor} = that.orderStateExp(9);
+								item = Object.assign(item, {
+									state: 9,
+									stateTip, 
+									stateTipColor
+								});
+								// 更新全部订单里面的状态
+								let position = that.navList[0].orderList.findIndex(val=>val.order_id === item.order_id);
+								if (position !== -1) {
+									that.navList[0].orderList[position] = item;
+								} 
+								
+								//取消订单后删除待付款中该项
+								let list = that.navList[1].orderList;
+								let index = list.findIndex(val=>val.order_id === item.order_id);
+								index !== -1 && list.splice(index, 1);
+							}
+						}
+					}
+				})
+				return;
 				uni.showLoading({
 					title: '请稍后'
 				})
@@ -239,7 +265,7 @@
 				}, 600)
 			},
 
-			//订单状态文字和颜色
+			// 订单状态文字和颜色
 			orderStateExp(state){
 				let stateTip = '',
 					stateTipColor = '#fa436a';
@@ -249,7 +275,11 @@
 					case 2:
 						stateTip = '待发货'; break;
 					case 3:
+						stateTip = '待收货'; break;
+					case 4:
 						stateTip = '待评价'; break;
+					case 5:
+						stateTip = '售后'; break;
 					case 9:
 						stateTip = '订单已关闭'; 
 						stateTipColor = '#909399';
@@ -258,6 +288,15 @@
 					//更多自定义
 				}
 				return {stateTip, stateTipColor};
+			},
+			
+			// 计算当前订单有多少个商品
+			quantity(products) {
+				let number = 0;
+				for(let i in products) {
+					number += parseInt(products[i].number);
+				}
+				return number;
 			}
 		},
 	}

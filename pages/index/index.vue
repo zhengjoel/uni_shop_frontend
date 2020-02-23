@@ -31,36 +31,36 @@
 			</view>
 		</view>
 		<!-- 秒杀楼层 -->
-		<view class="seckill-section m-t">
-			<view class="s-header">
+		<view class="seckill-section m-t" v-if="flashSale">
+			<view class="s-header" @click="navTo('/pages/flash/list')">
 				<image class="s-img" src="/static/temp/secskill-img.jpg" mode="widthFix"></image>
-				<text class="tip">8点场</text>
-				<text class="hour timer">07</text>
-				<text class="minute timer">13</text>
-				<text class="second timer">55</text>
+				<!-- <text class="tip">{{(new Date(flashSale.starttime*1000)).getHours()}}点场</text> -->
+				<text class="tip" v-if="flashSale.countdown" >下一场倒计时</text>
+				<text class="tip" v-else>{{flashSale.title}}</text>
+				<uni-countdown v-if="flashSale.countdown" @timeup="timeup" :show-day="flashSale.countdown.day ? true : false" :day="flashSale.countdown.day" :hour="flashSale.countdown.hour" :minute="flashSale.countdown.minute" :second="flashSale.countdown.second" color="#FFFFFF" background-color="#00B26A" border-color="#00B26A" ></uni-countdown>
 				<text class="yticon icon-you"></text>
 			</view>
 			<scroll-view class="floor-list" scroll-x>
 				<view class="scoll-wrapper">
-					<view v-for="(item, index) in goodsList" :key="index" class="floor-item" @click="navToDetailPage(item)">
-						<image :src="item.image" mode="aspectFill"></image>
-						<text class="title clamp">{{ item.title }}</text>
-						<text class="price">￥{{ item.price }}</text>
+					<view v-for="(item, index) in flashSale.product" :key="index" class="floor-item" @click="navToDetailPage({ product_id: item.flash_product_id }, flashSale.flash_id)">
+						<image :src="$cdn + item.product.image" mode="aspectFill"></image>
+						<text class="title clamp">{{item.product.title }}</text>
+						<text class="price">￥{{item.product.sales_price }}</text>
 					</view>
 				</view>
 			</scroll-view>
 		</view>
 
 		<!-- 团购楼层 -->
-		<view class="f-header m-t">
+		<!-- <view class="f-header m-t">
 			<image src="/static/temp/h1.png"></image>
 			<view class="tit-box">
 				<text class="tit">精品团购</text>
 				<text class="tit2">Boutique Group Buying</text>
 			</view>
 			<text class="yticon icon-you"></text>
-		</view>
-		<view class="group-section">
+		</view> -->
+		<!-- <view class="group-section">
 			<swiper class="g-swiper" :duration="500">
 				<swiper-item class="g-swiper-item" v-for="(item, index) in goodsList" :key="index" v-if="index % 2 === 0" @click="navToDetailPage(item)">
 					<view class="g-item left">
@@ -94,18 +94,18 @@
 					</view>
 				</swiper-item>
 			</swiper>
-		</view>
+		</view> -->
 
 		<!-- 分类推荐楼层 -->
-		<view class="f-header m-t">
+		<!-- <view class="f-header m-t">
 			<image src="/static/temp/h1.png"></image>
 			<view class="tit-box">
 				<text class="tit">分类精选</text>
 				<text class="tit2">Competitive Products For You</text>
 			</view>
 			<text class="yticon icon-you"></text>
-		</view>
-		<view class="hot-floor">
+		</view> -->
+		<!-- <view class="hot-floor">
 			<view class="floor-img-box">
 				<image
 					class="floor-img"
@@ -126,8 +126,8 @@
 					</view>
 				</view>
 			</scroll-view>
-		</view>
-		<view class="hot-floor">
+		</view> -->
+		<!-- <view class="hot-floor">
 			<view class="floor-img-box">
 				<image
 					class="floor-img"
@@ -148,8 +148,8 @@
 					</view>
 				</view>
 			</scroll-view>
-		</view>
-		<view class="hot-floor">
+		</view> -->
+		<!-- <view class="hot-floor">
 			<view class="floor-img-box">
 				<image
 					class="floor-img"
@@ -170,7 +170,7 @@
 					</view>
 				</view>
 			</scroll-view>
-		</view>
+		</view> -->
 
 		<!-- 猜你喜欢 -->
 		<view class="f-header m-t">
@@ -193,7 +193,9 @@
 </template>
 
 <script>
+import uniCountdown from '@/components/uni-countdown/uni-countdown.vue';
 export default {
+	components: {uniCountdown},
 	data() {
 		return {
 			titleNViewBackground: '',
@@ -201,10 +203,13 @@ export default {
 			swiperLength: 0,
 			carouselList: [],
 			goodsList: [],
-			menu:[]
+			menu:[],
+			flashSale: ''
 		};
 	},
-
+	computed:{
+		
+	},
 	onLoad() {
 		this.loadData();
 	},
@@ -214,13 +219,13 @@ export default {
 		 * 分次请求未作整合
 		 */
 		async loadData() {
-			var that = this;
-			//let carouselList = await this.$api.json('carouselList');
+			let that = this;
+			
 			//获取广告图
 			uni.request({
 				url: that.$unishow + '/ads/index',
 				success(res) {
-					let carouselList = res.data.data
+					let carouselList = res.data.data;
 					that.titleNViewBackground = carouselList[0].background;
 					that.swiperLength = carouselList.length;
 					that.carouselList = carouselList;
@@ -229,15 +234,26 @@ export default {
 			
 			//获取菜单栏
 			uni.request({
-				url: that.$mixshow + '/category/menu',
+				url: that.$unishow + '/category/menu',
 				success(res) {
-					that.menu = res.data.data
+					that.menu = res.data.data;
 				}
 			});
-
+			
+			this.getFlash();
 
 			let goodsList = await this.$api.json('goodsList');
 			this.goodsList = goodsList || [];
+		},
+		// 获取限时秒杀数据
+		getFlash() {
+			let that = this;
+			uni.request({
+				url: that.$unishow + '/flash/index',
+				success(res) {
+					that.flashSale = res.data.data;
+				}
+			})
 		},
 		//轮播图切换修改背景色
 		swiperChange(e) {
@@ -246,12 +262,24 @@ export default {
 			this.titleNViewBackground = this.carouselList[index].background;
 		},
 		//详情页
-		navToDetailPage(item) {
+		navToDetailPage(item, flash_id = 0) {
 			let id = item.product_id;
 			uni.navigateTo({
-				url: `/pages/product/product?id=${id}`
+				url: `/pages/product/product?id=${id}&flash=${flash_id}`
 			});
-		}
+		},
+		/**
+		 * 秒杀倒计时为0时再请求一次接口
+		 */
+		timeup() {
+			this.getFlash();
+		},
+		// 跳转页面
+		navTo(url){
+			uni.navigateTo({  
+				url
+			})  
+		}, 
 	},
 	// #ifndef MP
 	// 标题栏input搜索框点击
