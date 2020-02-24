@@ -261,7 +261,7 @@ export default {
 			this.swiperCurrent = index;
 			this.titleNViewBackground = this.carouselList[index].background;
 		},
-		//详情页
+		// 商品详情页
 		navToDetailPage(item, flash_id = 0) {
 			let id = item.product_id;
 			uni.navigateTo({
