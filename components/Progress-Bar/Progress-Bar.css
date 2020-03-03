@@ -20,7 +20,7 @@
 .progress-bar,
 .progress-text {
     width: 710rpx;
-    height: 40rpx;
+    height: 34rpx;
 }
 
 .progress .progress-text:first-child {

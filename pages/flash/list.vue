@@ -9,7 +9,7 @@
 			>
 				<view class="hour">
 					<view>{{item.starttime_hour}}</view>
-					<view class="text">{{item.text}}</view>
+					<view class="text">{{state[item.state].text}}</view>
 				</view>
 			</view>
 		</view>
@@ -29,7 +29,7 @@
 						v-for="(item, index) in tabItem.list" :key="index"
 						class="order-item"
 					>
-						<view class="info">
+						<view class="info"  @click="navToDetailPage(item.product.product_id, tabItem.flash_id)">
 							<view class="image">
 								<image mode="aspectFill" :src="$cdn + item.product.image"></image>
 							</view>
@@ -41,7 +41,7 @@
 									<view class="market"> ￥{{item.product.market_price}}</view>
 								</view>
 								<ProgressBar class="ProgressBar" :Sold="item.sold" :widthUpx="250" :Width="percentage(item.number,item.sold)" Type="candy" :Vice="true"></ProgressBar>
-								<view class="loot" @click="navToDetailPage(item.product.product_id, tabItem.flash_id)">马上抢</view>
+								<view class="loot">{{tabItem.state > 0 ? "马上抢" : "未开始"}}</view>
 							</view>
 						</view>
 					</view>
@@ -70,7 +70,14 @@
 			return {
 				pageSize: 15,
 				tabCurrentIndex: 0,
-				navList: []
+				navList: [],
+				state: [{
+					text: '未开始'
+				},{
+					text: '已开抢'
+				},{
+					text: '抢购进行中'
+				}]
 			}
 		},
 		onLoad(options){
@@ -91,7 +98,7 @@
 					});
 					this.loadData('tabChange', this.navList[this.tabCurrentIndex].flash_id);
 					this.setNavigationBarTitle(this.navList[this.tabCurrentIndex].title);
-					console.log(this.navList);
+					//console.log(this.navList);
 				}
 			},
 			// 加载数据
@@ -149,7 +156,7 @@
 				if (sold == 0) {
 					return 0;
 				}
-				return parseInt(number / sold * 100);
+				return parseInt(sold / number * 100);
 			},
 			// 商品详情页
 			navToDetailPage(product_id, flash_id = 0) {
@@ -175,7 +182,7 @@
 		height: 100%;
 	}
 	.swiper-box{
-		height: calc(100% - 40px);
+		height: calc(100% - 50px);
 	}
 	.list-scroll-content{
 		height: 100%;
@@ -283,13 +290,13 @@
 				.loot{
 					position: absolute;
 					right: 0;
-				    bottom: 0;
+				    bottom: 14rpx;
 				    background: $base-color;
 				    color: #fff;
-				    font-weight: 900;
 				    padding: 4upx 14upx;
-				    border-radius: 10upx;
-				    box-shadow: 2upx 2upx 8upx 0px #000;
+				    border-radius: 4upx;
+				    box-shadow: 2upx 2upx 8upx -2px #000;
+					font-size: 32rpx;
 				}
 			}
 		}

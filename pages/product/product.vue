@@ -10,9 +10,42 @@
 			</swiper>
 		</view>
 
+		<!-- 秒杀的话才显示 -->
+		<view class="flash" v-if="flash">
+			<view class="sales_price"><view class="symbol">￥</view>{{specProduct.sales_price}}</view>
+			<view class="left">
+				<view class="market_price">￥{{specProduct.market_price}}</view>
+				<view class="sold">已抢599件</view>
+			</view>
+			<view class="right">
+				<view class="time">距结束
+					<uni-countdown 
+					:showDay="countdown.day > 0 ? true : false" 
+					:day="countdown.day" 
+					:hour="countdown.hour" 
+					:minute="countdown.minute"
+					:second="countdown.second" 
+					color="#fffa30" 
+					borderWidth="22rpx" 
+					splitorColor="#fffa30"  
+					background-color="#282f2c00" 
+					border-color="#00B26A"></uni-countdown>
+				</view>
+				<view class="progress">
+					<ProgressBar 
+					class="ProgressBar" 
+					:Sold="2" 
+					:widthUpx="250" 
+					:Width="10" 
+					Type="candy" 
+					:Vice="true"></ProgressBar>
+				</view>
+			</view>
+		</view>
+
 		<view class="introduce-section">
 			<text class="title">{{product.title}}</text>
-			<view class="price-box">
+			<view class="price-box" v-if="flash == false">
 				<text class="price-tip">¥</text>
 				<text class="price">{{specProduct.sales_price}}</text>
 				<text class="m-price" v-if="specProduct.market_price">¥{{specProduct.market_price}}</text>
@@ -170,11 +203,15 @@
 	} from 'vuex';
 	import share from '@/components/share';
 	import coupon from '@/components/coolc-coupon/coolc-coupon';
+	import ProgressBar from '@/components/Progress-Bar/Progress-Bar';
+	import uniCountdown from '@/components/uni-countdown/uni-countdown.vue';
 
 	export default {
 		components: {
 			share,
-			coupon
+			coupon,
+			ProgressBar,
+			uniCountdown
 		},
 		computed: {
 			...mapGetters(['userInfo', 'hasLogin']),
@@ -219,53 +256,67 @@
 				specList: [],
 				specChildList: [],
 				specTableList: [],
-				product: {}
+				product: {},
+				flash: false,
+				countdown: {}
 			};
 		},
-		async onLoad(options) {
+		onLoad(options) {
 			let id = options.id;
-			this.product = await this.$api.request(`/product/info?id=${id}`, 'GET');
-
-			this.favorite = this.product.favorite;
-			if (this.product.use_spec) {
-				let specList = this.product.spec_list;
-				let specTableList = this.product.spec_table_list;
-
-				let e = 1;
-				let ee = 1;
-				let specChildList = [];
-				for (let i in specList) {
-					specList[i].id = e++;
-					for (let ii in specList[i].child) {
-						specChildList.push({
-							id: ee++,
-							pid: specList[i].id,
-							name: specList[i].child[ii]
-						})
-					}
-				}
-				this.specList = specList;
-				this.specChildList = specChildList;
-				this.specTableList = specTableList;
-				//console.log(this.specList)
-				//console.log(specChildList)
-
-				//规格 默认选中第一条
-				this.specList.forEach(item => {
-					for (let cItem of this.specChildList) {
-						if (cItem.pid === item.id) {
-							this.$set(cItem, 'selected', true);
-							this.specSelected.push(cItem.name);
-							break; //forEach不能使用break
-						}
-					}
-				})
+			let flash_id = options.flash ? options.flash : 0;
+			if (flash_id != 0) {
+				this.flash = flash_id;
 			}
-
-			//获取分享数据
-			//this.shareList = await this.$api.json('shareList');
+			this.getDetail(id, flash_id);
 		},
 		methods: {
+			// 获取商品详情
+			async getDetail(id, flash_id) {
+				let product = await this.$api.request(`/product/info?id=${id}&flash_id=${flash_id}`, 'GET');
+				if (!product) {
+					return;
+				}
+				this.product = product;
+				if (product.flash) {
+					this.countdown = product.flash.countdown;
+					console.log(countdown)
+				}
+				this.favorite = this.product.favorite;
+				if (this.product.use_spec) {
+					let specList = this.product.spec_list;
+					let specTableList = this.product.spec_table_list;
+				
+					let e = 1;
+					let ee = 1;
+					let specChildList = [];
+					for (let i in specList) {
+						specList[i].id = e++;
+						for (let ii in specList[i].child) {
+							specChildList.push({
+								id: ee++,
+								pid: specList[i].id,
+								name: specList[i].child[ii]
+							})
+						}
+					}
+					this.specList = specList;
+					this.specChildList = specChildList;
+					this.specTableList = specTableList;
+					//console.log(this.specList)
+					//console.log(specChildList)
+				
+					//规格 默认选中第一条
+					this.specList.forEach(item => {
+						for (let cItem of this.specChildList) {
+							if (cItem.pid === item.id) {
+								this.$set(cItem, 'selected', true);
+								this.specSelected.push(cItem.name);
+								break; //forEach不能使用break
+							}
+						}
+					})
+				}
+			},
 			//领取优惠券开关
 			toggleCoupon() {
 				if (this.couponClass === 'show') {
@@ -319,10 +370,14 @@
 			},
 			//收藏
 			async toFavorite() {
+				if (this.flash) {
+					this.$api.msg('秒杀商品不能收藏');
+					return;
+				}
 				let is_login = await this.$api.checkLogin();
 				if (is_login) {
 					this.favorite = !this.favorite;
-					let bool = await this.$api.request('/product/favorite?id=' + this.product.id);
+					let bool = await this.$api.request('/product/favorite?id=' + this.product.product_id);
 					if (!bool) {
 						this.favorite = !this.favorite;
 					}
@@ -342,13 +397,17 @@
 			},
 			//添加购物车
 			async addCart() {
+				if (this.flash) {
+					this.$api.msg('秒杀商品不能加入购物车');
+					return;
+				}
 				let is_login = await this.$api.checkLogin();
 				if (is_login) {
 					let spec = '';
 					if(this.product.use_spec == 1) {
 						spec = this.specSelected.join(',');
 					}
-					await this.$api.request('/cart/add?id=' + this.product.id + '&spec='+ spec);
+					await this.$api.request('/cart/add?id=' + this.product.product_id + '&spec='+ spec);
 				}
 			},
 			stopPrevent() {}
@@ -618,7 +677,7 @@
 			font-size: $font-base;
 			color: $font-color-base;
 			padding-left: 26upx;
-
+				
 			.con {
 				font-size: $font-base;
 				color: $font-color-dark;
@@ -924,6 +983,52 @@
 				padding: 0;
 				border-radius: 0;
 				background: transparent;
+			}
+		}
+	}
+	.flash {
+		height: 100upx;
+		background: linear-gradient(to right, #ffac30, #fa436a, #F56C6C);
+		display: flex;
+		flex-direction: row;
+		position: relative;
+		.sales_price{
+			.symbol{
+				font-size: 50upx;
+				display: inline;
+			}
+			color: #fff;
+			font-size: 80upx;
+		}
+		.left{
+			font-size: 30upx;
+			padding: 10upx;
+			.market_price{
+				color: #DCDFE6;
+				text-decoration: line-through;
+			}
+			.sold{
+				color: #E4E7ED;
+			}
+		}
+		.right{
+			height: 100%;
+			width: 258upx;
+			position: absolute;
+			right: 0;
+			padding: 4upx;
+			margin-right: 20upx;
+			.time{
+				font-size: 30upx;
+				color: #fffa30;
+				text-align: center;
+				.uni-countdown{
+					display: inline-flex;
+				}
+			}
+			.progress{
+				position: absolute;
+				bottom: 0;
 			}
 		}
 	}
