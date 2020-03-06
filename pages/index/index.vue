@@ -13,7 +13,7 @@
 			<view class="titleNview-background" :style="{ backgroundColor: titleNViewBackground }"></view>
 			<swiper class="carousel" circular @change="swiperChange">
 				<swiper-item v-for="(item, index) in carouselList" :key="index" class="carousel-item" @click="navToDetailPage({ product_id: item.product_id })">
-					<image :src="$site + item.image" />
+					<image :src="cdn + item.image" />
 				</swiper-item>
 			</swiper>
 			<!-- 自定义swiper指示器 -->
@@ -26,7 +26,7 @@
 		<!-- 分类 -->
 		<view class="cate-section">
 			<view class="cate-item" v-for="(item, index) in menu">
-				<image :src="$site + item.image" ></image>
+				<image :src="cdn + item.image" ></image>
 				<text>{{item.name}}</text>
 			</view>
 		</view>
@@ -43,7 +43,7 @@
 			<scroll-view class="floor-list" scroll-x>
 				<view class="scoll-wrapper">
 					<view v-for="(item, index) in flashSale.product" :key="index" class="floor-item" @click="navToDetailPage({ product_id: item.flash_product_id }, flashSale.flash_id)">
-						<image :src="$cdn + item.product.image" mode="aspectFill"></image>
+						<image :src="cdn + item.product.image" mode="aspectFill"></image>
 						<text class="title clamp">{{item.product.title }}</text>
 						<text class="price">￥{{item.product.sales_price }}</text>
 					</view>
@@ -184,9 +184,9 @@
 
 		<view class="guess-section">
 			<view v-for="(item, index) in goodsList" :key="index" class="guess-item" @click="navToDetailPage(item)">
-				<view class="image-wrapper"><image :src="item.image" mode="aspectFill"></image></view>
+				<view class="image-wrapper"><image :src="cdn + item.image" mode="aspectFill"></image></view>
 				<text class="title clamp">{{ item.title }}</text>
-				<text class="price">￥{{ item.price }}</text>
+				<text class="price"><text class="symbol">￥</text> {{ item.sales_price }} <text class="sales"> {{' '+item.sales}}人付款</text></text>
 			</view>
 		</view>
 	</view>
@@ -194,6 +194,7 @@
 
 <script>
 import uniCountdown from '@/components/uni-countdown/uni-countdown.vue';
+import {mapState} from 'vuex';  
 export default {
 	components: {uniCountdown},
 	data() {
@@ -204,21 +205,26 @@ export default {
 			carouselList: [],
 			goodsList: [],
 			menu:[],
-			flashSale: ''
+			flashSale: '',
+			page:1,
+			pageSize: 16
 		};
 	},
 	computed:{
-		
+		...mapState(['cdn'])
 	},
 	onLoad() {
 		this.loadData();
+	},
+	onReachBottom() {
+		this.getProduct();
 	},
 	methods: {
 		/**
 		 * 请求静态数据只是为了代码不那么乱
 		 * 分次请求未作整合
 		 */
-		async loadData() {
+		loadData() {
 			let that = this;
 			
 			//获取广告图
@@ -241,9 +247,22 @@ export default {
 			});
 			
 			this.getFlash();
-
-			let goodsList = await this.$api.json('goodsList');
-			this.goodsList = goodsList || [];
+				
+			this.getProduct();
+		},
+		// 获取产品列表
+		async getProduct() {
+			let goodsList = await this.$api.request('/product/lists', 'GET', {page:this.page, pagesize:this.pageSize});
+			if (goodsList) {
+				if (goodsList.length > 0) {
+					goodsList.forEach(item=>{
+						this.goodsList.push(item);
+					});
+					this.page++;
+				} else {
+					this.$api.msg('没有更多数据');
+				}
+			}
 		},
 		// 获取限时秒杀数据
 		getFlash() {
@@ -727,6 +746,13 @@ page {
 		font-size: $font-lg;
 		color: $uni-color-primary;
 		line-height: 1;
+		.sales{
+			color: #999999;
+			font-size: 24upx;
+		}
+		.symbol{
+			font-size: 24upx;
+		}
 	}
 }
 </style>

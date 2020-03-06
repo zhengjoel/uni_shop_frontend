@@ -2,7 +2,6 @@
     position: relative;
     z-index: 5;
     background: #484848;
-    #border: 10px solid #282828;
     border-radius: 20px;
     display: inline-block;
     box-shadow: 0 5px 17px rgba(40, 40, 40, 0.5), 0 0 3px 1px rgba(40, 40, 40, 0.5) inset;

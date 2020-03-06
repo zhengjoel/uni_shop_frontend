@@ -127,6 +127,7 @@
 <script>
 	import uniNumberBox from '@/components/uni-number-box.vue';
 	import {mapState} from 'vuex';
+	
 	export default {
 		components: {
 			uniNumberBox
@@ -265,7 +266,6 @@
 					price += (parseFloat(this.product[i].sales_price) * this.product[i].number);
 					number += this.product[i].number;
 				}
-				
 				this.price = price.toFixed(2);
 
 				// 检查当前优惠券是否满足使用条件

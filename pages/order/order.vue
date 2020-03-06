@@ -41,7 +41,7 @@
 								v-for="(goodsItem, goodsIndex) in item.products" :key="goodsIndex"
 								class="goods-item"
 							>
-								<image class="goods-img" :src="$cdn + goodsItem.image" mode="aspectFill"></image>
+								<image class="goods-img" :src="cdn + goodsItem.image" mode="aspectFill"></image>
 							</view>
 						</scroll-view>
 						<view 
@@ -49,7 +49,7 @@
 							class="goods-box-single"
 							v-for="(goodsItem, goodsIndex) in item.products" :key="goodsIndex"
 						>
-							<image class="goods-img" :src="$cdn + goodsItem.image" mode="aspectFill"></image>
+							<image class="goods-img" :src="cdn + goodsItem.image" mode="aspectFill"></image>
 							<view class="right">
 								<text class="title clamp">{{goodsItem.title}}</text>
 								<text class="attr-box">{{goodsItem.spec}} x {{goodsItem.number}}</text>
@@ -71,9 +71,7 @@
 							<button class="action-btn recom">立即支付</button>
 						</view>
 					</view>
-					 
 					<uni-load-more :status="tabItem.loadingType"></uni-load-more>
-					
 				</scroll-view>
 			</swiper-item>
 		</swiper>
@@ -83,10 +81,15 @@
 <script>
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	import empty from "@/components/empty";
+	import {mapState} from 'vuex';
+	
 	export default {
 		components: {
 			uniLoadMore,
 			empty
+		},
+		computed:{
+			...mapState(['cdn'])
 		},
 		data() {
 			return {

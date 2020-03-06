@@ -4,9 +4,9 @@
 			<swiper indicator-dots circular=true duration="400">
 				<swiper-item class="swiper-item" v-for="(item,index) in product.images_text" :key="index">
 					<view class="image-wrapper">
-						<image :src="$cdn + item" class="loaded" mode="aspectFill"></image>
+						<image :src="cdn + item" class="loaded" mode="aspectFill"></image>
 					</view>
-				</swiper-item>
+				</swiper-item> 
 			</swiper>
 		</view>
 
@@ -15,10 +15,10 @@
 			<view class="sales_price"><view class="symbol">￥</view>{{specProduct.sales_price}}</view>
 			<view class="left">
 				<view class="market_price">￥{{specProduct.market_price}}</view>
-				<view class="sold">已抢599件</view>
+				<view class="sold">秒{{progress.number}}件</view>
 			</view>
 			<view class="right">
-				<view class="time">距结束
+				<view class="time" v-if="countdown && progress.number != progress.sold">距结束
 					<uni-countdown 
 					:showDay="countdown.day > 0 ? true : false" 
 					:day="countdown.day" 
@@ -31,12 +31,13 @@
 					background-color="#282f2c00" 
 					border-color="#00B26A"></uni-countdown>
 				</view>
+				<view class="time" v-else>抢购已结束</view>
 				<view class="progress">
 					<ProgressBar 
 					class="ProgressBar" 
-					:Sold="2" 
-					:widthUpx="250" 
-					:Width="10" 
+					:Sold="progress.sold" 
+					:widthUpx="250"
+					:Width="percentage(progress.number, progress.sold)" 
 					Type="candy" 
 					:Vice="true"></ProgressBar>
 				</view>
@@ -167,7 +168,7 @@
 			<view class="mask"></view>
 			<view class="layer attr-content" @click.stop="stopPrevent">
 				<view class="a-t">
-					<image v-if="specProduct.image" mode="aspectFill" :src="$cdn + specProduct.image"></image>
+					<image v-if="specProduct.image" mode="aspectFill" :src="cdn + specProduct.image"></image>
 					<view class="right">
 						<text class="price">¥{{specProduct.sales_price}}</text>
 						<text class="stock">库存：{{specProduct.stock}}件</text>
@@ -199,7 +200,7 @@
 
 <script>
 	import {
-		mapGetters
+		mapGetters, mapState
 	} from 'vuex';
 	import share from '@/components/share';
 	import coupon from '@/components/coolc-coupon/coolc-coupon';
@@ -215,6 +216,7 @@
 		},
 		computed: {
 			...mapGetters(['userInfo', 'hasLogin']),
+			...mapState(['cdn']),
 			specSelectedName() {
 				return this.specSelected.join(' ');
 			},
@@ -258,7 +260,11 @@
 				specTableList: [],
 				product: {},
 				flash: false,
-				countdown: {}
+				countdown: {},
+				progress:{
+					sold:1,
+					number:1
+				}
 			};
 		},
 		onLoad(options) {
@@ -279,7 +285,7 @@
 				this.product = product;
 				if (product.flash) {
 					this.countdown = product.flash.countdown;
-					console.log(countdown)
+					this.progress = product.flash.product;
 				}
 				this.favorite = this.product.favorite;
 				if (this.product.use_spec) {
@@ -390,8 +396,12 @@
 					if (this.product.use_spec == 1) {
 						spec = this.specSelected.join(',');
 					}
+					let url = `/pages/order/createOrder?id=${this.product.product_id}&spec=${spec}`;
+					if (this.flash) {
+						url = `/pages/order/createOrderFlash?id=${this.product.product_id}&spec=${spec}&flash_id=${this.flash}`;
+					}
 					uni.navigateTo({
-						url: `/pages/order/createOrder?id=${this.product.product_id}&spec=${spec}`
+						url:url 
 					});
 				}
 			},
@@ -410,7 +420,14 @@
 					await this.$api.request('/cart/add?id=' + this.product.product_id + '&spec='+ spec);
 				}
 			},
-			stopPrevent() {}
+			stopPrevent() {},
+			// 计算百分比
+			percentage(number, sold) {
+				if (sold == 0) {
+					return 0;
+				}
+				return parseInt(sold / number * 100);
+			},
 		},
 
 	}
@@ -994,14 +1011,14 @@
 		position: relative;
 		.sales_price{
 			.symbol{
-				font-size: 50upx;
+				font-size: 30upx;
 				display: inline;
 			}
 			color: #fff;
-			font-size: 80upx;
+			font-size: 50upx;
 		}
 		.left{
-			font-size: 30upx;
+			font-size: 28upx;
 			padding: 10upx;
 			.market_price{
 				color: #DCDFE6;
@@ -1013,7 +1030,7 @@
 		}
 		.right{
 			height: 100%;
-			width: 258upx;
+			width: 280upx;
 			position: absolute;
 			right: 0;
 			padding: 4upx;
@@ -1029,6 +1046,7 @@
 			.progress{
 				position: absolute;
 				bottom: 0;
+				right: 10upx;
 			}
 		}
 	}
