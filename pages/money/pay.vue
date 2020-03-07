@@ -87,11 +87,37 @@
 				}
 			},
 			//确认支付
-			confirm: async function() {
-				uni.redirectTo({
-					url: '/pages/money/paySuccess'
-				})
+			async confirm() {
+				// #ifdef MP-WEIXIN
+				this.weixinPay();
+				// #endif
 			},
+			// #ifdef MP-WEIXIN
+			async weixinPay(){
+				let data = await this.$api.request('/pay/unify', 'GET', {order_id:this.orderId});
+				if (data) {
+					console.log(data);
+					return;
+					uni.requestPayment({
+					    provider: 'wxpay',
+					    timeStamp: String(Date.now()),
+					    nonceStr: 'A1B2C3D4E5',
+					    package: 'prepay_id=wx20180101abcdefg',
+					    signType: 'MD5',
+					    paySign: '',
+					    success: function (res) {
+					        console.log('success:' + JSON.stringify(res));
+					    },
+					    fail: function (err) {
+					        console.log('fail:' + JSON.stringify(err));
+					    }
+					});
+					uni.redirectTo({
+						url: '/pages/money/paySuccess'
+					})
+				}
+			}
+			// #endif
 		}
 	}
 </script>

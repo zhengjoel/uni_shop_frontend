@@ -9,6 +9,7 @@
 	export default {
 		methods: {
 			...mapMutations(['login', 'logout']),
+			// #ifdef H5
 			// 检查登录状态
 			async checkLogin() {
 				let user = uni.getStorageSync('userInfo');
@@ -20,7 +21,27 @@
 					// 若没有登录则清空个人信息
 					this.logout();
 				}
-			}
+			},
+			// #endif
+			// #ifdef MP-WEIXIN
+			// 微信小程序
+			wechatMiniLogin() {
+				let that = this;
+				uni.login({
+					provider: 'weixin',
+					success: async function (loginRes) {
+						console.log(loginRes)
+						if (loginRes.hasOwnProperty('code')) {
+							let data = await that.$api.request('/user/authBase', 'GET', {code:loginRes.code});
+							console.log(data);
+						}
+					},
+					fail: function() {
+						this.$api.msg('自动登录失败');
+					}
+				});
+			},
+			// #endif
 		},
 		onLaunch: function() {
 			// 锁定屏幕竖向
@@ -29,7 +50,13 @@
 			// #endif
 			
 			// 检查用户登录情况
+			// #ifdef H5
 			this.checkLogin();
+			// #endif
+			// #ifdef MP-WEIXIN
+			this.wechatMiniLogin();
+			// #endif
+		
 		},
 		onShow: function() {
 			console.log('App Show')

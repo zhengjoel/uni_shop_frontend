@@ -69,11 +69,7 @@
 			};
 		},
 		onLoad() {
-			
-		},
-		async onShow() {
-			this.cartList = await this.$api.request('/cart');
-			this.calcTotal();
+			this.getCart();
 		},
 		watch: {
 			//显示空白页
@@ -88,6 +84,13 @@
 			...mapState(['hasLogin', 'cdn'])
 		},
 		methods: {
+			async getCart() {
+				let login = await this.$api.checkLogin();
+				if (login) {
+					this.cartList = await this.$api.request('/cart');
+					this.calcTotal();
+				}
+			},
 			cartPrice(oldPrice, nowPrice) {
 				let string = '';
 				if (oldPrice < nowPrice) {

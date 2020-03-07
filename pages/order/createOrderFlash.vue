@@ -9,7 +9,7 @@
 						<text class="name">{{addressData.name}}</text>
 						<text class="mobile">{{addressData.mobile}}</text>
 					</view>
-					<text class="address">{{addressData.address}} {{addressData.area}}</text>
+					<text class="address">{{addressData.address}}</text>
 				</view>
 				<view class="cen" v-else>请选择收货地址</view>
 				<text class="yticon icon-you"></text>

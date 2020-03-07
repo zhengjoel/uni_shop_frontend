@@ -76,8 +76,18 @@
 					"animationType": "slide-in-bottom"
 				}
 			}
-		},{
+		}, {
 			"path": "pages/public/register",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom",
+				"app-plus": {
+					"titleNView": false,
+					"animationType": "slide-in-bottom"
+				}
+			}
+		}, {
+			"path": "pages/public/wechatMiniLogin",
 			"style": {
 				"navigationBarTitleText": "",
 				"navigationStyle": "custom",

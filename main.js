@@ -2,6 +2,7 @@ import Vue from 'vue'
 import store from './store'
 import App from './App'
 
+// 提示
 const msg = (title, duration = 3000, mask = false, icon = 'none') => {
 	//统一提示方便全局修改
 	if (Boolean(title) === false) {
@@ -18,7 +19,7 @@ const msg = (title, duration = 3000, mask = false, icon = 'none') => {
 	},duration)
 }
 
-
+// 返回上一页
 const prePage = () => {
 	let pages = getCurrentPages();
 	let prePage = pages[pages.length - 2];
@@ -28,7 +29,7 @@ const prePage = () => {
 	return prePage.$vm;
 }
 
-//检查有没有登录
+// 检查有没有登录
 const checkLogin = () => {
 	return new Promise(resolve => {
 		if (Vue.prototype.$store.state.hasLogin == false) {
@@ -37,9 +38,15 @@ const checkLogin = () => {
 				content: '你还没，请先登录',
 				success(res) {
 					if (res.confirm) {
+						// 账户秘密登录
+						let url = '/pages/public/login'; 
+						// 微信授权登录
+						// #ifdef MP-WEIXIN 
+						url = '/pages/public/wechatMiniLogin';
+						// #endif
 						uni.navigateTo({
-							url: '/pages/public/login'
-						})
+							url: url
+						});
 					}
 					resolve(false);
 				}
@@ -50,7 +57,7 @@ const checkLogin = () => {
 	});
 }
 
-//深拷贝
+// 深拷贝
 const deepCopy = (p, c) => {
 	var c = c || {};
 	for (var i in p) {
@@ -64,19 +71,19 @@ const deepCopy = (p, c) => {
 	return c;
 }
 
-
-//同步网络请求
+// 同步网络请求
 const request = (url, method = 'GET', data = {}) => {
 	let header = {
 		'content-type': 'application/x-www-form-urlencoded',
+		'lang': Vue.prototype.$store.state.lang,
+		'platform' : Vue.prototype.$platform
 	};
 	if (Vue.prototype.$store.state.userInfo.token) {
 		let token = Vue.prototype.$store.state.userInfo.token;
 		header.token = token;
 	}
-	header.platform = Vue.prototype.$platform;
 	return new Promise(resolve => {
-		msg('加载中...')
+		msg('加载中...');
 		uni.request({
 			url: Vue.prototype.$unishow + url,
 			method: method,

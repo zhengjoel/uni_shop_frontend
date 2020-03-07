@@ -7,8 +7,9 @@ const store = new Vuex.Store({
 	state: {
 		hasLogin: false,
 		userInfo: {},
-		cdn: 'http://t.fastadmin.com:8888'
-	},
+		cdn: 'http://t.fastadmin.com:8888',
+		lang: 'zh-cn'
+	}, 
 	mutations: {
 		login(state, provider) {
 			state.hasLogin = true;

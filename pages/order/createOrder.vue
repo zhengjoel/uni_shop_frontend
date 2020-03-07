@@ -9,7 +9,7 @@
 						<text class="name">{{addressData.name}}</text>
 						<text class="mobile">{{addressData.mobile}}</text>
 					</view>
-					<text class="address">{{addressData.address}} {{addressData.area}}</text>
+					<text class="address">{{addressData.address}}</text>
 				</view>
 				<view class="cen" v-else>请选择收货地址</view>
 				<text class="yticon icon-you"></text>
@@ -238,7 +238,7 @@
 					this.$api.msg('已提交', 2000);
 					uni.redirectTo({
 						url: '/pages/money/pay?order_id='+ result.order_id
-					})
+					});
 				}
 			},
 			stopPrevent() {},
