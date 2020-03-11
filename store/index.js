@@ -6,20 +6,20 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
 	state: {
 		hasLogin: false,
-		userInfo: {},
+		userInfo: {
+			token: ''
+		},
 		cdn: 'http://t.fastadmin.com:8888',
-		lang: 'zh-cn'
+		lang: 'zh-cn',
+		cookie: ''
 	}, 
 	mutations: {
 		login(state, provider) {
 			state.hasLogin = true;
 			state.userInfo = provider;
-			uni.setStorage({//缓存用户登陆状态
+			uni.setStorage({ //缓存用户信息
 			    key: 'userInfo',  
 			    data: provider  
-			}) 
-			uni.setStorage({
-				'userInfo' : provider
 			});
 		},
 		logout(state) {
@@ -27,8 +27,21 @@ const store = new Vuex.Store({
 			state.userInfo = {};
 			uni.removeStorage({  
                 key: 'userInfo'  
-            })
-			
+            });
+		},
+		serUserInfo(state, provider) {
+			state.userInfo = provider;
+			uni.setStorage({//缓存用户信息
+			    key: 'userInfo',  
+			    data: provider  
+			});
+		},
+		setCookie(state, provider) {
+			state.cookie = provider;
+			uni.setStorage({
+				key: 'cookieKey',
+				data: provider
+			});
 		}
 	},
 	actions: {

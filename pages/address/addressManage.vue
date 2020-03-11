@@ -25,8 +25,8 @@
 		</view>
 		<button class="add-btn" @click="confirm">提交</button>
 		
-		<mpvue-city-picker ref="mpvueCityPicker" :pickerValueDefault="pickerValueDefault" @onChange="onChange" @onCancel="onCancel"
-		 @onConfirm="onConfirm"></mpvue-city-picker>
+		<mpvue-city-picker @onChange="onChange" @onCancel="onCancel"
+		 @onConfirm="onConfirm" ref="mpvueCityPicker" ></mpvue-city-picker>
 	</view>
 </template>
 
@@ -42,28 +42,22 @@
 					name: '',
 					mobile: '',
 					address: '',
-					lng: 0,
-					lat: 0,
 					province_id: 0,
 					city_id: 0,
 					area_id: 0,
 					is_default: false
 				},
 				pickerValueDefault: [0, 0, 0] ,//城市选择器默认值 省市区id
-				cityLebel:'请选择地区'
+				cityLebel:'请选择地区',
 			}
 		},
 		onLoad(option) {
 			let title = '新增收货地址';
 			if (option.type === 'edit') {
+				
+				this.getInfo(option.id);
+				
 				title = '编辑收货地址'
-
-				this.addressData = JSON.parse(option.data)
-				this.pickerValueDefault = [
-					this.addressData.province_id,
-					this.addressData.city_id,
-					this.addressData.area_id
-				];
 			}
 			this.manageType = option.type;
 			uni.setNavigationBarTitle({
@@ -71,6 +65,22 @@
 			})
 		},
 		methods: {
+			// 获取地址详情
+			async getInfo(id){
+				let addressData = await this.$api.request(`/address/info?id=${id}`);
+				if (addressData) {
+					console.log(addressData);
+					
+					this.addressData = addressData;
+					let pickerValueDefault = [];
+					pickerValueDefault.push(addressData.province_id);
+					pickerValueDefault.push(addressData.city_id);
+					pickerValueDefault.push(addressData.area_id);
+					this.pickerValueDefault = pickerValueDefault;
+					
+					this.$refs.mpvueCityPicker.created(pickerValueDefault);
+				}
+			},
 			// 城市选择器
 			showCityPicker() {
 				this.$refs.mpvueCityPicker.show();

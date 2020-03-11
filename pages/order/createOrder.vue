@@ -64,27 +64,27 @@
 		<!-- 金额明细 -->
 		<view class="yt-list">
 			<view class="yt-list-cell b-b">
-				<text class="cell-tit clamp">商品金额</text>
-				<text class="cell-tip">￥{{price}}</text>
+				<view class="cell-tit clamp">商品金额</view>
+				<view class="cell-tip">￥{{price}}</view>
 			</view>
 			<view class="yt-list-cell b-b">
-				<text class="cell-tit clamp">优惠金额</text>
-				<text class="cell-tip red">-￥{{coupon_price}}</text>
+				<view class="cell-tit clamp">优惠金额</view>
+				<view class="cell-tip red">-￥{{coupon_price}}</view>
 			</view>
 			<view class="yt-list-cell b-b">
 				<view class="cell-tit clamp">配送方式<text style="color:red">（查看详情）</text></view>
-				<text class="cell-tip">
+				<view class="cell-tip">
 					<picker @change="deliveryChange" range-key="name" :value="deliveryIndex" :range="deliveryList">
 						<view class="uni-input">{{deliveryList[deliveryIndex].name}}</view>
 					</picker>
-				</text>
+				</view>
 			</view>
 			<view class="yt-list-cell b-b">
-				<text class="cell-tit clamp">运费</text>
-				<text class="cell-tip">￥{{deliveryPrice}}</text>
+				<view class="cell-tit clamp">运费</view>
+				<view class="cell-tip">￥{{deliveryPrice}}</view>
 			</view>
 			<view class="yt-list-cell desc-cell">
-				<text class="cell-tit clamp">备注</text>
+				<view class="cell-tit clamp">备注</view>
 				<input class="desc" type="text" v-model="remark" placeholder="请填写备注信息" placeholder-class="placeholder" />
 			</view>
 		</view>
@@ -113,7 +113,6 @@
 							<text class="price">{{item.value}}</text>
 							<text>满{{item.least}}可用</text>
 						</view>
-
 						<view class="circle l"></view>
 						<view class="circle r"></view>
 					</view>
@@ -223,6 +222,12 @@
 				this.payType = type;
 			},
 			async submit() {
+				// 如果没有地址则提示先加地址
+				if (!this.addressData.hasOwnProperty('city_id')) {
+					this.$api.msg('请选择收货地址');
+					return;
+				} 
+				
 				this.$api.msg('提交中...', 20000);
 				let data = {
 					product_id: this.productId,

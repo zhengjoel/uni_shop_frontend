@@ -8,7 +8,7 @@
 	} from 'vuex';
 	export default {
 		methods: {
-			...mapMutations(['login', 'logout']),
+			...mapMutations(['login', 'logout', 'serUserInfo']),
 			// #ifdef H5
 			// 检查登录状态
 			async checkLogin() {
@@ -30,11 +30,16 @@
 				uni.login({
 					provider: 'weixin',
 					success: async function (loginRes) {
-						console.log(loginRes)
+						//console.log(loginRes)
 						if (loginRes.hasOwnProperty('code')) {
-							let data = await that.$api.request('/user/authBase', 'GET', {code:loginRes.code});
-							console.log(data);
+							let data = await that.$api.request('/user/authSession', 'GET', {code:loginRes.code});
+							if (data) {
+								if (data.hasOwnProperty('userInfo') && data.userInfo.token != '') {
+									that.login(data.userInfo)
+								}
+							}
 						}
+						//wx.setStorageSync("cookieKey", response.header['Set-Cookie'].replace("; path=/", ""));
 					},
 					fail: function() {
 						this.$api.msg('自动登录失败');

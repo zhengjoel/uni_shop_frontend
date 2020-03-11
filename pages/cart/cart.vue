@@ -69,6 +69,10 @@
 			};
 		},
 		onLoad() {
+			
+		},
+		onShow() {
+			this.cartList = [];
 			this.getCart();
 		},
 		watch: {

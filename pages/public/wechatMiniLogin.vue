@@ -10,14 +10,12 @@
 				欢迎使用uni商城！
 			</view>
 			<view class="input-content">
-				<view class="input-item">
-					
-					<text class="tit">获取基础授权</text>
-				</view>
-				<view class="input-item">
-					
-					<text class="tit">获取授权手机号</text>
-				</view>
+				<button class="input-item" open-type="getUserInfo" @getuserinfo="getUserInfo">
+					获取基础授权
+				</button>
+				<button class="input-item" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">
+					获取授权手机号
+				</button>
 			</view>
 		</view>
 	</view>
@@ -45,28 +43,13 @@
 			navBack() {
 				uni.navigateBack();
 			},
-			async toLogin(){
-				this.logining = true;
-				const {mobile, password} = this;
-				const account = mobile;
-				const sendData = {
-					account,
-					password
-				};
-				let res = await this.$api.request('/user/login', 'POST', sendData)
-				if (res) {
-					this.login(res.userinfo);
-					this.logining = true;
-					uni.navigateBack();
-				} else {
-					this.logining = false;
-				}
-				
+			async getUserInfo(e) {
+				console.log(e);
+				let data = await this.$api.request('/user/decryptData', 'POST', {iv:e.detail.iv, encryptedData: e.detail.encryptedData});
+				console.log(data);
 			},
-			register(action){
-				uni.navigateTo({
-					url:'./register?action='+action
-				})
+			getPhoneNumber(e) {
+				console.log(e);
 			}
 		},
 
@@ -127,14 +110,7 @@
 		height: 120upx;
 		border-radius: 4px;
 		margin-bottom: 50upx;
-		&:last-child{
-			margin-bottom: 0;
-		}
-		.tit{
-			height: 50upx;
-			line-height: 56upx;
-			font-size: $font-sm+20upx;
-			color: $font-color-base;
-		}
+		font-size: $font-sm+20upx;
+		color: $font-color-base;
 	}
 </style>

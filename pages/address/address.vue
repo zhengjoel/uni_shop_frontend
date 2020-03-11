@@ -11,7 +11,7 @@
 					<text class="mobile">{{item.mobile}}</text>
 				</view>
 			</view>
-			<text class="yticon icon-bianji" @click.stop="addAddress('edit', item)"></text>
+			<text class="yticon icon-bianji" @click.stop="addAddress('edit', item.id)"></text>
 		</view>
 		
 		<button class="add-btn" @click="addAddress('add')">新增地址</button>
@@ -50,9 +50,9 @@
 					uni.navigateBack()
 				}
 			},
-			addAddress(type, item){
+			addAddress(type, id = 0){
 				uni.navigateTo({
-					url: `/pages/address/addressManage?type=${type}&data=${JSON.stringify(item)}`
+					url: `/pages/address/addressManage?type=${type}&id=${id}`
 				})
 			},
 			//添加或修改成功之后回调

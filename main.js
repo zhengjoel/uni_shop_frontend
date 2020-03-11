@@ -79,8 +79,10 @@ const request = (url, method = 'GET', data = {}) => {
 		'platform' : Vue.prototype.$platform
 	};
 	if (Vue.prototype.$store.state.userInfo.token) {
-		let token = Vue.prototype.$store.state.userInfo.token;
-		header.token = token;
+		header.token = Vue.prototype.$store.state.userInfo.token;
+	}
+	if (Vue.prototype.$store.state.cookie) {
+		header.cookie = Vue.prototype.$store.state.cookie;
 	}
 	return new Promise(resolve => {
 		msg('加载中...');
@@ -91,6 +93,10 @@ const request = (url, method = 'GET', data = {}) => {
 			data: data,
 			success(res) {
 				//console.log(res);
+				if (res.header.hasOwnProperty('Set-Cookie')) {
+					let cookie = res.header['Set-Cookie'].replace("; path=/", "");
+					Vue.prototype.$store.commit('setCookie', cookie);
+				}
 				if (res.hasOwnProperty('data')) {
 					if (res.data.hasOwnProperty('code') && res.data.code == 1) {
 						if (res.data.msg) {
