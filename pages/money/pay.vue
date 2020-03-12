@@ -7,11 +7,10 @@
 
 		<view class="pay-type-list">
 
-			<view class="type-item b-b" @click="changePayType(1)" v-if="payTypeList.weixin">
+			<view class="type-item b-b" @click="changePayType(1)" v-if="payTypeList.wxpay">
 				<text class="icon yticon icon-weixinzhifu"></text>
 				<view class="con">
 					<text class="tit">微信支付</text>
-					<!-- <text>推荐使用微信支付</text> -->
 				</view>
 				<label class="radio">
 					<radio value="" color="#fa436a" :checked='payType == 1' />
@@ -28,17 +27,6 @@
 					</radio>
 				</label>
 			</view>
-			<!-- <view class="type-item" @click="changePayType(3)">
-				<text class="icon yticon icon-erjiye-yucunkuan"></text>
-				<view class="con">
-					<text class="tit">预存款支付</text>
-					<text>可用余额 ¥198.5</text>
-				</view> 
-				<label class="radio">
-					<radio value="" color="#fa436a" :checked='payType == 3' />
-					</radio>
-				</label>
-			</view> -->
 		</view>
 		
 		<text class="mix-btn" @click="confirm">确认支付</text>
@@ -54,7 +42,7 @@
 				orderInfo: {},
 				orderId:'',
 				payTypeList:{
-					weixin:false,
+					wxpay:false,
 					alipay:false
 				}
 			};
@@ -88,33 +76,36 @@
 			},
 			//确认支付
 			async confirm() {
-				// #ifdef MP-WEIXIN
-				this.weixinPay();
-				// #endif
+				if (this.payType == 1) {
+					// #ifdef MP-WEIXIN
+					this.weixinPay();
+					// #endif
+				} else if(this.payType == 2) {
+					
+				}
 			},
 			// #ifdef MP-WEIXIN
 			async weixinPay(){
 				let data = await this.$api.request('/pay/unify', 'GET', {order_id:this.orderId});
+				let that = this;
 				if (data) {
-					console.log(data);
-					return;
 					uni.requestPayment({
 					    provider: 'wxpay',
-					    timeStamp: String(Date.now()),
-					    nonceStr: 'A1B2C3D4E5',
-					    package: 'prepay_id=wx20180101abcdefg',
+					    timeStamp: data.timeStamp,
+					    nonceStr: data.nonce_str,
+					    package: 'prepay_id=' + data.prepay_id,
 					    signType: 'MD5',
-					    paySign: '',
+					    paySign: data.paySign,
 					    success: function (res) {
-					        console.log('success:' + JSON.stringify(res));
+					        uni.redirectTo({
+					        	url: '/pages/money/paySuccess'
+					        })
 					    },
 					    fail: function (err) {
-					        console.log('fail:' + JSON.stringify(err));
+					        //console.log('fail:' + JSON.stringify(err));
+							that.$api.msg('fail:' + JSON.stringify(err))
 					    }
 					});
-					uni.redirectTo({
-						url: '/pages/money/paySuccess'
-					})
 				}
 			}
 			// #endif
