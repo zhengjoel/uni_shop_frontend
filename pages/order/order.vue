@@ -67,8 +67,14 @@
 							<text v-if="item.delivery_price > 0">(含运费￥{{item.delivery_price}})</text>
 						</view>
 						<view class="action-box b-t" v-if="item.state != 9">
-							<button class="action-btn" @click="cancelOrder(item)" v-if="item.have_paid == 0">取消订单</button>
-							<button class="action-btn recom">立即支付</button>
+							<button class="action-btn" @click="cancelOrder(item)" v-if="item.state == 1">取消订单</button>
+							<button class="action-btn recom" v-if="item.have_paid == 0">立即支付</button>
+							<button class="action-btn" v-if="item.have_paid == 1 && item.have_delivered == 0">提醒发货</button>
+							<button class="action-btn" v-if="item.have_paid == 1">查看物流</button>
+							<button class="action-btn" v-if="item.have_paid == 1 && item.have_received == 0">确认收货</button>
+							<button class="action-btn" v-if="item.have_received == 1 && item.have_commented == 0">评价</button>
+							<button class="action-btn" v-if="item.have_received == 1 && item.have_commented == 1">追加评价</button>
+							<button class="action-btn" v-if="item.have_paid == 1 && item.have_received == 1">申请售后</button>
 						</view>
 					</view>
 					<uni-load-more :status="tabItem.loadingType"></uni-load-more>
@@ -236,7 +242,7 @@
 								let position = that.navList[0].orderList.findIndex(val=>val.order_id === item.order_id);
 								if (position !== -1) {
 									that.navList[0].orderList[position] = item;
-								} 
+								}
 								
 								//取消订单后删除待付款中该项
 								let list = that.navList[1].orderList;

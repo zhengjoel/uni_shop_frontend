@@ -242,7 +242,7 @@
 				if (result) {
 					this.$api.msg('已提交', 2000);
 					uni.redirectTo({
-						url: '/pages/money/pay?order_id='+ result.order_id
+						url: `/pages/money/pay?order_id=${result.order_id}&total=${this.total}`
 					});
 				}
 			},

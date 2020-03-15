@@ -6,12 +6,12 @@
 			</view>
 		</scroll-view>
 		<scroll-view scroll-with-animation scroll-y class="right-aside" @scroll="asideScroll" :scroll-top="tabScrollTop">
-			<view v-for="item in slist" :key="item.id" class="s-list" :id="'main-'+item.id">
+			<view v-for="item in flist" :key="item.id" class="s-list" :id="'main-'+item.id">
 				<text class="s-item">{{item.name}}</text>
 				<view class="t-list">
-					<view @click="navToList(item.id, titem.id)" v-if="titem.pid === item.id" class="t-item" v-for="titem in tlist" :key="titem.id">
-						<image :src="$site + titem.image"></image>
-						<text>{{titem.name}}</text>
+					<view @click="navToList(item.id, sitem.id)" v-if="sitem.pid === item.id" class="t-item" v-for="sitem in slist" :key="sitem.id">
+						<image :src="$site + sitem.image"></image>
+						<text>{{sitem.name}}</text>
 					</view>
 				</view>
 			</view>
@@ -25,10 +25,9 @@
 			return {
 				sizeCalcState: false,
 				tabScrollTop: 0,
-				currentId: 1,
+				currentId: 0,
 				flist: [],
 				slist: [],
-				tlist: [],
 			}
 		},
 		onLoad(){
@@ -42,11 +41,12 @@
 
 				list.forEach(item=>{
 					if(item.pid == 0){
+						if (that.currentId == 0) {
+							that.currentId = item.id;
+						}
 						this.flist.push(item);  //pid为父级id, 没有pid或者pid=0是一级分类
-					}else if(item.image == ""){
+					}else {
 						this.slist.push(item); //没有图的是2级分类
-					}else{
-						this.tlist.push(item); //3级分类
 					}
 				})
 				
@@ -58,8 +58,8 @@
 				}
 				
 				this.currentId = item.id;
-				let index = this.slist.findIndex(sitem=>sitem.pid === item.id);
-				this.tabScrollTop = this.slist[index].top;
+				let index = this.flist.findIndex(fitem=>fitem.id === item.id);
+				this.tabScrollTop = this.flist[index].top;
 			},
 			//右侧栏滚动
 			asideScroll(e){
@@ -67,15 +67,15 @@
 					this.calcSize();
 				}
 				let scrollTop = e.detail.scrollTop;
-				let tabs = this.slist.filter(item=>item.top <= scrollTop).reverse();
+				let tabs = this.flist.filter(item=>item.top <= scrollTop).reverse();
 				if(tabs.length > 0){
-					this.currentId = tabs[0].pid;
+					this.currentId = tabs[0].id;
 				}
 			},
 			//计算右侧栏每个tab的高度等信息
 			calcSize(){
 				let h = 0;
-				this.slist.forEach(item=>{
+				this.flist.forEach(item=>{
 					let view = uni.createSelectorQuery().select("#main-" + item.id);
 					view.fields({
 						size: true
@@ -92,6 +92,11 @@
 					url: `/pages/product/list?fid=${this.currentId}&sid=${sid}&tid=${tid}`
 				})
 			}
+		},
+		onPullDownRefresh() {
+			this.flist = [];
+			this.slist = [];
+			this.loadData();
 		}
 	}
 </script>

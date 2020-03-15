@@ -2,11 +2,10 @@
 	<view class="app">
 		<view class="price-box">
 			<text>支付金额</text>
-			<text class="price">38.88</text>
+			<text class="price">{{total}}</text>
 		</view>
 
 		<view class="pay-type-list">
-
 			<view class="type-item b-b" @click="changePayType(1)" v-if="payTypeList.wxpay">
 				<text class="icon yticon icon-weixinzhifu"></text>
 				<view class="con">
@@ -44,13 +43,12 @@
 				payTypeList:{
 					wxpay:false,
 					alipay:false
-				}
+				},
+				total: 0.00
 			};
 		},
-		computed: {
-		
-		},
 		onLoad(options) {
+			this.total = options.total;
 			this.orderId = options.order_id;
 			this.getPayType();
 		},
