@@ -23,7 +23,7 @@
 				@click="navToDetailPage(item)"
 			>
 				<view class="image-wrapper">
-					<image :src="$site + item.image" mode="aspectFill"></image>
+					<image :src="cdn + item.image" mode="aspectFill"></image>
 				</view>
 				<text class="title clamp">{{item.title}}</text>
 				<view class="price-box">
@@ -38,11 +38,11 @@
 			<view class="cate-content" @click.stop.prevent="stopPrevent" @touchmove.stop.prevent="stopPrevent">
 				<scroll-view scroll-y class="cate-list">
 					<view v-for="item in cateList" :key="item.id">
-						<view class="cate-item b-b two">{{item.name}}</view>
+						<view class="cate-item b-b two" :class="{active: item.id==fId}">{{item.name}}</view>
 						<view 
 							v-for="tItem in item.child" :key="tItem.id" 
-							class="cate-item b-b" 
-							:class="{active: tItem.id==cateId}"
+							class="cate-item b-b"
+							:class="{active: tItem.id==sId}"
 							@click="changeCate(tItem)">
 							{{tItem.name}}
 						</view>
@@ -56,6 +56,7 @@
 
 <script>
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
+	import {mapState} from 'vuex';
 	export default {
 		components: {
 			uniLoadMore	
@@ -67,19 +68,23 @@
 				headerTop:"0px",
 				loadingType: 'more', //加载更多状态
 				filterIndex: 0, 
-				cateId: 0, //已选三级分类id
+				fId: 0, // 已选一级分类
+				sId: 0, // 已选二级分类id
 				priceOrder: 0, //1 价格从低到高 2价格从高到低
 				cateList: [],
 				goodsList: [],
 				page:1
 			};
 		},
-		
+		computed:{
+			...mapState(['cdn'])
+		},
 		onLoad(options){
 			// #ifdef H5
 			this.headerTop = document.getElementsByTagName('uni-page-head')[0].offsetHeight+'px';
 			// #endif
-			this.cateId = options.tid;
+			this.fId = options.fid;
+			this.sId = options.sid ? options.sid : 0;
 			this.loadCateList(options.fid,options.sid);
 			this.loadData();
 		},
@@ -104,30 +109,12 @@
 			async loadCateList(fid, sid){
 				const that = this;
 				//let list = await this.$api.json('cateList');
-				let list = await new Promise(resolve=>{
-					uni.request({
-						url:that.$unishow  + '/category/inlist?fid='+fid,
-						method:'GET',
-						success(res) {
-							if(res.data.code == 1){
-								resolve(res.data.data);
-							}else{
-								that.$api.msg('加载分类失败');
-								return;
-							}
-						},
-						fail(res) {
-							that.$api.msg(res)
-							return;
-						}
-					})
-				})
-				let cateList = list.filter(item=>item.pid == fid);	
-					
+				let list = await this.$api.request('/category/all');
+				let cateList = list.filter(item=>item.pid == 0);	
 				cateList.forEach(item=>{
 					let tempList = list.filter(val=>val.pid == item.id);
 					item.child = tempList;
-				})
+				});
 				this.cateList = cateList;
 			},
 			//加载商品 ，带下拉刷新和上滑加载
@@ -142,28 +129,16 @@
 					this.loadingType = 'more'
 				}
 				
-				//let goodsList = await this.$api.json('goodsList');
-				const that = this;
 				let by = this.filterIndex == 0 ? 'weigh' : (this.filterIndex == 1 ? 'sales':'sales_price');
 				let desc = 'desc';
-				if(this.filterIndex == 2){
+				if (this.filterIndex == 2) {
 					desc = this.priceOrder === 1 ? 'desc': 'asc';
 				}
-				let goodsList = await new Promise((resolve) => {
-					uni.request({
-						url:that.$mixshow + '/product/index?cid='+that.cateId+'&page='+that.page+'&by='+by+'&desc='+desc,
-						method:'GET',
-						success(res) {
-							if(res.data.code == 1){
-								resolve(res.data.data);
-							}
-						},
-						fail(res) {
-							that.$api.msg(res)
-							return;
-						}
-					})
-				});
+				let goodsList = await this.$api.request('/product/lists', 'GET', {fid:this.fId,sid:this.sId,page:this.page,by:by,desc:desc});
+				if (!goodsList) {
+					this.loadingType = 'nomore';
+					return;
+				}
 				
 				if(type === 'refresh'){
 					this.goodsList = [];
@@ -220,7 +195,9 @@
 			},
 			//分类点击
 			changeCate(item){
-				this.cateId = item.id;
+				this.page = 1;
+				this.fId = item.pid;
+				this.sId = item.id;
 				this.toggleCateMask();
 				uni.pageScrollTo({
 					duration: 300,
@@ -233,11 +210,9 @@
 			},
 			//详情
 			navToDetailPage(item){
-				//测试数据没有写id，用title代替
-				let id = item.id;
 				uni.navigateTo({
-					url: `/pages/product/product?id=${id}`
-				})
+					url: `/pages/product/product?id=${item.product_id}`
+				});
 			},
 			stopPrevent(){}
 		},

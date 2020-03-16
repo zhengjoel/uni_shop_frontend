@@ -25,7 +25,7 @@
 		</view>
 		<!-- 分类 -->
 		<view class="cate-section">
-			<view class="cate-item" v-for="(item, index) in menu">
+			<view class="cate-item" v-for="(item, index) in menu" :key="index" @click="navToList(item.id)">
 				<image :src="cdn + item.image" ></image>
 				<text>{{item.name}}</text>
 			</view>
@@ -299,6 +299,12 @@ export default {
 				url
 			})  
 		}, 
+		// 跳转到商品列表
+		navToList(fid) {
+			uni.navigateTo({
+				url: `/pages/product/list?fid=${fid}&sid=0`
+			});
+		}
 	},
 	// #ifndef MP
 	// 标题栏input搜索框点击
