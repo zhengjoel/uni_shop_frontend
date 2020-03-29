@@ -25,6 +25,7 @@
 					<view 
 						v-for="(item,index) in tabItem.orderList" :key="index"
 						class="order-item"
+						@click="navTo('/pages/order/orderDetail')"
 					>
 						<view class="i-top b-b">
 							<text class="time">{{item.createtime}}</text>
@@ -32,7 +33,7 @@
 							<text 
 								v-if="item.state===9" 
 								class="del-btn yticon icon-iconfontshanchu1"
-								@click="deleteOrder(index)"
+								@click.stop="deleteOrder(index)"
 							></text>
 						</view>
 						
@@ -67,14 +68,14 @@
 							<text v-if="item.delivery_price > 0">(含运费￥{{item.delivery_price}})</text>
 						</view>
 						<view class="action-box b-t" v-if="item.state != 9">
-							<button class="action-btn" @click="cancelOrder(item)" v-if="item.state == 1">取消订单</button>
-							<button class="action-btn recom" v-if="item.have_paid == 0">立即支付</button>
-							<button class="action-btn" v-if="item.have_paid == 1 && item.have_delivered == 0">提醒发货</button>
-							<button class="action-btn" v-if="item.have_paid == 1">查看物流</button>
-							<button class="action-btn" v-if="item.have_paid == 1 && item.have_received == 0">确认收货</button>
-							<button class="action-btn" v-if="item.have_received == 1 && item.have_commented == 0">评价</button>
-							<button class="action-btn" v-if="item.have_received == 1 && item.have_commented == 1">追加评价</button>
-							<button class="action-btn" v-if="item.have_paid == 1 && item.have_received == 1">申请售后</button>
+							<button class="action-btn" v-if="item.state == 1" @click.stop="cancelOrder(item)">取消订单</button>
+							<button class="action-btn recom" v-if="item.have_paid == 0" @click.stop="navTo('/pages/money/pay?order_id='+ item.order_id + '&total='+ item.total_price)">立即支付</button>
+							<!-- <button class="action-btn" v-if="item.have_paid != 0 && item.have_delivered == 0">提醒发货</button> -->
+							<button class="action-btn" v-if="item.have_paid != 0" @click.stop="navTo('/pages/public/webview?type=kd&number='+item.extend.express_number)">查看物流</button>
+							<button class="action-btn" v-if="item.have_paid != 0 && item.have_received == 0" @click.stop="receivedOrder(item, index)">确认收货</button>
+							<button class="action-btn" v-if="item.have_received != 0 && item.have_commented == 0">评价</button>
+							<button class="action-btn" v-if="item.have_received != 0 && item.have_commented != 0">追加评价</button>
+							<button class="action-btn" v-if="item.have_paid != 0">申请售后</button>
 						</view>
 					</view>
 					<uni-load-more :status="tabItem.loadingType"></uni-load-more>
@@ -226,8 +227,8 @@
 			cancelOrder(item){
 				let that = this;
 				uni.showModal({
-					title:'确认删除订单',
-					content:'删除之后不可恢复',
+					title:'确认取消订单',
+					content:'取消之后不可恢复',
 					async success(res) {
 						if (res.confirm) {
 							let result = await that.$api.request('/order/cancelOrder?order_id=' + item.order_id);
@@ -272,7 +273,22 @@
 					uni.hideLoading();
 				}, 600)
 			},
-
+			// 收货
+			receivedOrder(item, index) {
+				let that = this;
+				uni.showModal({
+					title: "确认收货",
+					async success(res) {
+						if (res.confirm == true) {
+							let res = await that.$api.request('/order/received', 'GET', {order_id:item.order_id});
+							if (res) {
+								// 已确认收货
+								that.navList[that.tabCurrentIndex].orderList.splice(index, 1);
+							}
+						}
+					}
+				})
+			},
 			// 订单状态文字和颜色
 			orderStateExp(state){
 				let stateTip = '',
@@ -305,6 +321,9 @@
 					number += parseInt(products[i].number);
 				}
 				return number;
+			},
+			navTo(url){
+				this.$api.navTo(url);
 			}
 		},
 	}

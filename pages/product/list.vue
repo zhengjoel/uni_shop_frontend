@@ -38,12 +38,12 @@
 			<view class="cate-content" @click.stop.prevent="stopPrevent" @touchmove.stop.prevent="stopPrevent">
 				<scroll-view scroll-y class="cate-list">
 					<view v-for="item in cateList" :key="item.id">
-						<view class="cate-item b-b two" :class="{active: item.id==fId}">{{item.name}}</view>
-						<view 
+						<view class="cate-item b-b two" :class="{active: item.id==fId}" @click="changeFirst(item.id)">{{item.name}}</view>
+						<view
 							v-for="tItem in item.child" :key="tItem.id" 
 							class="cate-item b-b"
 							:class="{active: tItem.id==sId}"
-							@click="changeCate(tItem)">
+							@click="changeSecond(tItem)">
 							{{tItem.name}}
 						</view>
 					</view>
@@ -134,15 +134,16 @@
 				if (this.filterIndex == 2) {
 					desc = this.priceOrder === 1 ? 'desc': 'asc';
 				}
-				let goodsList = await this.$api.request('/product/lists', 'GET', {fid:this.fId,sid:this.sId,page:this.page,by:by,desc:desc});
-				if (!goodsList) {
-					this.loadingType = 'nomore';
-					return;
-				}
 				
 				if(type === 'refresh'){
 					this.goodsList = [];
 					this.page = 1;
+				}
+				
+				let goodsList = await this.$api.request('/product/lists', 'GET', {fid:this.fId,sid:this.sId,page:this.page,by:by,desc:desc});
+				if (!goodsList) {
+					this.loadingType = 'nomore';
+					return;
 				}
 				
 				this.goodsList = this.goodsList.concat(goodsList);
@@ -193,8 +194,23 @@
 					this.cateMaskState = state;
 				}, timer)
 			},
-			//分类点击
-			changeCate(item){
+			// 点击一级分类
+			changeFirst(id){
+				this.page = 1;
+				this.fId = id;
+				this.sId = 0;
+				this.toggleCateMask();
+				uni.pageScrollTo({
+					duration: 300,
+					scrollTop: 0
+				});
+				this.loadData('refresh', 1);
+				uni.showLoading({
+					title: '正在加载'
+				});
+			},
+			// 点击二级分类
+			changeSecond(item){
 				this.page = 1;
 				this.fId = item.pid;
 				this.sId = item.id;
@@ -202,11 +218,11 @@
 				uni.pageScrollTo({
 					duration: 300,
 					scrollTop: 0
-				})
+				});
 				this.loadData('refresh', 1);
 				uni.showLoading({
 					title: '正在加载'
-				})
+				});
 			},
 			//详情
 			navToDetailPage(item){

@@ -60,11 +60,7 @@
         "setting" : {
             "urlCheck" : false
         },
-        "permission" : {
-            "scope.userLocation" : {
-                "desc" : ""
-            }
-        }
+        "permission" : {}
     },
     "h5" : {
         "title" : "uni商城",

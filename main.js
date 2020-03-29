@@ -126,6 +126,16 @@ const request = (url, method = 'GET', data = {}) => {
 	})
 }
 
+// 跳转判断是否登录
+const navTo = (url, check = true) => {
+	if (check && !Vue.prototype.$store.state.hasLogin) {
+		url = '/pages/public/login';
+	}
+	uni.navigateTo({
+		url:url
+	});
+}
+
 Vue.config.productionTip = false
 Vue.prototype.$fire = new Vue();
 Vue.prototype.$store = store;
@@ -134,13 +144,20 @@ Vue.prototype.$api = {
 	prePage,
 	checkLogin,
 	request,
-	deepCopy
+	deepCopy,
+	navTo
 };
-Vue.prototype.$site = "http://t.fastadmin.com:8888";
-Vue.prototype.$cdn = "http://t.fastadmin.com:8888"; // 图片路径
-Vue.prototype.$unishow = "http://t.fastadmin.com:8888/addons/unishop";
 
-// 目前平台
+let env = 'dev';
+if (env == 'dev') {
+	Vue.prototype.$unishow = "http://t.fastadmin.com:8888/addons/unishop";
+} else {
+	Vue.prototype.$unishow = "https://shop.weivee.com/addons/unishop";
+}
+Vue.prototype.$cdn = "http://cdn.shop.weivee.com"; // 图片路径
+
+
+// 平台号
 // #ifdef APP-PLUS
 Vue.prototype.$platform = 'APP-PLUS';
 // #endif

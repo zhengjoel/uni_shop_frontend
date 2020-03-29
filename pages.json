@@ -5,7 +5,7 @@
 			"path": "pages/index/index",
 			"style": {
 				// #ifdef MP 
-				"navigationBarTitleText": "Dloud商城",
+				"navigationBarTitleText": "Uni商城",
 				//"navigationStyle": "custom",
 				// #endif 
 				"app-plus": {
@@ -135,7 +135,16 @@
 					"bounce": "none"
 				}
 			}
-		}, {
+		}, 
+		{
+			"path": "pages/order/orderDetail",
+			"style": {
+				"navigationBarTitleText": "订单详情",
+				"app-plus": {
+					"bounce": "none"
+				}
+			}
+		},{
 			"path": "pages/money/money",
 			"style": {}
 		}, {
@@ -198,6 +207,20 @@
 		    "style" : {
 				"enablePullDownRefresh": true,
 				"navigationBarTitleText": "限时秒杀"
+			}
+		},
+		{
+		    "path" : "pages/favorite/favorite",
+		    "style" : {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "我的收藏"
+			}
+		},
+		{
+		    "path" : "pages/public/webview",
+		    "style" : {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "物流"
 			}
 		}
     ],

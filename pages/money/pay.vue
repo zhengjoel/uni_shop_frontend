@@ -26,6 +26,16 @@
 					</radio>
 				</label>
 			</view>
+			<view class="type-item b-b" @click="changePayType(3)" v-if="payTypeList.offline">
+				<text class="icon yticon icon-shang"></text>
+				<view class="con">
+					<text class="tit">货到付款</text>
+				</view>
+				<label class="radio">
+					<radio value="" color="#fa436a" :checked='payType == 3' />
+					</radio>
+				</label>
+			</view>
 		</view>
 		
 		<text class="mix-btn" @click="confirm">确认支付</text>
@@ -70,6 +80,8 @@
 					case 2: // 支付宝支付
 					
 						break;
+					case 3: // 货到付款
+						break;
 				}
 			},
 			//确认支付
@@ -79,7 +91,11 @@
 					this.weixinPay();
 					// #endif
 				} else if(this.payType == 2) {
+					// 支付宝支付
 					
+				} else if(this.payType == 3) {
+					// 货到付款
+					this.offlinePay();
 				}
 			},
 			// #ifdef MP-WEIXIN
@@ -105,8 +121,16 @@
 					    }
 					});
 				}
-			}
+			},
 			// #endif
+			async offlinePay() {
+				let data = await this.$api.request('/pay/offline', 'GET', {order_id:this.orderId});
+				if (data) {
+					uni.redirectTo({
+						url: '/pages/money/paySuccess'
+					});
+				}
+			}
 		}
 	}
 </script>

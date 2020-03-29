@@ -120,7 +120,7 @@
 						<text class="title clamp">{{ item.title }}</text>
 						<text class="price">￥{{ item.price }}</text>
 					</view>
-					<view class="more">
+					<view class="more"> 
 						<text>查看全部</text>
 						<text>More+</text>
 					</view>
