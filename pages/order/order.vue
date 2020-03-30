@@ -73,8 +73,8 @@
 							<!-- <button class="action-btn" v-if="item.have_paid != 0 && item.have_delivered == 0">提醒发货</button> -->
 							<button class="action-btn" v-if="item.have_paid != 0" @click.stop="navTo('/pages/public/webview?type=kd&number='+item.extend.express_number)">查看物流</button>
 							<button class="action-btn" v-if="item.have_paid != 0 && item.have_received == 0" @click.stop="receivedOrder(item, index)">确认收货</button>
-							<button class="action-btn" v-if="item.have_received != 0 && item.have_commented == 0">评价</button>
-							<button class="action-btn" v-if="item.have_received != 0 && item.have_commented != 0">追加评价</button>
+							<button class="action-btn" v-if="item.have_received != 0 && item.have_commented == 0" @click.stop="commentOrder(item)">评价</button>
+							<!-- <button class="action-btn" v-if="item.have_received != 0 && item.have_commented != 0">追加评价</button> -->
 							<button class="action-btn" v-if="item.have_paid != 0">申请售后</button>
 						</view>
 					</view>
@@ -147,7 +147,6 @@
 				pageSize: 10
 			};
 		},
-		
 		onLoad(options){
 			/**
 			 * 修复app端点击除全部订单外的按钮进入时不加载数据的问题
@@ -162,6 +161,9 @@
 				this.loadData()
 			}
 			// #endif
+		},
+		onPullDownRefresh() {
+			this.pullDownRefresh()
 		},
 		methods: {
 			//获取订单列表
@@ -187,8 +189,9 @@
 				navItem.loadingType = 'loading';
 				
 				let result = await this.$api.request('/order/getOrders', 'GET', {type: state, page: navItem.page, pagesize: this.pageSize});
+				uni.stopPullDownRefresh();
 				if (result) {
-					console.log(result)
+					//console.log(result)
 					if (result.length >= this.pageSize) {
 						//判断是否还有数据， 有改为 more， 没有改为noMore
 						navItem.loadingType = 'more';
@@ -204,6 +207,7 @@
 					//loaded新字段用于表示数据加载完毕，如果为空可以显示空白页
 					this.$set(navItem, 'loaded', true);
 				}
+				
 			}, 
 			
 			//swiper 切换
@@ -218,7 +222,7 @@
 			//删除订单
 			deleteOrder(index){
 				let order_id = this.navList[this.tabCurrentIndex].orderList[index].order_id;
-				let result = this.$api.request('/order/deleteOrder?order_id=' + order_id)
+				let result = this.$api.request('/order/delete?order_id=' + order_id)
 				if (result) {
 					this.navList[this.tabCurrentIndex].orderList.splice(index, 1);
 				}
@@ -231,7 +235,7 @@
 					content:'取消之后不可恢复',
 					async success(res) {
 						if (res.confirm) {
-							let result = await that.$api.request('/order/cancelOrder?order_id=' + item.order_id);
+							let result = await that.$api.request('/order/cancel?order_id=' + item.order_id);
 							if (result) {
 								let {stateTip, stateTipColor} = that.orderStateExp(9);
 								item = Object.assign(item, {
@@ -252,26 +256,7 @@
 							}
 						}
 					}
-				})
-				return;
-				uni.showLoading({
-					title: '请稍后'
-				})
-				setTimeout(()=>{
-					let {stateTip, stateTipColor} = this.orderStateExp(9);
-					item = Object.assign(item, {
-						state: 9,
-						stateTip, 
-						stateTipColor
-					})
-					
-					//取消订单后删除待付款中该项
-					let list = this.navList[1].orderList;
-					let index = list.findIndex(val=>val.id === item.id);
-					index !== -1 && list.splice(index, 1);
-					
-					uni.hideLoading();
-				}, 600)
+				});
 			},
 			// 收货
 			receivedOrder(item, index) {
@@ -289,11 +274,17 @@
 					}
 				})
 			},
+			// 发表评论
+			commentOrder(item) {
+				this.$api.navTo('/pages/order/comment?product_id='+item.products[0].product_id+'&order_id='+item.order_id+'&image='+item.products[0].image+'&title='+item.products[0].title+'&spec='+item.products[0].spec);
+			},
 			// 订单状态文字和颜色
 			orderStateExp(state){
 				let stateTip = '',
 					stateTipColor = '#fa436a';
 				switch(+state){
+					case 0:
+						stateTip = '交易成功';break;
 					case 1:
 						stateTip = '待付款'; break;
 					case 2:
@@ -313,7 +304,6 @@
 				}
 				return {stateTip, stateTipColor};
 			},
-			
 			// 计算当前订单有多少个商品
 			quantity(products) {
 				let number = 0;
@@ -324,6 +314,53 @@
 			},
 			navTo(url){
 				this.$api.navTo(url);
+			},
+			async pullDownRefresh(){
+				this.navList = [];
+				this.navList = [{
+						state: 0,
+						text: '全部',
+						loadingType: 'more',
+						orderList: [],
+						page: 1
+					},
+					{
+						state: 1,
+						text: '待付款',
+						loadingType: 'more',
+						orderList: [],
+						page: 1
+					},
+					{
+						state: 2,
+						text: '待发货',
+						loadingType: 'more',
+						orderList: [],
+						page: 1
+					},
+					{
+						state: 3,
+						text: '待收货',
+						loadingType: 'more',
+						orderList: [],
+						page: 1
+					},
+					{
+						state: 4,
+						text: '评价',
+						loadingType: 'more',
+						orderList: [],
+						page: 1
+					},
+					{
+						state: 5,
+						text: '售后',
+						loadingType: 'more',
+						orderList: [],
+						page: 1
+					}
+				];
+				this.loadData();
 			}
 		},
 	}
