@@ -4,7 +4,7 @@
 			<view class="wrapper">
 				<view class="address-box">
 					<text v-if="item.is_default" class="tag">默认</text>
-					<text class="address">{{item.address}}</text>
+					<text class="address">{{item.province.name+item.city.name+item.area.name+' '+item.address}}</text>
 				</view>
 				<view class="u-box">
 					<text class="name">{{item.name}}</text>

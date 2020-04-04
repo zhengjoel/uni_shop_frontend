@@ -9,7 +9,7 @@
 						<text class="name">{{addressData.name}}</text>
 						<text class="mobile">{{addressData.mobile}}</text>
 					</view>
-					<text class="address">{{addressData.address}}</text>
+					<text class="address">{{addressData.province.name+addressData.city.name+addressData.area.name+' '+addressData.address}}</text>
 				</view>
 				<view class="cen" v-else>请选择收货地址</view>
 				<text class="yticon icon-you"></text>
@@ -233,7 +233,8 @@
 					product_id: this.productId,
 					spec: this.spec,
 					number: this.product[0].number,
-					city_id: this.addressData.city_id ? this.addressData.city_id : '',
+					city_id: this.addressData.city_id,
+					address_id: this.addressData.id,
 					delivery_id: this.deliveryList[this.deliveryIndex].id ? this.deliveryList[this.deliveryIndex].id : '',
 					coupon_id: this.useCouponIndex && this.couponList[this.useCouponIndex].id ? this.couponList[this.useCouponIndex].id : '',
 					remark: this.remark

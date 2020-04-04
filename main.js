@@ -2,6 +2,30 @@ import Vue from 'vue'
 import store from './store'
 import App from './App'
 
+Vue.prototype.$unishow = "http://t.fastadmin.com:8888/addons/unishop";
+//Vue.prototype.$unishow = "https://shop.weivee.com/addons/unishop";
+
+// 平台号
+// #ifdef APP-PLUS
+Vue.prototype.$platform = 'APP-PLUS';
+// #endif
+// #ifdef H5
+Vue.prototype.$platform = 'H5';
+// #endif
+// #ifdef MP-WEIXIN
+Vue.prototype.$platform = 'MP-WEIXIN';
+// #endif
+// #ifdef MP-ALIPAY
+Vue.prototype.$platform = 'MP-ALIPAY';
+// #endif
+// #ifdef MP-BAIDU
+Vue.prototype.$platform = 'MP-BAIDU';
+// #endif
+// #ifdef MP-TOUTIAO
+Vue.prototype.$platform = 'MP-TOUTIAO';
+// #endif
+
+
 // 提示
 const msg = (title, duration = 3000, mask = false, icon = 'none') => {
 	//统一提示方便全局修改
@@ -119,7 +143,8 @@ const request = (url, method = 'GET', data = {}) => {
 				}
 			},
 			fail(res) {
-				msg('网络错误');
+				//msg('网络错误');
+				msg(JSON.stringify(res));
 				resolve(false);
 			}
 		})
@@ -147,35 +172,6 @@ Vue.prototype.$api = {
 	deepCopy,
 	navTo
 };
-
-let env = 'dev';
-if (env == 'dev') {
-	Vue.prototype.$unishow = "http://t.fastadmin.com:8888/addons/unishop";
-} else {
-	Vue.prototype.$unishow = "https://shop.weivee.com/addons/unishop";
-}
-Vue.prototype.$cdn = "http://cdn.shop.weivee.com"; // 图片路径
-
-
-// 平台号
-// #ifdef APP-PLUS
-Vue.prototype.$platform = 'APP-PLUS';
-// #endif
-// #ifdef H5
-Vue.prototype.$platform = 'H5';
-// #endif
-// #ifdef MP-WEIXIN
-Vue.prototype.$platform = 'MP-WEIXIN';
-// #endif
-// #ifdef MP-ALIPAY
-Vue.prototype.$platform = 'MP-ALIPAY';
-// #endif
-// #ifdef MP-BAIDU
-Vue.prototype.$platform = 'MP-BAIDU';
-// #endif
-// #ifdef MP-TOUTIAO
-Vue.prototype.$platform = 'MP-TOUTIAO';
-// #endif
 
 
 App.mpType = 'app'

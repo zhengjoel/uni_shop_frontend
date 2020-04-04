@@ -7,7 +7,7 @@
 
 		<view class="pay-type-list">
 			<view class="type-item b-b" @click="changePayType(1)" v-if="payTypeList.wxpay">
-				<text class="icon yticon icon-weixinzhifu"></text>
+				<text class="icon yticon icon-wxpay"></text>
 				<view class="con">
 					<text class="tit">微信支付</text>
 				</view>
@@ -27,7 +27,7 @@
 				</label>
 			</view>
 			<view class="type-item b-b" @click="changePayType(3)" v-if="payTypeList.offline">
-				<text class="icon yticon icon-shang"></text>
+				<text class="icon yticon icon-pay"></text>
 				<view class="con">
 					<text class="tit">货到付款</text>
 				</view>
@@ -181,10 +181,10 @@
 			width: 100upx;
 			font-size: 52upx;
 		}
-		.icon-erjiye-yucunkuan {
+		.icon-pay {
 			color: #fe8e2e;
 		}
-		.icon-weixinzhifu {
+		.icon-wxpay {
 			color: #36cb59;
 		}
 		.icon-alipay {

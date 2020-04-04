@@ -4,6 +4,7 @@
 		{
 			"path": "pages/index/index",
 			"style": {
+				"enablePullDownRefresh": true,
 				// #ifdef MP 
 				"navigationBarTitleText": "Uni商城",
 				//"navigationStyle": "custom",
@@ -140,9 +141,13 @@
 		{
 			"path": "pages/order/orderDetail",
 			"style": {
+				"enablePullDownRefresh": true,
 				"navigationBarTitleText": "订单详情",
 				"app-plus": {
-					"bounce": "none"
+					"bounce": "none",
+					"titleNView": {
+						"type": "transparent"
+					}
 				}
 			}
 		},{
@@ -270,7 +275,7 @@
 		]
 	},
 	"condition" : { //模式配置，仅开发期间生效
-		"current": 1, //当前激活的模式(list 的索引项)
+		"current": 0, //当前激活的模式(list 的索引项)
 		"list": [
 			{
 				"name": "index", //模式名称
@@ -281,6 +286,11 @@
 				"name": "comment",
 				"path": "pages/order/comment",
 				"query":"order_id=nAyML8YWRXU1O2b&image=/shop/20200315/5507a02e4f1a43c72d8360e4194b42a5.png&title=万里无一万里无一万里无一万里无一万里无一万里无一苹果X&spec=白色"
+			},
+			{
+				"name": "orderDetail",
+				"path":"pages/order/orderDetail",
+				"query":"order_id=XDW6kZLJD4ijNEE"
 			}
 		]
 	}

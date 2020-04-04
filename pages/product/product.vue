@@ -134,7 +134,7 @@
 		<!-- 底部操作菜单 -->
 		<view class="page-bottom">
 			<navigator url="/pages/index/index" open-type="switchTab" class="p-b-btn">
-				<text class="yticon icon-xiatubiao--copy"></text>
+				<text class="yticon icon-fangzi"></text>
 				<text>首页</text>
 			</navigator>
 			<navigator url="/pages/cart/cart" open-type="switchTab" class="p-b-btn">
@@ -948,7 +948,7 @@
 			height: 80upx;
 
 			.yticon {
-				font-size: 40upx;
+				font-size: 46upx;
 				line-height: 48upx;
 				color: $font-color-light;
 			}
@@ -956,15 +956,6 @@
 			&.active,
 			&.active .yticon {
 				color: $uni-color-primary;
-			}
-
-			.icon-fenxiang2 {
-				font-size: 42upx;
-				transform: translateY(-2upx);
-			}
-
-			.icon-shoucang {
-				font-size: 46upx;
 			}
 		}
 

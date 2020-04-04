@@ -1,7 +1,7 @@
 <template>
 	<view class="bg">
 		<view class="header">
-			<image class="image" :src="image"></image>
+			<image class="image" :src="cdn + image"></image>
 			<view class="right">
 				<view class="title">{{title}}</view>
 				<view class="spec">{{spec}}</view>
@@ -25,7 +25,13 @@
 
 <script>
 	import uniRate from '@/components/uni-rate/uni-rate.vue'
+	import {
+		mapState
+	} from 'vuex';
 	export default{
+		computed:{
+			...mapState(['cdn'])
+		},
 		components: {
 			uniRate
 		},
@@ -43,7 +49,7 @@
 		},
 		onLoad(options) {
 			this.title = options.title;
-			this.image = this.$cdn + options.image;
+			this.image = options.image;
 			this.spec = options.spec;
 			this.order_id = options.order_id;
 			this.product_id = options.product_id;
@@ -80,12 +86,15 @@
 					comment:this.textarea,
 				});
 				if (data) {
-					this.$api.prePage().tabCurrentIndex = 0;
+					let prePage = this.$api.prePage()
+					if (prePage.tabCurrentIndex) {
+						prePage.tabCurrentIndex = 0;
+					}
 					let that = this;
 					setTimeout(function(){
-						that.$api.prePage().pullDownRefresh();
+						prePage.pullDownRefresh();
 						uni.navigateBack();
-					},1000)
+					},2000)
 				}
 			}
 		}

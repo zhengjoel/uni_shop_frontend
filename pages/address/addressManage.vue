@@ -58,6 +58,8 @@
 				this.getInfo(option.id);
 				
 				title = '编辑收货地址'
+			} else {
+				this.$refs.mpvueCityPicker.created(this.pickerValueDefault);
 			}
 			this.manageType = option.type;
 			uni.setNavigationBarTitle({

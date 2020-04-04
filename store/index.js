@@ -9,7 +9,8 @@ const store = new Vuex.Store({
 		userInfo: {
 			token: ''
 		},
-		cdn: 'http://t.fastadmin.com:8888',
+		//cdn: 'http://t.fastadmin.com:8888',
+		cdn: 'http://cdn.shop.weivee.com',
 		lang: 'zh-cn',
 		cookie: ''
 	}, 

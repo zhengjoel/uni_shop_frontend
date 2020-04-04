@@ -219,6 +219,11 @@ export default {
 	onReachBottom() {
 		this.getProduct();
 	},
+	onPullDownRefresh() {
+		this.goodsList = [];
+		this.page = 1;
+		this.loadData();
+	},
 	methods: {
 		/**
 		 * 请求静态数据只是为了代码不那么乱
@@ -245,6 +250,8 @@ export default {
 					that.menu = res.data.data;
 				}
 			});
+			
+			uni.stopPullDownRefresh();
 			
 			this.getFlash();
 				
