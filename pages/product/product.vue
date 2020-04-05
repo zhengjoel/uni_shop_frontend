@@ -4,7 +4,7 @@
 			<swiper indicator-dots circular=true duration="400">
 				<swiper-item class="swiper-item" v-for="(item,index) in product.images_text" :key="index">
 					<view class="image-wrapper">
-						<image :src="cdn + item" class="loaded" mode="aspectFill"></image>
+						<image :src="cdn + item" class="loaded" @click="previewImage(index)" mode="aspectFill"></image>
 					</view>
 				</swiper-item> 
 			</swiper>
@@ -44,7 +44,7 @@
 			</view>
 		</view>
 
-		<view class="introduce-section">
+		<view class="introduce-section" v-if="product.product_id">
 			<text class="title">{{product.title}}</text>
 			<view class="price-box" v-if="flash == false">
 				<text class="price-tip">¥</text>
@@ -104,27 +104,27 @@
 		</view>
 
 		<!-- 评价 -->
-		<view class="eva-section">
-			<view class="e-header">
+		<view class="eva-section" v-if="product.evaluate_data && product.evaluate_data.count > 0">
+			<view class="e-header" @click="$api.navTo('/pages/product/evaluate?product_id='+product.product_id)">
 				<text class="tit">评价</text>
-				<text>(86)</text>
-				<text class="tip">好评率 100%</text>
+				<text>({{product.evaluate_data.count}})</text>
+				<text class="tip">好评率 {{product.evaluate_data.avg}}%</text>
 				<text class="yticon icon-you"></text>
 			</view>
-			<view class="eva-box">
-				<image class="portrait" src="http://img3.imgtn.bdimg.com/it/u=1150341365,1327279810&fm=26&gp=0.jpg" mode="aspectFill"></image>
+			<view class="eva-box" v-for="(item, index) in product.evaluate_list" :key="index">
+				<image class="portrait" :src="cdn + item.avatar" mode="aspectFill"></image>
 				<view class="right">
-					<text class="name">Leo yo</text>
-					<text class="con">商品收到了，79元两件，质量不错，试了一下有点瘦，但是加个外罩很漂亮，我很喜欢</text>
+					<text class="name">{{item.username}}</text>
+					<text class="con">{{item.comment}}</text>
 					<view class="bot">
-						<text class="attr">购买类型：XL 红色</text>
-						<text class="time">2019-04-01 19:21</text>
+						<text class="attr">购买类型：{{item.spec}}</text>
+						<text class="time">{{item.createtime_text}}</text>
 					</view>
 				</view>
 			</view>
 		</view>
 
-		<view class="detail-desc">
+		<view class="detail-desc" v-if="product.desc">
 			<view class="d-header">
 				<text>图文详情</text>
 			</view>
@@ -260,6 +260,7 @@
 				specTableList: [],
 				product: {},
 				flash: false,
+				id: false,
 				countdown: {},
 				progress:{
 					sold:1,
@@ -267,18 +268,22 @@
 				}
 			};
 		},
+		onPullDownRefresh(){
+			this.getDetail(this.id, this.flash);
+		},
 		onLoad(options) {
-			let id = options.id;
+			this.id = options.id;
 			let flash_id = options.flash ? options.flash : 0;
-			if (flash_id != 0) {
+			if (flash_id) {
 				this.flash = flash_id;
 			}
-			this.getDetail(id, flash_id);
+			this.getDetail(this.id, flash_id);
 		},
 		methods: {
 			// 获取商品详情
 			async getDetail(id, flash_id) {
-				let product = await this.$api.request(`/product/info?id=${id}&flash_id=${flash_id}`, 'GET');
+				let product = await this.$api.request(`/product/detail?id=${id}&flash_id=${flash_id}`, 'GET');
+				uni.stopPullDownRefresh();
 				if (!product) {
 					return;
 				}
@@ -312,6 +317,7 @@
 					//console.log(specChildList)
 				
 					//规格 默认选中第一条
+					this.specSelected = [];
 					this.specList.forEach(item => {
 						for (let cItem of this.specChildList) {
 							if (cItem.pid === item.id) {
@@ -428,6 +434,19 @@
 				}
 				return parseInt(sold / number * 100);
 			},
+			// 查看图片
+			previewImage(index){
+				let urls = [];
+				this.product.images_text.forEach(item=>{
+					urls.push(this.cdn + item);
+				})
+				uni.previewImage({
+					current:this.cdn + this.product.images_text[index],
+					urls:urls,
+					indicator:"number",
+					loop: true
+				})
+			}
 		},
 
 	}

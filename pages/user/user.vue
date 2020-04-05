@@ -5,7 +5,7 @@
 			<image class="bg" src="/static/user-bg.jpg"></image>
 			<view class="user-info-box">
 				<view class="portrait-box">
-					<image class="portrait" :src="userInfo.avatar || '/static/missing-face.png'"></image>
+					<image class="portrait" :src="cdn + userInfo.avatar || '/static/missing-face.png'"></image>
 				</view>
 				<view class="info-box">
 					<text class="username">{{userInfo.nickname || '游客'}}</text>
@@ -148,7 +148,7 @@
 		},
 		// #endif
         computed: {
-			...mapState(['hasLogin','userInfo'])
+			...mapState(['hasLogin','userInfo','cdn'])
 		},
         methods: {
 			/**
@@ -245,7 +245,6 @@
 		.portrait{
 			width: 130upx;
 			height: 130upx;
-			border:5upx solid #fff;
 			border-radius: 50%;
 		}
 		.username{

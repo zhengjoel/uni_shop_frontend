@@ -96,7 +96,7 @@ const deepCopy = (p, c) => {
 }
 
 // 同步网络请求
-const request = (url, method = 'GET', data = {}) => {
+const request = (url, method = 'GET', data = {}, showMsg = true) => {
 	let header = {
 		'content-type': 'application/x-www-form-urlencoded',
 		'lang': Vue.prototype.$store.state.lang,
@@ -109,7 +109,7 @@ const request = (url, method = 'GET', data = {}) => {
 		header.cookie = Vue.prototype.$store.state.cookie;
 	}
 	return new Promise(resolve => {
-		msg('加载中...');
+		showMsg && msg('加载中...');
 		uni.request({
 			url: Vue.prototype.$unishow + url,
 			method: method,
@@ -124,27 +124,27 @@ const request = (url, method = 'GET', data = {}) => {
 				if (res.hasOwnProperty('data')) {
 					if (res.data.hasOwnProperty('code') && res.data.code == 1) {
 						if (res.data.msg) {
-							msg(res.data.msg);
+							showMsg && msg(res.data.msg);
 						} else {
 							uni.hideToast();
 						}
 						resolve(res.data.data);
 					} else {
 						if (res.data.hasOwnProperty('msg')) {
-							msg(res.data.msg);
+							showMsg && msg(res.data.msg);
 						} else {
-							msg('返回参数错误');
+							showMsg && msg('返回参数错误');
 						}
 						resolve(false);
 					}
 				} else {
-					msg('不能识别数据');
+					showMsg && msg('不能识别数据');
 					resolve(false);
 				}
 			},
 			fail(res) {
 				//msg('网络错误');
-				msg(JSON.stringify(res));
+				showMsg && msg(JSON.stringify(res));
 				resolve(false);
 			}
 		})

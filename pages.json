@@ -44,6 +44,7 @@
 			"path": "pages/product/product",
 			"style": {
 				"navigationBarTitleText": "详情展示",
+				"enablePullDownRefresh": true,
 				"app-plus": {
 					"titleNView": {
 						"type": "transparent"
@@ -230,10 +231,24 @@
 			}
 		},
 		{
-		    "path" : "pages/order/comment",
+		    "path" : "pages/order/evaluate",
 		    "style" : {
 				"enablePullDownRefresh": true,
 				"navigationBarTitleText": "发表评论"
+			}
+		},
+		{
+		    "path" : "pages/order/refund",
+		    "style" : {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "申请退款"
+			}
+		},
+		{
+		    "path" : "pages/product/evaluate",
+		    "style" : {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "评价"
 			}
 		}
     ],

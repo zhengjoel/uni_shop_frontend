@@ -78,7 +78,7 @@
 	  font-family: 'unishop';  
 	  font-weight: normal;
 	  font-style: normal;
-	  src: url('//at.alicdn.com/t/font_1729059_4ja4pnmw1m.ttf') format('truetype');
+	  src: url('//at.alicdn.com/t/font_1729059_udfm4nnyhc.ttf') format('truetype');
 	}
 	
 	.yticon {
@@ -87,6 +87,14 @@
 		font-style: normal;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
+	}
+	
+	.icon-jiahao:before{
+		content: "\e616";
+	}
+	
+	.icon-jianhao:before{
+		content: "\e617";
 	}
 	
 	.icon-wxpay:before{
@@ -122,11 +130,11 @@
 	}
 	
 	.icon-daifukuan:before{
-		content: "\e601;";
+		content: "\e601";
 	}
 	
 	.icon-daifahuo:before{
-		content: "\e704;";
+		content: "\e704";
 	}
 	
 	.icon-daishouhuo:before{

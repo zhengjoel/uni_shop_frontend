@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<!-- 空白页 -->
-		<view v-if="!hasLogin || empty===true" class="empty">
+		<view v-if="(!hasLogin || empty===true) && state != 'load'" class="empty">
 			<image src="/static/emptyCart.jpg" mode="aspectFit"></image>
 			<view v-if="hasLogin" class="empty-tips">
 				空空如也
@@ -29,7 +29,7 @@
 							<uni-number-box class="step" :min="1" :max="item.stock" :value="cartList[index].number"
 							 :isMax="item.number>=item.stock?true:false" :isMin="item.number===1" :index="index" @eventChange="numberChange"></uni-number-box>
 						</view>
-						<text class="del-btn yticon icon-fork" @click="deleteCartItem(index)"></text>
+						<text class="del-btn yticon icon-lajitong" @click="deleteCartItem(index)"></text>
 						<text class="invalid" v-if="item.isset == false">失效</text>
 					</view>
 				</block>
@@ -66,14 +66,17 @@
 				allChoose: false, //全选状态  true|false
 				empty: false, //空白页现实  true|false
 				cartList: [],
+				state : 'load'
 			};
 		},
 		onLoad() {
 			
 		},
 		onShow() {
+			this.state = 'load';
 			this.cartList = [];
 			this.getCart();
+			
 		},
 		watch: {
 			//显示空白页
@@ -91,8 +94,13 @@
 			async getCart() {
 				let login = await this.$api.checkLogin();
 				if (login) {
-					this.cartList = await this.$api.request('/cart');
-					this.calcTotal();
+					let data = await this.$api.request('/cart');
+					this.state = 'loaded';
+					if (data){
+						this.cartList = data;
+						this.calcTotal();
+					}
+					
 				}
 			},
 			cartPrice(oldPrice, nowPrice) {
@@ -177,7 +185,7 @@
 				this.calcTotal();
 				
 				let cart_id = this.cartList[data.index].cart_id;
-				let result = await this.$api.request('/cart/number_change?id='+cart_id, 'GET', {number:newNumber});
+				let result = await this.$api.request('/cart/number_change?id='+cart_id, 'GET', {number:newNumber}, false);
 				if (!result) {
 					this.cartList[data.index].number = oldNumber;
 					this.calcTotal();
