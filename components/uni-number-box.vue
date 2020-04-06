@@ -1,5 +1,5 @@
 <template>
-	<view class="uni-numbox">
+	<view class="uni-numbox" @click.stop="nothing">
 		<view class="uni-numbox-minus" 
 			@click="_calcValue('subtract')"
 		>
@@ -85,6 +85,7 @@
 			}
 		},
 		methods: {
+			nothing(){},
 			_calcValue(type) {
 				const scale = this._getDecimalScale();
 				let value = this.inputValue * scale;

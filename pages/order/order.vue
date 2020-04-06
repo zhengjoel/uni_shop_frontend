@@ -51,7 +51,7 @@
 							<!-- <button class="action-btn" v-if="item.have_paid != 0 && item.have_delivered == 0">提醒发货</button> -->
 							<button class="action-btn" v-if="item.have_paid != 0" @click.stop="button('delivery',item)">查看物流</button>
 							<button class="action-btn" v-if="item.have_paid != 0 && item.have_received == 0" @click.stop="button('recerved',item)">确认收货</button>
-							<button class="action-btn" v-if="item.have_received != 0 && item.have_commented == 0" @click.stop="button('comment',item)">评价</button>
+							<button class="action-btn" v-if="item.have_received != 0 && item.have_commented == 0" @click.stop="button('evaluate',item)">评价</button>
 							<!-- <button class="action-btn" v-if="item.have_received != 0 && item.have_commented != 0">追加评价</button> -->
 							<button class="action-btn" v-if="item.have_paid != 0">申请售后</button>
 						</view>
@@ -354,8 +354,8 @@
 					case 'recerved':
 						this.receivedOrder(item);
 						break;
-					case 'comment':
-						this.$api.navTo('/pages/order/comment?product_id=' + item.products[0].product_id + '&order_id=' + item.order_id +
+					case 'evaluate':
+						this.$api.navTo('/pages/order/evaluate?product_id=' + item.products[0].id + '&order_id=' + item.order_id +
 							'&image=' + item.products[0].image + '&title=' + item.products[0].title + '&spec=' + item.products[0].spec);
 						break;
 				}

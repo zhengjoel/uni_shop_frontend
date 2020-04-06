@@ -31,7 +31,7 @@
 			</view>
 		</view>
 		<!-- 秒杀楼层 -->
-		<view class="seckill-section m-t" v-if="flashSale">
+		<view class="seckill-section m-t" v-if="flashSale && flashSale.product.length > 0">
 			<view class="s-header" @click="navTo('/pages/flash/list')">
 				<image class="s-img" src="/static/temp/secskill-img.jpg" mode="widthFix"></image>
 				<!-- <text class="tip">{{(new Date(flashSale.starttime*1000)).getHours()}}点场</text> -->
@@ -43,9 +43,9 @@
 			<scroll-view class="floor-list" scroll-x>
 				<view class="scoll-wrapper">
 					<view v-for="(item, index) in flashSale.product" :key="index" class="floor-item" @click="navToDetailPage({ product_id: item.flash_product_id }, flashSale.flash_id)">
-						<image :src="cdn + item.product.image" mode="aspectFill"></image>
-						<text class="title clamp">{{item.product.title }}</text>
-						<text class="price">￥{{item.product.sales_price }}</text>
+						<image :src="cdn + item.image" mode="aspectFill"></image>
+						<text class="title clamp">{{item.title }}</text>
+						<text class="price">￥{{item.sales_price }}</text>
 					</view>
 				</view>
 			</scroll-view>

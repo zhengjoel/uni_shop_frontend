@@ -58,7 +58,7 @@
 			<button class="action-btn recom" v-if="order.have_paid == 0" @click.stop="button('pay')">立即支付</button>
 			<button class="action-btn" v-if="order.have_paid != 0" @click.stop="button('delivery')">查看物流</button>
 			<button class="action-btn" v-if="order.have_paid != 0 && order.have_received == 0" @click.stop="button('recerved')">确认收货</button>
-			<button class="action-btn" v-if="order.have_received != 0 && order.have_commented == 0" @click.stop="button('comment')">评价</button>
+			<button class="action-btn" v-if="order.have_received != 0 && order.have_commented == 0" @click.stop="button('evaluate')">评价</button>
 			<button class="action-btn" v-if="order.have_paid != 0">申请售后</button>
 		</view>
 	</view>
@@ -134,8 +134,8 @@
 					case 'recerved':
 						detail = await this.$api.prePage().receivedOrder({order_id:this.order_id});
 						break;
-					case 'comment':
-						this.$api.navTo('/pages/order/comment?product_id='+this.order.products[0].product_id+'&order_id='+this.order_id+'&image='+this.order.products[0].image+'&title='+this.order.products[0].title+'&spec='+this.order.products[0].spec);
+					case 'evaluate':
+						this.$api.navTo('/pages/order/evaluate?product_id='+this.order.products[0].id+'&order_id='+this.order_id+'&image='+this.order.products[0].image+'&title='+this.order.products[0].title+'&spec='+this.order.products[0].spec);
 						break;
 				}
 				if (detail) {

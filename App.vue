@@ -65,6 +65,7 @@
 		},
 		onShow: function() {
 			console.log('App Show')
+			
 		},
 		onHide: function() {
 			console.log('App Hide')
@@ -78,7 +79,7 @@
 	  font-family: 'unishop';  
 	  font-weight: normal;
 	  font-style: normal;
-	  src: url('//at.alicdn.com/t/font_1729059_udfm4nnyhc.ttf') format('truetype');
+	  src: url('//at.alicdn.com/t/font_1729059_viru2cdoar.ttf') format('truetype');
 	}
 	
 	.yticon {
@@ -87,6 +88,18 @@
 		font-style: normal;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
+	}
+	
+	.icon-xuanzhong:before{
+		content: "\e64c";
+	}
+	
+	.icon-fenlei:before{
+		content: "\e71b";
+	}
+	
+	.icon-bianji:before{
+		content: "\e77d";
 	}
 	
 	.icon-jiahao:before{

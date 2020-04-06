@@ -16,26 +16,27 @@
 			<!-- 列表 -->
 			<view class="cart-list">
 				<block v-for="(item, index) in cartList" :key="item.id">
-					<view class="cart-item" :class="{'b-b': index!==cartList.length-1}">
+					<view class="cart-item" :class="{'b-b': index!==cartList.length-1}" :style="{'background':item.isset?'':'#f5f5f5'}" 
+						@click="navTo(`/pages/product/product?id=${item.product_id}&flash=0`)"
+					>
 						<view class="image-wrapper">
-							<image :src="cdn + item.image" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)"
-							 @error="onImageError('cartList', index)"></image>
-							<view class="yticon icon-xuanzhong2 checkbox" :class="{checked: item.choose}" @click="check('item', index)"></view>
+							<image :src="cdn + item.image" class="loaded" mode="aspectFill"></image>
+							<view v-if="item.isset == true" class="yticon icon-xuanzhong checkbox" :class="{checked: item.choose}" @click.stop="check('item', index)"></view>
 						</view>
 						<view class="item-right">
 							<text class="clamp title">{{item.title}}</text>
-							<text class="attr">{{item.spec}}</text>
+							<text class="attr" v-if="item.spec">{{item.spec}}</text>
 							<text class="price">￥{{item.nowPrice}} <text style="color:red"> {{cartPrice(item.oldPrice, item.nowPrice)}}</text></text>
 							<uni-number-box class="step" :min="1" :max="item.stock" :value="cartList[index].number"
 							 :isMax="item.number>=item.stock?true:false" :isMin="item.number===1" :index="index" @eventChange="numberChange"></uni-number-box>
 						</view>
-						<text class="del-btn yticon icon-lajitong" @click="deleteCartItem(index)"></text>
+						<text class="del-btn yticon icon-lajitong" @click.stop="deleteCartItem(index)"></text>
 						<text class="invalid" v-if="item.isset == false">失效</text>
 					</view>
 				</block>
 			</view>
 			<!-- 底部菜单栏 -->
-			<view class="action-section">
+			<view class="action-section" v-if="state != 'load'">
 				<view class="checkbox">
 					<image :src="allChoose?'/static/selected.png':'/static/select.png'" mode="aspectFit" @click="check('all')"></image>
 					<view class="clear-btn" :class="{show: allChoose}" @click="clearCart">
@@ -72,11 +73,15 @@
 		onLoad() {
 			
 		},
+		onPullDownRefresh() {
+			this.state = 'load';
+			this.cartList = [];
+			this.getCart();
+		},
 		onShow() {
 			this.state = 'load';
 			this.cartList = [];
 			this.getCart();
-			
 		},
 		watch: {
 			//显示空白页
@@ -95,6 +100,7 @@
 				let login = await this.$api.checkLogin();
 				if (login) {
 					let data = await this.$api.request('/cart');
+					uni.stopPullDownRefresh();
 					this.state = 'loaded';
 					if (data){
 						this.cartList = data;
@@ -114,14 +120,6 @@
 				}
 				return string;
 			},
-			//监听image加载完成
-			onImageLoad(key, index) {
-				this.$set(this[key][index], 'loaded', 'loaded');
-			},
-			//监听image加载失败
-			onImageError(key, index) {
-				this[key][index].image = '/static/errorImage.jpg';
-			},
 			navToLogin() {
 				uni.navigateTo({
 					url: '/pages/public/login'
@@ -129,6 +127,7 @@
 			},
 			//选中状态处理
 			async check(type, index) {
+				
 				let trueArr = [];
 				let falseArr = [];
 				let oldChoose = [];
@@ -152,10 +151,12 @@
 					const choose = !this.allChoose
 					list.forEach(item => {
 						item.choose = choose;
-						if (choose) {
-							trueArr.push(item.cart_id);
-						} else {
-							falseArr.push(item.cart_id);
+						if (item.isset) {
+							if (choose) {
+								trueArr.push(item.cart_id);
+							} else {
+								falseArr.push(item.cart_id);
+							}
 						}
 					})
 					this.allChoose = choose;
@@ -213,15 +214,15 @@
 
 			},
 			//清空
-			clearCart() {
-				uni.showModal({
-					content: '清空购物车？',
-					success: (e) => {
-						if (e.confirm) {
-							this.cartList = [];
-						}
-					}
-				})
+			async clearCart() {
+				let [error, res] = await uni.showModal({
+					title: '确认清空购物车？'
+				});
+				if (res.confirm) {
+					this.cartList = [];
+					let data = this.$api.request('/');
+					
+				}
 			},
 			//计算总价
 			calcTotal() {
@@ -233,10 +234,12 @@
 				let total = 0;
 				let choose = true;
 				list.forEach(item => {
-					if (item.choose == 1) {
-						total += item.nowPrice * item.number;
-					} else if (choose === true) {
-						choose = false;
+					if (item.isset) {
+						if (item.choose == 1) {
+							total += item.nowPrice * item.number;
+						} else if (choose === true) {
+							choose = false;
+						}
 					}
 				})
 				this.allChoose = choose;
@@ -245,22 +248,20 @@
 			//创建订单
 			createOrder() {
 				let list = this.cartList;
-				let goodsData = [];
+				let cartId = [];
 				list.forEach(item => {
 					if (item.choose) {
-						goodsData.push({
-							attr_val: item.attr_val,
-							number: item.number
-						})
+						cartId.push(item.cart_id);
 					}
 				})
-
-				uni.navigateTo({
-					url: `/pages/order/createOrder?data=${JSON.stringify({
-						goodsData: goodsData
-					})}`
-				})
-				this.$api.msg('跳转下一页 sendData');
+				if (cartId.length == 0) {
+					this.$api.msg('没有选中商品');
+					return;
+				}
+				this.$api.navTo(`/pages/order/createOrder?cartId=${JSON.stringify({cartId})}`);
+			},
+			navTo(url){
+				this.$api.navTo(url);
 			}
 		}
 	}
@@ -269,7 +270,7 @@
 <style lang='scss'>
 	.container {
 		padding-bottom: 134upx;
-
+		
 		/* 空白页 */
 		.empty {
 			position: fixed;

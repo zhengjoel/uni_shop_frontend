@@ -269,12 +269,12 @@
 			};
 		},
 		onPullDownRefresh(){
-			this.getDetail(this.id, this.flash);
+			this.getDetail(this.id, this.flash?this.flash:0);
 		},
 		onLoad(options) {
 			this.id = options.id;
 			let flash_id = options.flash ? options.flash : 0;
-			if (flash_id) {
+			if (flash_id != 0) {
 				this.flash = flash_id;
 			}
 			this.getDetail(this.id, flash_id);
@@ -733,7 +733,6 @@
 	.detail-desc {
 		background: #fff;
 		margin-top: 16upx;
-
 		.d-header {
 			display: flex;
 			justify-content: center;

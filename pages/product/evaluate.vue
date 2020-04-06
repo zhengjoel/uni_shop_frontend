@@ -48,6 +48,7 @@
 		methods:{
 			async getEvaluete(){
 				let comment = await this.$api.request('/product/evaluate', 'GET', {product_id:this.product_id,page:this.page,pagesize:this.pageSize});
+				uni.stopPullDownRefresh();
 				if (comment) {
 					this.page++;
 					comment.forEach(item=>{

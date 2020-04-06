@@ -154,7 +154,7 @@
 		},
 		onLoad(option) {
 			this.saveOptionTodata(option);
-			this.getOrderCreate(option.id, option.spec);
+			//this.getOrderCreate(option.id, option.spec);
 		},
 		onShow() {
 			if (this.addressData.hasOwnProperty('city_id')) {
@@ -164,13 +164,17 @@
 		},
 		methods: {
 			// 保存参数到全局变量
-			saveOptionTodata(option){
-				if (option.hasOwnProperty('id')) {
-					this.productId = option.id;
+			saveOptionTodata(options){
+				if (options.hasOwnProperty('id')) {
+					this.productId = options.id;
 				}
-				if (option.hasOwnProperty('spec')) {
-					this.spec = option.spec;
+				if (options.hasOwnProperty('spec')) {
+					this.spec = options.spec;
 				}
+				if (options.hasOwnProperty('data')){
+					console.log(options.data);
+				}
+				
 			},
 			// 获取运费模板
 			async getDelivery() {

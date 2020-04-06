@@ -14,7 +14,7 @@
 					<text :class="{active: priceOrder === 2 && filterIndex === 2}" class="yticon icon-shang xia"></text>
 				</view>
 			</view>
-			<text class="cate-item yticon icon-fenlei1" @click="toggleCateMask('show')"></text>
+			<text class="cate-item yticon icon-fenlei" @click="toggleCateMask('show')"></text>
 		</view>
 		<view class="goods-list">
 			<view 
