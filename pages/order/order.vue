@@ -21,18 +21,14 @@
 							<text v-if="item.state===9" class="del-btn yticon icon-lajitong" @click.stop="deleteOrder(index)"></text>
 						</view>
 
-						<scroll-view v-if="item.products.length > 1" class="goods-box" scroll-x>
-							<view v-for="(goodsItem, goodsIndex) in item.products" :key="goodsIndex" class="goods-item">
-								<image class="goods-img" :src="cdn + goodsItem.image" mode="aspectFill"></image>
-							</view>
-						</scroll-view>
-						<view v-if="item.products.length === 1" class="goods-box-single" v-for="(goodsItem, goodsIndex) in item.products"
+						<view class="goods-box-single" v-for="(goodsItem, goodsIndex) in item.products"
 						 :key="goodsIndex">
 							<image class="goods-img" :src="cdn + goodsItem.image" mode="aspectFill"></image>
 							<view class="right">
 								<text class="title clamp">{{goodsItem.title}}</text>
 								<text class="attr-box">{{goodsItem.spec}} x {{goodsItem.number}}</text>
 								<text class="price">{{goodsItem.price}}</text>
+								<button class="action-btn" v-if="item.have_received != 0 && goodsItem.evaluate == false" @click.stop="button('evaluate', {order_id:item.order_id,id:goodsItem.id,image:goodsItem.image,title:goodsItem.title,spec:goodsItem.spec})">评价</button>
 							</view>
 						</view>
 
@@ -51,7 +47,6 @@
 							<!-- <button class="action-btn" v-if="item.have_paid != 0 && item.have_delivered == 0">提醒发货</button> -->
 							<button class="action-btn" v-if="item.have_paid != 0" @click.stop="button('delivery',item)">查看物流</button>
 							<button class="action-btn" v-if="item.have_paid != 0 && item.have_received == 0" @click.stop="button('recerved',item)">确认收货</button>
-							<button class="action-btn" v-if="item.have_received != 0 && item.have_commented == 0" @click.stop="button('evaluate',item)">评价</button>
 							<!-- <button class="action-btn" v-if="item.have_received != 0 && item.have_commented != 0">追加评价</button> -->
 							<button class="action-btn" v-if="item.have_paid != 0">申请售后</button>
 						</view>
@@ -355,8 +350,7 @@
 						this.receivedOrder(item);
 						break;
 					case 'evaluate':
-						this.$api.navTo('/pages/order/evaluate?product_id=' + item.products[0].id + '&order_id=' + item.order_id +
-							'&image=' + item.products[0].image + '&title=' + item.products[0].title + '&spec=' + item.products[0].spec);
+						this.$api.navTo('/pages/order/evaluate?product_id='+item.id+'&order_id='+item.order_id+'&image='+item.image+'&title='+item.title+'&spec='+item.spec);
 						break;
 				}
 			},
@@ -546,7 +540,7 @@
 				flex-direction: column;
 				padding: 0 30upx 0 24upx;
 				overflow: hidden;
-
+				position: relative;
 				.title {
 					font-size: $font-base + 2upx;
 					color: $font-color-dark;
@@ -568,6 +562,21 @@
 						font-size: $font-sm;
 						margin: 0 2upx 0 8upx;
 					}
+				}
+				.action-btn{
+					width: 160rpx;
+					height: 60rpx;
+					padding: 0;
+					text-align: center;
+					line-height: 60rpx;
+					font-size: 26rpx;
+					color: #303133;
+					background: #fff;
+					border-radius: 100px;
+					float: right;
+					position: absolute;
+					right: 30rpx;
+					bottom: 0;
 				}
 			}
 		}

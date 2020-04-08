@@ -79,7 +79,7 @@
 	  font-family: 'unishop';  
 	  font-weight: normal;
 	  font-style: normal;
-	  src: url('//at.alicdn.com/t/font_1729059_viru2cdoar.ttf') format('truetype');
+	  src: url('//at.alicdn.com/t/font_1729059_6moh54x0bpf.ttf') format('truetype');
 	}
 	
 	.yticon {
@@ -88,6 +88,10 @@
 		font-style: normal;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
+	}
+	
+	.icon-shouhuodizhi:before{
+		content: "\e6b5";
 	}
 	
 	.icon-xuanzhong:before{

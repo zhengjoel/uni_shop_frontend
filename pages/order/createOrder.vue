@@ -41,7 +41,7 @@
 		</view>
 
 		<!-- 优惠明细 -->
-		<view class="yt-list">
+		<view class="yt-list" v-if="couponList.length">
 			<view class="yt-list-cell b-b" @click="toggleMask('show')">
 				<view class="cell-icon">
 					券
@@ -64,7 +64,7 @@
 		<!-- 金额明细 -->
 		<view class="yt-list">
 			<view class="yt-list-cell b-b">
-				<view class="cell-tit clamp">商品金额</view>
+				<view class="cell-tit clamp">总共合计</view>
 				<view class="cell-tip">￥{{price}}</view>
 			</view>
 			<view class="yt-list-cell b-b">
@@ -125,12 +125,14 @@
 
 <script>
 	import uniNumberBox from '@/components/uni-number-box.vue';
-	import {mapState} from 'vuex';
+	import {
+		mapState
+	} from 'vuex';
 	export default {
 		components: {
 			uniNumberBox
 		},
-		computed:{
+		computed: {
 			...mapState(['cdn'])
 		},
 		data() {
@@ -148,13 +150,23 @@
 				deliveryList: [],
 				deliveryIndex: 0,
 				deliveryPrice: 0.00,
-				productId: 0 ,// 产品id
-				spec: '' ,// 产品规格
+				cart:[], // 购物车id
 			}
 		},
-		onLoad(option) {
-			this.saveOptionTodata(option);
-			//this.getOrderCreate(option.id, option.spec);
+		onLoad(options) {
+			if (options.hasOwnProperty('cart')) {
+				// 从购物车进入 
+				this.getOrderCreate({
+					cart: options.cart
+				});
+				this.cart = options.cart;
+			} else {
+				// 从商品进入
+				this.getOrderCreate({
+					id: options.id,
+					spec: options.spec
+				});
+			}
 		},
 		onShow() {
 			if (this.addressData.hasOwnProperty('city_id')) {
@@ -163,19 +175,6 @@
 			}
 		},
 		methods: {
-			// 保存参数到全局变量
-			saveOptionTodata(options){
-				if (options.hasOwnProperty('id')) {
-					this.productId = options.id;
-				}
-				if (options.hasOwnProperty('spec')) {
-					this.spec = options.spec;
-				}
-				if (options.hasOwnProperty('data')){
-					console.log(options.data);
-				}
-				
-			},
 			// 获取运费模板
 			async getDelivery() {
 				let delivery = await this.$api.request('/order/getDelivery?city_id=' + this.addressData.city_id);
@@ -199,8 +198,8 @@
 				}
 			},
 			//获取创建订单信息
-			async getOrderCreate(product_id, spec = '') {
-				let data = await this.$api.request(`/order/create?id=${product_id}&spec=${spec}`);
+			async getOrderCreate(param) {
+				let data = await this.$api.request('/order/create', 'POST', param);
 				if (data) {
 					this.addressData = data.address;
 					this.product = data.product;
@@ -208,7 +207,7 @@
 					this.deliveryList = data.delivery;
 					this.calcTotal();
 				} else {
-					setTimeout(function(){
+					setTimeout(function() {
 						uni.navigateBack();
 					}, 3000)
 				}
@@ -230,19 +229,27 @@
 				if (!this.addressData.hasOwnProperty('city_id')) {
 					this.$api.msg('请选择收货地址');
 					return;
-				} 
-				
+				}
+
 				this.$api.msg('提交中...', 20000);
 				let data = {
-					product_id: this.productId,
-					spec: this.spec,
-					number: this.product[0].number,
 					city_id: this.addressData.city_id,
 					address_id: this.addressData.id,
 					delivery_id: this.deliveryList[this.deliveryIndex].id ? this.deliveryList[this.deliveryIndex].id : '',
 					coupon_id: this.useCouponIndex && this.couponList[this.useCouponIndex].id ? this.couponList[this.useCouponIndex].id : '',
-					remark: this.remark
+					remark: this.remark,
+					product_id: [],
+					spec:[],
+					number:[],
+					cart: this.cart
 				};
+
+				this.product.forEach((item, index) => {
+					data.product_id.push(item.id);
+					data.spec.push(item.spec);
+					data.number.push(item.number);
+				});
+
 				let result = await this.$api.request('/order/submit', 'POST', data);
 				if (result) {
 					this.$api.msg('已提交', 2000);
@@ -275,7 +282,7 @@
 					price += (parseFloat(this.product[i].sales_price) * this.product[i].number);
 					number += this.product[i].number;
 				}
-				
+
 				this.price = price.toFixed(2);
 
 				// 检查当前优惠券是否满足使用条件
@@ -302,9 +309,9 @@
 				if (this.deliveryList[this.deliveryIndex].hasOwnProperty('id')) {
 					if (delivery.min > number) {
 						this.$api.msg('必须至少购买' + delivery.min + '件商品才能使用此配送方式', 6000)
-					} 
-					for (let i = 0; i < number; ) {
-						if (i === 0) { 
+					}
+					for (let i = 0; i < number;) {
+						if (i === 0) {
 							deliveryPrice += parseInt(delivery.first_fee);
 							i += parseInt(delivery.first);
 						} else {
@@ -324,6 +331,11 @@
 	page {
 		background: $page-color-base;
 		padding-bottom: 100upx;
+	}
+
+	.uni-numbox {
+		left: initial !important;
+		right: 0 !important;
 	}
 
 	.address-section {
@@ -442,16 +454,19 @@
 				align-items: center;
 				font-size: 32upx;
 				color: $font-color-dark;
-				padding-top: 10upx;
+				padding-top: 5px;
 
 				.price {
 					margin-bottom: 4upx;
+					color: red;
 				}
 
 				.market_price {
 					font-size: 26upx;
 					margin-left: 20upx;
-					color: red;
+					color: #b2b2b2;
+					text-decoration: line-through;
+					margin-top: -8rpx;
 				}
 
 				.number {

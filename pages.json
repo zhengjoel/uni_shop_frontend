@@ -6,7 +6,7 @@
 			"style": {
 				"enablePullDownRefresh": true,
 				// #ifdef MP 
-				"navigationBarTitleText": "Uni商城",
+				"navigationBarTitleText": "喂喂商城",
 				//"navigationStyle": "custom",
 				// #endif 
 				"app-plus": {

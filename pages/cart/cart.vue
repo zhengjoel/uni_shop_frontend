@@ -258,7 +258,7 @@
 					this.$api.msg('没有选中商品');
 					return;
 				}
-				this.$api.navTo(`/pages/order/createOrder?cartId=${JSON.stringify({cartId})}`);
+				this.$api.navTo(`/pages/order/createOrder?cart=${cartId.join(',')}`);
 			},
 			navTo(url){
 				this.$api.navTo(url);

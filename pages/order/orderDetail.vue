@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<view class="header">
-			<view class="left" @click="detail(order_id)">{{status}}</view>
+			<view class="left">{{status}}</view>
 			
 		</view>
 		<view class="delivery" v-if="order.have_delivered">
@@ -28,12 +28,14 @@
 			<view
 				class="goods-box-single"
 				v-for="(goodsItem, goodsIndex) in order.products" :key="goodsIndex"
+				@click="navTo('/pages/product/product?id='+goodsItem.id+'&flash=0')"
 			>
 				<image class="goods-img" :src="cdn + goodsItem.image" mode="aspectFill"></image>
 				<view class="right">
 					<text class="title clamp">{{goodsItem.title}}</text>
 					<text class="attr-box">{{goodsItem.spec}} x {{goodsItem.number}}</text>
 					<text class="price">{{goodsItem.price}}</text>
+					<button class="action-btn" v-if="order.have_received != 0 && goodsItem.evaluate == false" @click.stop="button('evaluate', goodsItem)">评价</button>
 				</view>
 			</view>
 			
@@ -53,12 +55,12 @@
 			<view v-if="order.have_received">成交时间：{{order.receivedtime}}</view>
 			<view v-if="order.have_refunded">退货时间：{{order.refundedtime}}</view>
 		</view>
-		<view class="bottom" v-if="order.state && order.state != 9">
+		<view style="height: 10rpx;"><!--兼容苹果系统下margin-bottom不生效--></view>
+		<view class="bottom" v-if="order.state != 9">
 			<button class="action-btn" v-if="order.state == 1" @click.stop="button('cancel')">取消订单</button>
 			<button class="action-btn recom" v-if="order.have_paid == 0" @click.stop="button('pay')">立即支付</button>
 			<button class="action-btn" v-if="order.have_paid != 0" @click.stop="button('delivery')">查看物流</button>
 			<button class="action-btn" v-if="order.have_paid != 0 && order.have_received == 0" @click.stop="button('recerved')">确认收货</button>
-			<button class="action-btn" v-if="order.have_received != 0 && order.have_commented == 0" @click.stop="button('evaluate')">评价</button>
 			<button class="action-btn" v-if="order.have_paid != 0">申请售后</button>
 		</view>
 	</view>
@@ -119,7 +121,7 @@
 				this.$api.navTo(url);
 			},
 			// 按钮动作
-			async button(action) {
+			async button(action, item = {}) {
 				let detail = false;
 				switch(action) {
 					case 'cancel':
@@ -135,7 +137,7 @@
 						detail = await this.$api.prePage().receivedOrder({order_id:this.order_id});
 						break;
 					case 'evaluate':
-						this.$api.navTo('/pages/order/evaluate?product_id='+this.order.products[0].id+'&order_id='+this.order_id+'&image='+this.order.products[0].image+'&title='+this.order.products[0].title+'&spec='+this.order.products[0].spec);
+						this.$api.navTo('/pages/order/evaluate?product_id='+item.id+'&order_id='+this.order_id+'&image='+item.image+'&title='+item.title+'&spec='+item.spec);
 						break;
 				}
 				if (detail) {
@@ -232,6 +234,7 @@
 		.goods-box-single{
 			display: flex;
 			padding: 20upx 0;
+			border-bottom: 1rpx solid #eaeaea;
 			.goods-img{
 				display: block;
 				width: 120upx;
@@ -243,6 +246,7 @@
 				flex-direction: column;
 				padding: 0 30upx 0 24upx;
 				overflow: hidden;
+				position: relative;
 				.title{
 					font-size: $font-base + 2upx;
 					color: $font-color-dark;
@@ -256,11 +260,27 @@
 				.price{
 					font-size: $font-base + 2upx;
 					color: $font-color-dark;
+					margin-top: 0;
 					&:before{
 						content: '￥';
 						font-size: $font-sm;
 						margin: 0 2upx 0 8upx;
 					}
+				}
+				.action-btn{
+					width: 160rpx;
+					height: 60rpx;
+					padding: 0;
+					text-align: center;
+					line-height: 60rpx;
+					font-size: 26rpx;
+					color: #303133;
+					background: #fff;
+					border-radius: 100px;
+					float: right;
+					position: absolute;
+					right: 0;
+					bottom: 0;
 				}
 			}
 		}

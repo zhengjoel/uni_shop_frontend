@@ -5,6 +5,16 @@ import App from './App'
 Vue.prototype.$unishow = "http://t.fastadmin.com:8888/addons/unishop";
 //Vue.prototype.$unishow = "https://shop.weivee.com/addons/unishop";
 
+// 为了方便每次上传的时候忘记修改上面的参数
+uni.getSystemInfo({
+	success(res) {
+		//console.log(res)
+		if (res.platform != "devtools") {
+			Vue.prototype.$unishow = "https://shop.weivee.com/addons/unishop";
+		}
+	}
+})
+
 // 平台号
 // #ifdef APP-PLUS
 Vue.prototype.$platform = 'APP-PLUS';
