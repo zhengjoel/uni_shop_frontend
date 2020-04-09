@@ -241,7 +241,7 @@
 		    "path" : "pages/order/refund",
 		    "style" : {
 				"enablePullDownRefresh": true,
-				"navigationBarTitleText": "申请退款"
+				"navigationBarTitleText": "申请售后"
 			}
 		},
 		{
@@ -306,6 +306,11 @@
 				"name": "orderDetail",
 				"path":"pages/order/orderDetail",
 				"query":"order_id=XDW6kZLJD4ijNEE"
+			},
+			{
+				"name":"orderRefund",
+				"path":"pages/order/refund",
+				"query":"order_id=7Rw23P1oW1CyPgO"
 			}
 		]
 	}

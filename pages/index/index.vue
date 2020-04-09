@@ -13,7 +13,7 @@
 			<view class="titleNview-background" :style="{ backgroundColor: titleNViewBackground }"></view>
 			<swiper class="carousel" circular @change="swiperChange">
 				<swiper-item v-for="(item, index) in carouselList" :key="index" class="carousel-item" @click="navToDetailPage({ product_id: item.product_id })">
-					<image :src="cdn + item.image" />
+					<image mode="aspectFill" :src="cdn + item.image" />
 				</swiper-item> 
 			</swiper>
 			<!-- 自定义swiper指示器 -->
@@ -223,6 +223,9 @@ export default {
 		this.goodsList = [];
 		this.page = 1;
 		this.loadData();
+	},
+	onShareAppMessage(e) {
+		
 	},
 	methods: {
 		/**

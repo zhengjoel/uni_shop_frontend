@@ -48,7 +48,7 @@
 							<button class="action-btn" v-if="item.have_paid != 0" @click.stop="button('delivery',item)">查看物流</button>
 							<button class="action-btn" v-if="item.have_paid != 0 && item.have_received == 0" @click.stop="button('recerved',item)">确认收货</button>
 							<!-- <button class="action-btn" v-if="item.have_received != 0 && item.have_commented != 0">追加评价</button> -->
-							<button class="action-btn" v-if="item.have_paid != 0">申请售后</button>
+							<button class="action-btn" v-if="item.have_paid != 0" @click.stop="button('refund', item)">申请售后</button>
 						</view>
 					</view>
 					<uni-load-more :status="tabItem.loadingType"></uni-load-more>
@@ -351,6 +351,9 @@
 						break;
 					case 'evaluate':
 						this.$api.navTo('/pages/order/evaluate?product_id='+item.id+'&order_id='+item.order_id+'&image='+item.image+'&title='+item.title+'&spec='+item.spec);
+						break;
+					case 'refund':
+						this.$api.navTo('/pages/order/refund?order_id=' + item.order_id);
 						break;
 				}
 			},

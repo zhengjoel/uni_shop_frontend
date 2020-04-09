@@ -271,6 +271,11 @@
 		onPullDownRefresh(){
 			this.getDetail(this.id, this.flash?this.flash:0);
 		},
+		onShareAppMessage(e) {
+			return {
+				title: this.product.title,
+			};
+		},
 		onLoad(options) {
 			this.id = options.id;
 			let flash_id = options.flash ? options.flash : 0;

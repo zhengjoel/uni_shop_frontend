@@ -79,6 +79,11 @@
 		computed:{
 			...mapState(['cdn'])
 		},
+		onShareAppMessage(e){
+			return{
+				path: '/pages/product/list?fid='+this.fId+'&sid='+this.sId
+			};
+		},
 		onLoad(options){
 			// #ifdef H5
 			this.headerTop = document.getElementsByTagName('uni-page-head')[0].offsetHeight+'px';

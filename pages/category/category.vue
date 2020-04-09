@@ -36,6 +36,9 @@
 		computed: {
 			...mapState(['cdn'])
 		},
+		onShareAppMessage(e){
+			
+		},
 		onLoad(){
 			this.loadData();
 		},
