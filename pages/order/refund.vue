@@ -1,29 +1,34 @@
 <template>
 	<view>
+		<view class="header" v-if="order.refund_status != ''">
+			<view class="left">{{order.refund_status_text}}</view>
+		</view>
 		<view class="product">
-			<view class="goods-box-single" v-for="(goodsItem, goodsIndex) in order.products" :key="goodsIndex">
-				<image class="goods-img" :src="cdn + goodsItem.image" mode="aspectFill"></image>
-				<view class="right">
-					<text class="title clamp">{{goodsItem.title}}</text>
-					<text class="attr-box">{{goodsItem.spec}} x {{goodsItem.number}}</text>
-					<text class="price">{{goodsItem.price}}</text>
+			<view class="goods-for" v-for="(goodsItem, goodsIndex) in order.products" :key="goodsIndex" @click="check(goodsIndex)">
+				<view class="goods-box-single">
+					<image class="goods-img" :src="cdn + goodsItem.image" mode="aspectFill"></image>
+					<view class="right">
+						<text class="title clamp">{{goodsItem.title}}</text>
+						<text class="attr-box">{{goodsItem.spec}} x {{goodsItem.number}}</text>
+						<text class="price">{{goodsItem.price}}</text>
+					</view>
+					<view class="yticon icon-xuanzhong checkbox" :class="{checked: goodsItem.choose}"></view>
 				</view>
 			</view>
-
 		</view>
 		
-		<view class="yt-list-cell" v-if="order.total_price">
-			<view class="cell-tit clamp">退款金额： <text style="color: #ed6b00;">￥ {{order.total_price}}</text>
-				<input type="digit" v-model="amount" :placeholder="'最多 ￥'+order.total_price + ', 含发货邮费 ￥'+ order.delivery_price" placeholder-class="placeholder" />
+		<view class="yt-list-cell" v-if="order.refund_status == 2 || order.refund.express_number">
+			<view class="cell-tit clamp">快递编号
+				<input style="max-width: 350rpx;" class="input" type="text" v-model="expressNumber" placeholder="请填写快递编号" placeholder-class="placeholder" />
 			</view>
-			
+			<button type="warn" @click="confirmDelivery" v-if="order.refund_status == 2">确认发货</button>
 		</view>
 		
 		<view class="yt-list-cell">
 			<view class="cell-tit clamp">货物状态</view>
 			<view class="cell-tip">
-				<picker @change="productStatusChange" range-key="name" :value="productStatusIndex" :range="productStatus">
-					<view class="uni-input">{{productStatus[productStatusIndex].name}}</view>
+				<picker :disabled="order.status == 1 ? false : true" @change="receivingStatusChange" range-key="name" :value="receivingStatusIndex" :range="receivingStatus">
+					<view class="uni-input">{{receivingStatus[receivingStatusIndex].name}}</view>
 				</picker>
 				<text class="yticon icon-you"></text>
 			</view>
@@ -32,17 +37,23 @@
 		<view class="yt-list-cell">
 			<view class="cell-tit clamp">服务类型</view>
 			<view class="cell-tip">
-				<picker @change="typeChange" range-key="name" :value="typeIndex" :range="type">
-					<view class="uni-input">{{type[typeIndex].name}}</view>
+				<picker :disabled="order.status == 1 ? false : true" @change="typeChange" range-key="name" :value="serviceTypeIndex" :range="serviceType">
+					<view class="uni-input">{{serviceType[serviceTypeIndex].name}}</view>
 				</picker>
 				<text class="yticon icon-you"></text>
 			</view>
 		</view>
-
+		
+		<view class="yt-list-cell" v-if="order.total_price > 0 && (serviceTypeIndex == 0 || serviceTypeIndex == 1)">
+			<view class="cell-tit clamp">退款金额： <text style="color: #ed6b00;">￥ {{order.total_price}}</text>
+				<input :disabled="order.status == 1 ? false : true" type="digit" v-model="amount" :placeholder="'最多 ￥'+order.total_price + ', 含发货邮费 ￥'+ order.delivery_price" placeholder-class="placeholder" />
+			</view>
+		</view>
+		
 		<view class="yt-list-cell">
 			<view class="cell-tit clamp">换货原因</view>
 			<view class="cell-tip">
-				<picker @change="reasonTypeChange" range-key="name" :value="reasonTypeIndex" :range="reasonType">
+				<picker :disabled="order.status == 1 ? false : true" @change="reasonTypeChange" range-key="name" :value="reasonTypeIndex" :range="reasonType">
 					<view class="uni-input">{{reasonType[reasonTypeIndex].name}}</view>
 				</picker>
 				<text class="yticon icon-you"></text>
@@ -51,11 +62,11 @@
 
 		<view class="yt-list-cell">
 			<view class="cell-tit clamp">换货说明
-				<input class="input" type="text" v-model="refundExplain" placeholder="选填" placeholder-class="placeholder" />
+				<input :disabled="order.status == 1 ? false : true" class="input" type="text" v-model="refundExplain" placeholder="选填" placeholder-class="placeholder" />
 			</view>
 		</view>
 		
-		<button class="button" @click="submit" type="warn">提交</button>
+		<button v-if="order.status == 1" class="button" @click="submit" type="warn">提交</button>
 	</view>
 </template>
 
@@ -66,7 +77,23 @@
 	} from 'vuex';
 	export default {
 		computed: {
-			...mapState(['cdn'])
+			...mapState(['cdn']),
+			productIds(){
+				var product_id = [];
+				this.order.products.forEach(item=>{
+					if (item.choose == 1) {
+						product_id.push(item.id);
+					}
+				});
+				return product_id.join(',');
+			},
+			status() {
+				if (this.order.have_refunded == 0) {
+					return '申请中';
+				} else {
+					return '已退货'
+				}
+			}
 		},
 		components: {
 			uniRate
@@ -76,7 +103,7 @@
 				order_id: 0,
 				order: {},
 				amount: '',
-				type:[{
+				serviceType:[{
 						'value': 0,
 						'name': '我要退款(无需退货)'
 					},
@@ -93,8 +120,8 @@
 						'name':'选选择'
 					}
 				],
-				typeIndex:3,
-				productStatus: [{
+				serviceTypeIndex:3,
+				receivingStatus: [{
 						'value': 0,
 						'name': '未收到'
 					},
@@ -107,7 +134,7 @@
 						'name': '请选择'
 					}
 				],
-				productStatusIndex: 2,
+				receivingStatusIndex: 2,
 				reasonType: [{
 						'name': '其他'
 					},
@@ -128,7 +155,8 @@
 					}
 				],
 				reasonTypeIndex: 0,
-				refundExplain: ''
+				refundExplain: '',
+				expressNumber: ''
 			}
 		},
 		onPullDownRefresh() {
@@ -146,10 +174,25 @@
 				uni.stopPullDownRefresh();
 				if (data) {
 					this.order = data;
+					
+					if (data.status == -1) { // 状态为退款
+						let refund = data.refund;
+						this.amount = refund.amount;
+						let that = this;
+						this.reasonType.filter(function(item, index){
+							if (item.name == refund.reason_type) {
+								that.reasonTypeIndex = index;
+							}
+						})
+						this.receivingStatusIndex = refund.receiving_status;
+						this.refundExplain = refund.refund_explain;
+						this.serviceTypeIndex = refund.service_type;
+						this.expressNumber = refund.express_number;
+					}
 				}
 			},
 			async submit(){
-				if (this.productStatusIndex == 2) {
+				if (this.receivingStatusIndex == 2) {
 					this.$api.msg('请选择货物状态');
 					return;
 				}
@@ -157,16 +200,28 @@
 					this.$api.msg('请选择服务类型')
 					return;
 				}
+				if ((this.typeIndex == 0 || this.typeIndex == 1) && this.order.total_price > 0) {
+					if (!this.amount) {
+						this.$api.msg('请填写退货金额');
+						return;
+					}
+				}
 				let data = await this.$api.request('/order/refund', 'POST', {
-					
+					order_id: this.order_id,
+					amount: this.amount ? parseFloat(this.amount) : 0,
+					service_type: this.serviceType[this.serviceTypeIndex].value,
+					receiving_status: this.receivingStatus[this.receivingStatusIndex].value,
+					reason_type: this.reasonType[this.reasonTypeIndex].name,
+					refund_explain: this.refundExplain,
+					product_id: this.productIds
 				});
 				if (data) {
-					
+					this.refundInfo();
 				}
 			},
 			// 更改商品状态
-			productStatusChange(e) {
-				this.productStatusIndex = e.detail.value;
+			receivingStatusChange(e) {
+				this.receivingStatusIndex = e.detail.value;
 			},
 			// 更改换货原因
 			reasonTypeChange(e) {
@@ -174,7 +229,22 @@
 			},
 			// 选择服务类型
 			typeChange(e) {
-				this.typeIndex = e.detail.value;
+				this.serviceTypeIndex = e.detail.value;
+			},
+			// 选商品
+			check(index) {
+				this.order.products[index].choose = this.order.products[index].choose ? 0 : 1;
+			},
+			// 确认发货
+			async confirmDelivery(){
+				if (this.expressNumber == '') {
+					this.$api.msg('请添加物流单号');
+					return;
+				}
+				let data = await this.$api.request('/order/refundDelivery', 'POST', {order_id: this.order_id, express_number:this.expressNumber});
+				if (data) {
+					this.refundInfo();
+				}
 			}
 		}
 	}
@@ -184,18 +254,33 @@
 	page {
 		background: #f5f5f5;
 	}
+	
+	.header {
+		height: 200rpx;
+		background: linear-gradient(to right, #ffac30, #fa436a, #F56C6C);
+
+		.left {
+			color: #ffffff;
+			line-height: 200rpx;
+			padding-left: 100rpx;
+		}
+	}
 
 	.product {
 		background: #ffffff;
 		margin-top: 20rpx;
 		padding: 30rpx;
+		.goods-for{
+			border-bottom: 1rpx solid #eaeaea;
+		}
 
 		/* 单条商品 */
 		.goods-box-single {
 			display: flex;
 			padding: 20upx 0;
-			border-bottom: 1rpx solid #eaeaea;
-
+			
+			position: relative;
+			
 			.goods-img {
 				display: block;
 				width: 120upx;
@@ -249,6 +334,21 @@
 					right: 0;
 					bottom: 0;
 				}
+			}
+			.checkbox {
+				position: absolute;
+				left: -16upx;
+				top: -16upx;
+				z-index: 8;
+				font-size: 44upx;
+				line-height: 1;
+				padding: 4upx;
+				color: $font-color-disabled;
+				background: #fff;
+				border-radius: 50px;
+			}
+			.checkbox.checked {
+				color: $uni-color-primary;
 			}
 		}
 	}

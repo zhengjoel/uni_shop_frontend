@@ -67,7 +67,7 @@
 				<view class="cell-tit clamp">总共合计</view>
 				<view class="cell-tip">￥{{price}}</view>
 			</view>
-			<view class="yt-list-cell b-b">
+			<view class="yt-list-cell b-b" v-if="couponList.length">
 				<view class="cell-tit clamp">优惠金额</view>
 				<view class="cell-tip red">-￥{{coupon_price}}</view>
 			</view>
@@ -151,9 +151,14 @@
 				deliveryIndex: 0,
 				deliveryPrice: 0.00,
 				cart:[], // 购物车id
+				flash_id: 0, // 秒杀id
 			}
 		},
 		onLoad(options) {
+			if (options.hasOwnProperty('flash_id')) {
+				this.flash_id = options.flash_id;
+			}
+			
 			if (options.hasOwnProperty('cart')) {
 				// 从购物车进入 
 				this.getOrderCreate({
@@ -164,7 +169,8 @@
 				// 从商品进入
 				this.getOrderCreate({
 					id: options.id,
-					spec: options.spec
+					spec: options.spec,
+					flash_id: this.flash_id
 				});
 			}
 		},
@@ -199,7 +205,8 @@
 			},
 			//获取创建订单信息
 			async getOrderCreate(param) {
-				let data = await this.$api.request('/order/create', 'POST', param);
+				let apiUrl = param.flash_id == 0 ? '/order/create' : '/flash/createOrder';
+				let data = await this.$api.request(apiUrl, 'POST', param);
 				if (data) {
 					this.addressData = data.address;
 					this.product = data.product;
@@ -241,16 +248,19 @@
 					product_id: [],
 					spec:[],
 					number:[],
-					cart: this.cart
-				};
+					cart: this.cart,
+					flash_id: this.flash_id
+				};  
 
 				this.product.forEach((item, index) => {
-					data.product_id.push(item.id);
-					data.spec.push(item.spec);
+					data.product_id.push(item.id); 
+					data.spec.push(item.spec.replace(/,/g, '|'));
 					data.number.push(item.number);
 				});
+				
+				let apiUrl = this.flash_id == 0 ? '/order/submit' : '/flash/submitOrder';
 
-				let result = await this.$api.request('/order/submit', 'POST', data);
+				let result = await this.$api.request(apiUrl, 'POST', data);
 				if (result) {
 					this.$api.msg('已提交', 2000);
 					uni.redirectTo({

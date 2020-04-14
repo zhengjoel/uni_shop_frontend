@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<view class="header">
-			<view class="left">{{status}}</view>
+			<view class="left">{{status + (order.refund_status_text ? ':'+order.refund_status_text : '')}}</view>
 
 		</view>
 		<view class="delivery" v-if="order.have_delivered">
@@ -114,6 +114,9 @@
 						break;
 					case 5:
 						stateTip = '售后';
+						break;
+					case 6:
+						stateTip = '拒绝退款';
 						break;
 					case 9:
 						stateTip = '订单已关闭';

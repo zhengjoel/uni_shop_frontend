@@ -79,7 +79,7 @@
 	  font-family: 'unishop';  
 	  font-weight: normal;
 	  font-style: normal;
-	  src: url('//at.alicdn.com/t/font_1729059_6moh54x0bpf.ttf') format('truetype');
+	  src: url('//at.alicdn.com/t/font_1729059_llr8d2acjac.ttf') format('truetype');
 	}
 	
 	.yticon {
@@ -155,7 +155,7 @@
 	}
 	
 	.icon-daishouhuo:before{
-		content: "\e633";
+		content: "\e62f";
 	}
 	
 	.icon-pingjia:before{

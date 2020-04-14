@@ -159,11 +159,6 @@
 			"style": {
 				"navigationBarTitleText": "创建订单"
 			}
-		},{
-			"path": "pages/order/createOrderFlash",
-			"style": {
-				"navigationBarTitleText": "创建订单"
-			}
 		}, {
 			"path": "pages/address/address",
 			"style": {

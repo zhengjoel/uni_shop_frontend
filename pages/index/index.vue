@@ -2,7 +2,7 @@
 	<view class="container">
 		<!-- 小程序头部兼容 -->
 		<!-- #ifdef MP -->
-		<view class="mp-search-box"><input class="ser-input" type="text" value="输入关键字搜索" disabled /></view>
+		<!-- <view class="mp-search-box"><input class="ser-input" type="text" value="输入关键字搜索" disabled /></view> -->
 		<!-- #endif -->
 
 		<!-- 头部轮播 -->
@@ -431,6 +431,7 @@ page {
 		width: 100%;
 		height: 100%;
 		border-radius: 10upx;
+		padding: 20rpx;
 	}
 }
 .swiper-dots {

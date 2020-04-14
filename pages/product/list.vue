@@ -146,6 +146,7 @@
 				}
 				
 				let goodsList = await this.$api.request('/product/lists', 'GET', {fid:this.fId,sid:this.sId,page:this.page,by:by,desc:desc});
+				uni.stopPullDownRefresh();
 				if (!goodsList) {
 					this.loadingType = 'nomore';
 					return;

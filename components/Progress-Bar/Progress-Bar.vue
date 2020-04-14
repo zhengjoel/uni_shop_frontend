@@ -1,7 +1,7 @@
 <template>
 	<view>
-		<view class="progress" :class="Type" :style="{width: widthUpx + 'upx'}">
-			<view class="progress-text" v-if="Vice == true" :style="{width: widthUpx + 'upx'}">
+		<view class="progress" :class="Type" :style="{width: widthUpx + 'rpx'}">
+			<view class="progress-text" v-if="Vice == true" :style="{width: widthUpx + 'rpx'}">
 				已抢{{Sold}}件
 				{{ Width + '%' }}
 			</view>

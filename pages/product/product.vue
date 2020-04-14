@@ -287,7 +287,8 @@
 		methods: {
 			// 获取商品详情
 			async getDetail(id, flash_id) {
-				let product = await this.$api.request(`/product/detail?id=${id}&flash_id=${flash_id}`, 'GET');
+				let apiUrl = flash_id == 0 ? '/product/detail' : '/flash/productDetail'
+				let product = await this.$api.request(apiUrl + `?id=${id}&flash_id=${flash_id}`, 'GET');
 				uni.stopPullDownRefresh();
 				if (!product) {
 					return;
@@ -409,7 +410,7 @@
 					}
 					let url = `/pages/order/createOrder?id=${this.product.product_id}&spec=${spec}`;
 					if (this.flash) {
-						url = `/pages/order/createOrderFlash?id=${this.product.product_id}&spec=${spec}&flash_id=${this.flash}`;
+						url = url + `&flash_id=${this.flash}`;
 					}
 					uni.navigateTo({
 						url:url 
@@ -1059,7 +1060,7 @@
 			}
 			.progress{
 				position: absolute;
-				bottom: 0;
+				bottom: 7rpx;
 				right: 10upx;
 			}
 		}

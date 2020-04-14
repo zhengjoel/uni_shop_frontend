@@ -17,7 +17,7 @@
 					<view v-for="(item,index) in tabItem.orderList" :key="index" class="order-item" @click="navTo('/pages/order/orderDetail?order_id='+item.order_id)">
 						<view class="i-top b-b">
 							<text class="time">{{item.createtime}}</text>
-							<text class="state" :style="{color: item.stateTipColor}">{{item.stateTip}}</text>
+							<text class="state" :style="{color: item.stateTipColor}">{{item.stateTip + (item.refund_status_text && goodsItem.refund==false ? ':'+item.refund_status_text : '')}} </text>
 							<text v-if="item.state===9" class="del-btn yticon icon-lajitong" @click.stop="deleteOrder(index)"></text>
 						</view>
 
@@ -25,10 +25,11 @@
 						 :key="goodsIndex">
 							<image class="goods-img" :src="cdn + goodsItem.image" mode="aspectFill"></image>
 							<view class="right">
+								<text class="refund" v-if="goodsItem.refund">退款成功</text>
 								<text class="title clamp">{{goodsItem.title}}</text>
 								<text class="attr-box">{{goodsItem.spec}} x {{goodsItem.number}}</text>
 								<text class="price">{{goodsItem.price}}</text>
-								<button class="action-btn" v-if="item.have_received != 0 && goodsItem.evaluate == false" @click.stop="button('evaluate', {order_id:item.order_id,id:goodsItem.id,image:goodsItem.image,title:goodsItem.title,spec:goodsItem.spec})">评价</button>
+								<button class="action-btn" v-if="item.have_received != 0 && goodsItem.evaluate == false && goodsItem.refund==false" @click.stop="button('evaluate', {order_id:item.order_id,id:goodsItem.id,image:goodsItem.image,title:goodsItem.title,spec:goodsItem.spec})">评价</button>
 							</view>
 						</view>
 
@@ -311,6 +312,9 @@
 					case 5:
 						stateTip = '售后';
 						break;
+					case 6:
+						stateTip = '拒绝退款';
+						break;
 					case 9:
 						stateTip = '订单已关闭';
 						stateTipColor = '#909399';
@@ -580,6 +584,13 @@
 					position: absolute;
 					right: 30rpx;
 					bottom: 0;
+				}
+				.refund{
+					position: absolute;
+					right: 30rpx;
+					font-size: 28rpx;
+					color: #fa436a;
+					top: 35rpx;
 				}
 			}
 		}
