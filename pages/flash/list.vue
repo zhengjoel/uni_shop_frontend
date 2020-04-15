@@ -84,6 +84,9 @@
 				}]
 			}
 		},
+		onPullDownRefresh() {
+			this.loadNavBar();
+		},
 		onLoad(options){
 			this.loadNavBar();
 		},
@@ -91,6 +94,7 @@
 			// 加载标签
 			async loadNavBar() {
 				let navbar = await this.$api.request('/flash/navbar', 'GET');
+				uni.stopPullDownRefresh();
 				if (navbar) {
 					this.navList = navbar;
 					this.navList.forEach((item, index)=>{

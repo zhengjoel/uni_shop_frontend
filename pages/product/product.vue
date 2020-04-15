@@ -12,8 +12,8 @@
 
 		<!-- 秒杀的话才显示 -->
 		<view class="flash" v-if="flash">
-			<view class="sales_price"><view class="symbol">￥</view>{{specProduct.sales_price}}</view>
-			<view class="left">
+			<view class="sales_price" v-if="product.market_price"><view class="symbol">￥</view>{{specProduct.sales_price}}</view>
+			<view class="left" v-if="product.market_price">
 				<view class="market_price">￥{{specProduct.market_price}}</view>
 				<view class="sold">秒{{progress.number}}件</view>
 			</view>
@@ -296,7 +296,7 @@
 				this.product = product;
 				if (product.flash) {
 					this.countdown = product.flash.countdown;
-					this.progress = product.flash.product;
+					this.progress = product.flash;
 				}
 				this.favorite = this.product.favorite;
 				if (this.product.use_spec) {

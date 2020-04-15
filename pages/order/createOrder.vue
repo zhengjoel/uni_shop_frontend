@@ -205,7 +205,9 @@
 			},
 			//获取创建订单信息
 			async getOrderCreate(param) {
-				let apiUrl = param.flash_id == 0 ? '/order/create' : '/flash/createOrder';
+				let that = this;
+				
+				let apiUrl = !param.flash_id || param.flash_id == 0 ? '/order/create' : '/flash/createOrder';
 				let data = await this.$api.request(apiUrl, 'POST', param);
 				if (data) {
 					this.addressData = data.address;
@@ -215,6 +217,7 @@
 					this.calcTotal();
 				} else {
 					setTimeout(function() {
+						that.$api.prePage().getDetail(param.id, param.flash_id);
 						uni.navigateBack();
 					}, 3000)
 				}
