@@ -6,7 +6,7 @@
 无论是个人、团队、或是企业，都能够用码云实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
 
 #### 体验
-![微信小程序](https://images.gitee.com/uploads/images/2020/0415/215327_77d28dac_1588098.jpeg "gh_faf1f5d0ef28_258.jpg")
+![微信小程序](https://images.gitee.com/uploads/images/2020/0415/215327_77d28dac_1588098.jpeg "微信小程序")
 
 #### 安装教程
 
