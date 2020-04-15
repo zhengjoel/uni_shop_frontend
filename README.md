@@ -1,9 +1,7 @@
-# uni-shop
+# uniShop
 
 #### 介绍
-{**以下是码云平台说明，您可以替换此简介**
-码云是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用码云实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+{**本项目简称uniShop,是一个完整的商城。基于[uniapp框架](https://uniapp.dcloud.io/)开发。**}
 
 #### 体验
 ![微信小程序](https://images.gitee.com/uploads/images/2020/0415/215327_77d28dac_1588098.jpeg "微信小程序")
@@ -11,12 +9,6 @@
 #### 安装教程
 
 1.  git clone 下来之后直接在HBuilderX打开即可
-
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
 
 #### 参与贡献
 
