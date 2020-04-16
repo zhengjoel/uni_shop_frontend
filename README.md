@@ -9,6 +9,7 @@
 #### 安装教程
 
 1.  git clone 下来之后直接在HBuilderX打开即可
+2.  接口地址在main.js修改
 
 #### 参与贡献
 
