@@ -9,6 +9,10 @@
 			<view class="welcome">
 				欢迎回来！
 			</view>
+			<!-- #ifdef MP-WEIXIN -->
+			<button class="confirm-btn" @click="login">小程序一键登录</button>
+			<!-- #endif -->
+			<!-- #ifndef MP -->
 			<view class="input-content">
 				<view class="input-item">
 					<text class="tit">手机号码</text>
@@ -39,6 +43,7 @@
 			<view class="forget-section">
 				<view><label @click="register('forget')">忘记密码</label> - <label @click="register('register')">立马注册</label></view>
 			</view>
+			<!-- #endif -->
 		</view>
 	</view>
 </template>
@@ -90,7 +95,18 @@
 				uni.navigateTo({
 					url:'./register?action='+action
 				})
-			}
+			},
+			// #ifdef MP-WEIXIN
+			async login(){
+				let data = await this.$wechatMiniLogin();
+				if (data) {
+					this.$api.msg('登录成功');
+					setTimeout(function() {
+						uni.navigateBack();
+					},2000);
+				}
+			},
+			// #endif
 		},
 
 	}

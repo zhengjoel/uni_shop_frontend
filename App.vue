@@ -8,7 +8,7 @@
 	} from 'vuex';
 	export default {
 		methods: {
-			...mapMutations(['login', 'logout', 'serUserInfo']),
+			...mapMutations(['login', 'logout', 'setUserInfo']),
 			// #ifdef H5
 			// 检查登录状态
 			async checkLogin() {
@@ -23,30 +23,6 @@
 				}
 			},
 			// #endif
-			// #ifdef MP-WEIXIN
-			// 微信小程序
-			wechatMiniLogin() {
-				let that = this;
-				uni.login({
-					provider: 'weixin',
-					success: async function (loginRes) {
-						//console.log(loginRes)
-						if (loginRes.hasOwnProperty('code')) {
-							let data = await that.$api.request('/user/authSession', 'GET', {code:loginRes.code});
-							if (data) {
-								if (data.hasOwnProperty('userInfo') && data.userInfo.token != '') {
-									that.login(data.userInfo)
-								}
-							}
-						}
-						//wx.setStorageSync("cookieKey", response.header['Set-Cookie'].replace("; path=/", ""));
-					},
-					fail: function() {
-						this.$api.msg('自动登录失败');
-					}
-				});
-			},
-			// #endif
 		},
 		onLaunch: function() {
 			// 锁定屏幕竖向
@@ -59,7 +35,7 @@
 			this.checkLogin();
 			// #endif
 			// #ifdef MP-WEIXIN
-			this.wechatMiniLogin();
+			this.$wechatMiniLogin();
 			// #endif
 		
 		},

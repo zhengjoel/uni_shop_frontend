@@ -306,6 +306,11 @@
 				"name":"orderRefund",
 				"path":"pages/order/refund",
 				"query":"order_id=7Rw23P1oW1CyPgO"
+			},
+			{
+				"name":"userinfo",
+				"path":"pages/userinfo/userinfo",
+				"query":""
 			}
 		]
 	}

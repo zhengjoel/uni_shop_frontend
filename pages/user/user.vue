@@ -5,10 +5,10 @@
 			<image class="bg" src="/static/user-bg.jpg"></image>
 			<view class="user-info-box">
 				<view class="portrait-box">
-					<image class="portrait" :src="cdn + userInfo.avatar || '/static/missing-face.png'"></image>
+					<image class="portrait" :src="userInfo.avatar ? userInfo.avatar : '/static/missing-face.png'"></image>
 				</view>
 				<view class="info-box">
-					<text class="username">{{userInfo.nickname || '游客'}}</text>
+					<text class="username">{{userInfo.username || '游客'}}</text>
 				</view>
 			</view>
 			<view class="vip-card-box">
@@ -20,7 +20,7 @@
 					<text class="yticon icon-iLinkapp-"></text>
 					喂喂会员
 				</view>
-				<text class="e-m">Shop Union</text>
+				<text class="e-m">uniShop</text> 
 				<text class="e-b">开通会员开发无bug 一测就上线</text>
 			</view>
 		</view>

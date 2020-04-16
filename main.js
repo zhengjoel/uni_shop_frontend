@@ -54,9 +54,9 @@ const msg = (title, duration = 3000, mask = false, icon = 'none') => {
 		mask,
 		icon
 	});
-	setTimeout(function(){
+	setTimeout(function() {
 		uni.hideToast();
-	},duration)
+	}, duration)
 }
 
 // 返回上一页
@@ -79,7 +79,7 @@ const checkLogin = () => {
 				success(res) {
 					if (res.confirm) {
 						// 账户秘密登录
-						let url = '/pages/public/login'; 
+						let url = '/pages/public/login';
 						// 微信授权登录
 						// #ifdef MP-WEIXIN 
 						url = '/pages/public/wechatMiniLogin';
@@ -116,7 +116,7 @@ const request = (url, method = 'GET', data = {}, showMsg = true) => {
 	let header = {
 		'content-type': 'application/x-www-form-urlencoded',
 		'lang': Vue.prototype.$store.state.lang,
-		'platform' : Vue.prototype.$platform
+		'platform': Vue.prototype.$platform
 	};
 	if (Vue.prototype.$store.state.userInfo.token) {
 		header.token = Vue.prototype.$store.state.userInfo.token;
@@ -138,6 +138,10 @@ const request = (url, method = 'GET', data = {}, showMsg = true) => {
 					Vue.prototype.$store.commit('setCookie', cookie);
 				}
 				if (res.hasOwnProperty('data')) {
+					if(res.data.hasOwnProperty('code') && res.data.code == 401){
+						// 未登录 或 登录失效
+						Vue.prototype.$store.commit('logout');
+					}
 					if (res.data.hasOwnProperty('code') && res.data.code == 1) {
 						if (res.data.msg) {
 							showMsg && msg(res.data.msg);
@@ -173,7 +177,7 @@ const navTo = (url, check = true) => {
 		url = '/pages/public/login';
 	}
 	uni.navigateTo({
-		url:url
+		url: url
 	});
 }
 
@@ -189,6 +193,31 @@ Vue.prototype.$api = {
 	navTo
 };
 
+// #ifdef MP-WEIXIN
+// 微信小程序
+const wechatMiniLogin = async () => {
+	msg('登录中');
+	let [error, loginRes] = await uni.login({
+		provider: 'weixin'
+	});
+	if (loginRes.hasOwnProperty('code')) {
+		let data = await request('/user/authSession', 'GET', {
+			code: loginRes.code
+		});
+		if (data) {
+			if (data.hasOwnProperty('userInfo') && data.userInfo.token != '') {
+				Vue.prototype.$store.commit('login', data.userInfo);
+				//Vue.prototype.$store.mutations.login(data.userInfo)
+			}
+		}
+		return true;
+	} else {
+		msg('登录失败');
+		return false;
+	}
+};
+Vue.prototype.$wechatMiniLogin = wechatMiniLogin;
+// #endif
 
 App.mpType = 'app'
 

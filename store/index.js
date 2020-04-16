@@ -30,7 +30,7 @@ const store = new Vuex.Store({
                 key: 'userInfo'  
             });
 		},
-		serUserInfo(state, provider) {
+		setUserInfo(state, provider) {
 			state.userInfo = provider;
 			uni.setStorage({//缓存用户信息
 			    key: 'userInfo',  
