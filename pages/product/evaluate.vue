@@ -3,7 +3,7 @@
 		<!-- 评价 -->
 		<view class="eva-section">
 			<view class="eva-box" v-for="(item, index) in list" :key="index">
-				<image class="portrait" :src="cdn + item.avatar" mode="aspectFill"></image>
+				<image class="portrait" :src="item.avatar" mode="aspectFill"></image>
 				<view class="right">
 					<text class="name">{{item.username}}</text>
 					<text class="con">{{item.comment}}</text>
@@ -39,7 +39,7 @@
 		},
 		onPullDownRefresh() {
 			this.page = 1;
-			list = [];
+			this.list = [];
 			this.getEvaluete();
 		},
 		onReachBottom() {
