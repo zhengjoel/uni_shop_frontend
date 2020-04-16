@@ -21,5 +21,6 @@
 #### 特别鸣谢
 
 1.  uni-app https://uniapp.dcloud.io/
-2.  mix-mall插件 https://ext.dcloud.net.cn/plugin?id=200
+2.  mix-mall https://ext.dcloud.net.cn/plugin?id=200
+3.  mpvue-citypicker https://github.com/MPComponent/mpvue-citypicker  
 
