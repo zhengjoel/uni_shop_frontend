@@ -23,4 +23,4 @@
 1.  uni-app https://uniapp.dcloud.io/
 2.  mix-mall https://ext.dcloud.net.cn/plugin?id=200
 3.  mpvue-citypicker https://github.com/MPComponent/mpvue-citypicker  
-
+4.  vue.js https://cn.vuejs.org/
