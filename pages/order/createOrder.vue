@@ -231,7 +231,7 @@
 			},
 			async submit() {
 				// 如果没有地址则提示先加地址
-				if (!this.addressData.hasOwnProperty('city_id')) {
+				if (!this.addressData || !this.addressData.hasOwnProperty('city_id')) {
 					this.$api.msg('请选择收货地址');
 					return;
 				}
