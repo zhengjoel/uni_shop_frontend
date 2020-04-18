@@ -4,7 +4,7 @@
 			<swiper indicator-dots circular=true duration="400">
 				<swiper-item class="swiper-item" v-for="(item,index) in product.images_text" :key="index">
 					<view class="image-wrapper">
-						<image :src="cdn + item" class="loaded" @click="previewImage(index)" mode="aspectFill"></image>
+						<image :src="item" class="loaded" @click="previewImage(index)" mode="aspectFill"></image>
 					</view>
 				</swiper-item> 
 			</swiper>
@@ -168,7 +168,7 @@
 			<view class="mask"></view>
 			<view class="layer attr-content" @click.stop="stopPrevent">
 				<view class="a-t">
-					<image v-if="specProduct.image" mode="aspectFill" :src="cdn + specProduct.image"></image>
+					<image v-if="specProduct.image" mode="aspectFill" :src="specProduct.image"></image>
 					<view class="right">
 						<text class="price">¥{{specProduct.sales_price}}</text>
 						<text class="stock">库存：{{specProduct.stock}}件</text>
@@ -200,7 +200,7 @@
 
 <script>
 	import {
-		mapGetters, mapState
+		mapGetters
 	} from 'vuex';
 	import share from '@/components/share';
 	import coupon from '@/components/coolc-coupon/coolc-coupon';
@@ -216,7 +216,7 @@
 		},
 		computed: {
 			...mapGetters(['userInfo', 'hasLogin']),
-			...mapState(['cdn']),
+			
 			specSelectedName() {
 				return this.specSelected.join(' ');
 			},
@@ -442,13 +442,9 @@
 			},
 			// 查看图片
 			previewImage(index){
-				let urls = [];
-				this.product.images_text.forEach(item=>{
-					urls.push(this.cdn + item);
-				})
 				uni.previewImage({
-					current:this.cdn + this.product.images_text[index],
-					urls:urls,
+					current:this.product.images_text[index],
+					urls:this.product.images_text,
 					indicator:"number",
 					loop: true
 				})

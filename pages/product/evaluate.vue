@@ -18,9 +18,7 @@
 </template>
 
 <script>
-	import {
-		mapState
-	} from 'vuex';
+
 	export default{
 		data(){
 			return {
@@ -29,9 +27,6 @@
 				pageSize:20,
 				list:[]
 			}
-		},
-		computed:{
-			...mapState(['cdn'])
 		},
 		onLoad(options){
 			this.product_id = options.product_id;

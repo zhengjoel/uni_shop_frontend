@@ -2,11 +2,9 @@ import Vue from 'vue'
 import store from './store'
 import App from './App'
 
-// 图片 cdn 地址
-store.state.cdn = "http://cdn.shop.weivee.com";
-
 // 后端api地址
 Vue.prototype.$unishow = "http://t.fastadmin.com:8888/addons/unishop";
+//Vue.prototype.$unishow = "http://t.fastadmin-ceshi.com:8888/addons/unishop";
 //Vue.prototype.$unishow = "https://shop.weivee.com/addons/unishop";
 
 // 为了方便每次上传的时候忘记修改上面的参数

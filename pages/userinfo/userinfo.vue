@@ -46,7 +46,7 @@
 			};
 		},
 		computed: {
-			...mapState(['userInfo', 'cdn'])
+			...mapState(['userInfo'])
 		},
 		onLoad() {
 			this.username = this.userInfo.username;

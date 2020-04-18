@@ -26,7 +26,7 @@
 		</view>
 		<view class="product" v-if="order.products">
 			<view class="goods-box-single" v-for="(goodsItem, goodsIndex) in order.products" :key="goodsIndex" @click="navTo('/pages/product/product?id='+goodsItem.id+'&flash=0')">
-				<image class="goods-img" :src="cdn + goodsItem.image" mode="aspectFill"></image>
+				<image class="goods-img" :src="goodsItem.image" mode="aspectFill"></image>
 				<view class="right">
 					<text class="title clamp">{{goodsItem.title}}</text>
 					<text class="attr-box">{{goodsItem.spec}} x {{goodsItem.number}}</text>
@@ -65,13 +65,8 @@
 </template>
 
 <script>
-	import {
-		mapState
-	} from 'vuex';
+	
 	export default {
-		computed: {
-			...mapState(['cdn'])
-		},
 		data() {
 			return {
 				order_id: 0,

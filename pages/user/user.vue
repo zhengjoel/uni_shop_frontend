@@ -148,7 +148,7 @@
 		},
 		// #endif
         computed: {
-			...mapState(['hasLogin','userInfo','cdn'])
+			...mapState(['hasLogin','userInfo'])
 		},
         methods: {
 			/**

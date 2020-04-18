@@ -8,7 +8,7 @@
 			<view v-for="(item, index) in favorite.list" :key="index" class="order-item">
 				<view class="info" @click="navToDetailPage(item.product.product_id)">
 					<view class="image">
-						<image mode="aspectFill" :src="cdn + item.product.image"></image>
+						<image mode="aspectFill" :src="item.product.image"></image>
 					</view>
 					<view class="detail">
 						<view class="title">{{item.product.title}}</view>
@@ -28,16 +28,13 @@
 <script>
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	import empty from "@/components/empty";
-	import {
-		mapState
-	} from 'vuex';
+
 	export default {
 		components: {
 			uniLoadMore,
 			empty
 		},
 		computed: {
-			...mapState(['cdn'])
 		},
 		data() {
 			return {

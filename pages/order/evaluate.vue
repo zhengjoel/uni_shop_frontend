@@ -1,7 +1,7 @@
 <template>
 	<view class="bg">
 		<view class="header">
-			<image class="image" :src="cdn + image"></image>
+			<image class="image" :src="image"></image>
 			<view class="right">
 				<view class="title">{{title}}</view>
 				<view class="spec">{{spec}}</view>
@@ -25,12 +25,10 @@
 
 <script>
 	import uniRate from '@/components/uni-rate/uni-rate.vue'
-	import {
-		mapState
-	} from 'vuex';
+
 	export default{
 		computed:{
-			...mapState(['cdn'])
+
 		},
 		components: {
 			uniRate

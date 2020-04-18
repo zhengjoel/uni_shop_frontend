@@ -6,7 +6,7 @@
 		<view class="product">
 			<view class="goods-for" v-for="(goodsItem, goodsIndex) in order.products" :key="goodsIndex" @click="check(goodsIndex)">
 				<view class="goods-box-single">
-					<image class="goods-img" :src="cdn + goodsItem.image" mode="aspectFill"></image>
+					<image class="goods-img" :src="goodsItem.image" mode="aspectFill"></image>
 					<view class="right">
 						<text class="title clamp">{{goodsItem.title}}</text>
 						<text class="attr-box">{{goodsItem.spec}} x {{goodsItem.number}}</text>
@@ -72,12 +72,8 @@
 
 <script>
 	import uniRate from '@/components/uni-rate/uni-rate.vue'
-	import {
-		mapState
-	} from 'vuex';
 	export default {
 		computed: {
-			...mapState(['cdn']),
 			productIds(){
 				var product_id = [];
 				this.order.products.forEach(item=>{

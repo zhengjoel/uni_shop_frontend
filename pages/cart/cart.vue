@@ -20,7 +20,7 @@
 						@click="navTo(`/pages/product/product?id=${item.product_id}&flash=0`)"
 					>
 						<view class="image-wrapper">
-							<image :src="cdn + item.image" class="loaded" mode="aspectFill"></image>
+							<image :src="item.image" class="loaded" mode="aspectFill"></image>
 							<view v-if="item.isset == true" class="yticon icon-xuanzhong checkbox" :class="{checked: item.choose}" @click.stop="check('item', index)"></view>
 						</view>
 						<view class="item-right">
@@ -93,7 +93,7 @@
 			}
 		},
 		computed: {
-			...mapState(['hasLogin', 'cdn'])
+			...mapState(['hasLogin'])
 		},
 		methods: {
 			async getCart() {

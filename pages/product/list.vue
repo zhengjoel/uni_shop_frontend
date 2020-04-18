@@ -23,7 +23,7 @@
 				@click="navToDetailPage(item)"
 			>
 				<view class="image-wrapper">
-					<image :src="cdn + item.image" mode="aspectFill"></image>
+					<image :src="item.image" mode="aspectFill"></image>
 				</view>
 				<text class="title clamp">{{item.title}}</text>
 				<view class="price-box">
@@ -56,7 +56,7 @@
 
 <script>
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
-	import {mapState} from 'vuex';
+	
 	export default {
 		components: {
 			uniLoadMore	
@@ -77,7 +77,7 @@
 			};
 		},
 		computed:{
-			...mapState(['cdn'])
+			
 		},
 		onShareAppMessage(e){
 			return{

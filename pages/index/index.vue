@@ -13,7 +13,7 @@
 			<view class="titleNview-background" :style="{ backgroundColor: titleNViewBackground }"></view>
 			<swiper class="carousel" circular @change="swiperChange">
 				<swiper-item v-for="(item, index) in carouselList" :key="index" class="carousel-item" @click="navToDetailPage({ product_id: item.product_id })">
-					<image mode="aspectFill" :src="cdn + item.image" />
+					<image mode="aspectFill" :src="item.image" />
 				</swiper-item> 
 			</swiper>
 			<!-- 自定义swiper指示器 -->
@@ -26,7 +26,7 @@
 		<!-- 分类 -->
 		<view class="cate-section">
 			<view class="cate-item" v-for="(item, index) in menu" :key="index" @click="navToList(item.id)">
-				<image :src="cdn + item.image" ></image>
+				<image :src="item.image" ></image>
 				<text>{{item.name}}</text>
 			</view>
 		</view>
@@ -43,7 +43,7 @@
 			<scroll-view class="floor-list" scroll-x>
 				<view class="scoll-wrapper">
 					<view v-for="(item, index) in flashSale.product" :key="index" class="floor-item" @click="navToDetailPage({ product_id: item.flash_product_id }, flashSale.flash_id)">
-						<image :src="cdn + item.image" mode="aspectFill"></image>
+						<image :src="item.image" mode="aspectFill"></image>
 						<text class="title clamp">{{item.title }}</text>
 						<text class="price">￥{{item.sales_price }}</text>
 					</view>
@@ -184,7 +184,7 @@
 
 		<view class="guess-section">
 			<view v-for="(item, index) in goodsList" :key="index" class="guess-item" @click="navToDetailPage(item)">
-				<view class="image-wrapper"><image :src="cdn + item.image" mode="aspectFill"></image></view>
+				<view class="image-wrapper"><image :src="item.image" mode="aspectFill"></image></view>
 				<text class="title clamp">{{ item.title }}</text>
 				<text class="price"><text class="symbol">￥</text> {{ item.sales_price }} <text class="sales"> {{' '+item.sales}}人付款</text></text>
 			</view>
@@ -194,7 +194,6 @@
 
 <script>
 import uniCountdown from '@/components/uni-countdown/uni-countdown.vue';
-import {mapState} from 'vuex';  
 export default {
 	components: {uniCountdown},
 	data() {
@@ -211,7 +210,7 @@ export default {
 		};
 	},
 	computed:{
-		...mapState(['cdn'])
+		
 	},
 	onLoad() {
 		this.loadData();

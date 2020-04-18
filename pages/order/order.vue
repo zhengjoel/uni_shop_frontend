@@ -23,7 +23,7 @@
 
 						<view class="goods-box-single" v-for="(goodsItem, goodsIndex) in item.products"
 						 :key="goodsIndex">
-							<image class="goods-img" :src="cdn + goodsItem.image" mode="aspectFill"></image>
+							<image class="goods-img" :src="goodsItem.image" mode="aspectFill"></image>
 							<view class="right">
 								<text class="refund" v-if="goodsItem.refund">退款成功</text>
 								<text class="title clamp">{{goodsItem.title}}</text>
@@ -62,17 +62,10 @@
 <script>
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	import empty from "@/components/empty";
-	import {
-		mapState
-	} from 'vuex';
-
 	export default {
 		components: {
 			uniLoadMore,
 			empty
-		},
-		computed: {
-			...mapState(['cdn'])
 		},
 		data() {
 			return {

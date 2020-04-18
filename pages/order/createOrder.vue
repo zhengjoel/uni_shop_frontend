@@ -26,7 +26,7 @@
 			</view> -->
 			<!-- 商品列表 -->
 			<view class="g-item" v-for="(item, index) in product" :key="item.id">
-				<image :src="cdn + item.image" mode="aspectFill"></image>
+				<image :src="item.image" mode="aspectFill"></image>
 				<view class="right">
 					<text class="title clamp">{{item.title}}</text>
 					<view class="spec">{{item.spec ? "规格:" + item.spec : ""}} {{" 库存:"+item.stock}}</view>
@@ -125,15 +125,10 @@
 
 <script>
 	import uniNumberBox from '@/components/uni-number-box.vue';
-	import {
-		mapState
-	} from 'vuex';
+
 	export default {
 		components: {
 			uniNumberBox
-		},
-		computed: {
-			...mapState(['cdn'])
 		},
 		data() {
 			return {

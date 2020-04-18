@@ -31,7 +31,7 @@
 					>
 						<view class="info"  @click="navToDetailPage(item.product.product_id, tabItem.flash_id)">
 							<view class="image">
-								<image mode="aspectFill" :src="cdn + item.product.image"></image>
+								<image mode="aspectFill" :src="item.product.image"></image>
 							</view>
 							<view class="detail">
 								<view class="title">{{item.product.title}}</view>
@@ -59,7 +59,6 @@
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	import empty from "@/components/empty";
 	import ProgressBar from '@/components/Progress-Bar/Progress-Bar';
-	import {mapState} from 'vuex';
 	
 	export default {
 		components: {
@@ -68,7 +67,6 @@
 			ProgressBar
 		},
 		computed:{
-			...mapState(['cdn'])
 		},
 		data() {
 			return {
