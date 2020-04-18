@@ -6,6 +6,9 @@
 #### 体验
 ![微信小程序](https://images.gitee.com/uploads/images/2020/0415/215327_77d28dac_1588098.jpeg "微信小程序")
 
+#### 后台体验
+1.  地址 [后端地址](http://demo.shop.weivee.com/admin)  
+
 #### 安装教程
 
 1.  git clone 下来之后直接在HBuilderX打开即可
