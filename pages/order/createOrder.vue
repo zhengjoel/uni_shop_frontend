@@ -125,7 +125,6 @@
 
 <script>
 	import uniNumberBox from '@/components/uni-number-box.vue';
-
 	export default {
 		components: {
 			uniNumberBox
@@ -155,11 +154,11 @@
 			}
 			
 			if (options.hasOwnProperty('cart')) {
+				this.cart = options.cart;
 				// 从购物车进入 
 				this.getOrderCreate({
 					cart: options.cart
 				});
-				this.cart = options.cart;
 			} else {
 				// 从商品进入
 				this.getOrderCreate({
@@ -179,9 +178,11 @@
 			// 获取运费模板
 			async getDelivery() {
 				let delivery = await this.$api.request('/order/getDelivery?city_id=' + this.addressData.city_id);
-				this.deliveryList = delivery;
-				this.deliveryIndex = 0;
-				this.calcTotal();
+				if (delivery) {
+					this.deliveryList = delivery;
+					this.deliveryIndex = 0;
+					this.calcTotal();
+				}
 			},
 			// 选择运费模板
 			deliveryChange(e) {
@@ -204,6 +205,7 @@
 				
 				let apiUrl = !param.flash_id || param.flash_id == 0 ? '/order/create' : '/flash/createOrder';
 				let data = await this.$api.request(apiUrl, 'POST', param);
+
 				if (data) {
 					this.addressData = data.address;
 					this.product = data.product;
@@ -215,7 +217,7 @@
 						that.$api.prePage().getDetail(param.id, param.flash_id);
 						uni.navigateBack();
 					}, 3000)
-				}
+				} 
 			},
 			//显示优惠券面板
 			toggleMask(type) {
@@ -285,24 +287,28 @@
 			calcTotal() {
 				let price = 0;
 				let number = 0; // 产品数量
-
-				for (let i in this.product) {
-					price += (parseFloat(this.product[i].sales_price) * this.product[i].number);
-					number += this.product[i].number;
-				}
+				let product = this.product;
+				
+				product.forEach(item=>{
+					price = parseFloat(item.sales_price) * item.number;
+					number = number + item.number;
+				});
 
 				this.price = price.toFixed(2);
 
 				// 检查当前优惠券是否满足使用条件
-				if (this.useCouponIndex === false || this.price >= this.couponList[this.useCouponIndex].least) {
-					this.total = price - this.coupon_price;
-				} else {
-					this.$api.msg('选中的优惠券不满足使用条件', 2000);
-					this.useCouponIndex = false; //取消选中的优惠券
-					this.coupon_price = 0; //设置优惠金额为0
-					this.total = price - this.coupon_price;
+				let couponList = this.couponList;
+				if (couponList) {
+					if (this.useCouponIndex === false || this.price >= couponList[this.useCouponIndex].least) {
+						this.total = price - this.coupon_price;
+					} else {
+						this.$api.msg('选中的优惠券不满足使用条件', 2000);
+						this.useCouponIndex = false; //取消选中的优惠券
+						this.coupon_price = 0; //设置优惠金额为0
+						this.total = price - this.coupon_price;
+					}
 				}
-
+				
 				// 计算当前运费模板
 				// id: 29 运费模板id
 				// name: "购买2件以上包邮"  标题
@@ -313,23 +319,28 @@
 				// additional: 1  // 续件数量
 				// additional_fee: "0" // 续件价钱
 				let delivery = this.deliveryList[this.deliveryIndex];
-				let deliveryPrice = 0;
-				if (this.deliveryList[this.deliveryIndex].hasOwnProperty('id')) {
-					if (delivery.min > number) {
-						this.$api.msg('必须至少购买' + delivery.min + '件商品才能使用此配送方式', 6000)
-					}
-					for (let i = 0; i < number;) {
-						if (i === 0) {
-							deliveryPrice += parseInt(delivery.first_fee);
-							i += parseInt(delivery.first);
-						} else {
-							deliveryPrice += parseInt(delivery.additional_fee);
-							i += parseInt(delivery.additional);
+				if (delivery) {
+					let deliveryPrice = 0;
+					if (delivery.hasOwnProperty('id')) {
+						if (delivery.min > number) {
+							this.$api.msg('必须至少购买' + delivery.min + '件商品才能使用此配送方式', 6000)
+						}
+						// 如何为0就赋值1，不然下面的循环会死循环
+						delivery.first = delivery.first == 0 ? 1 :  delivery.first;
+						delivery.additional = delivery.additional == 0 ? 1 : delivery.additional;
+						for (let i = 0; i < number;) {
+							if (i === 0) {
+								deliveryPrice = deliveryPrice + parseInt(delivery.first_fee);
+								i = i + parseInt(delivery.first);
+							} else {
+								deliveryPrice = deliveryPrice + parseInt(delivery.additional_fee);
+								i = i + parseInt(delivery.additional);
+							}
 						}
 					}
+					this.deliveryPrice = deliveryPrice;
+					this.total = this.total + deliveryPrice;
 				}
-				this.deliveryPrice = deliveryPrice;
-				this.total += deliveryPrice;
 			}
 		}
 	}
