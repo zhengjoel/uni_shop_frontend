@@ -15,11 +15,11 @@
 			<view class="sales_price" v-if="product.market_price"><view class="symbol">￥</view>{{specProduct.sales_price}}</view>
 			<view class="left" v-if="product.market_price">
 				<view class="market_price">￥{{specProduct.market_price}}</view>
-				<view class="sold">秒{{progress.number}}件</view>
+				<view class="sold" v-if="progress.number">秒{{progress.number}}件</view>
 			</view>
 			<view class="right">
 				<view class="time" v-if="countdown && progress.number != progress.sold">距结束
-					<uni-countdown 
+					<uni-countdown
 					:showDay="countdown.day > 0 ? true : false" 
 					:day="countdown.day" 
 					:hour="countdown.hour" 
@@ -31,8 +31,8 @@
 					background-color="#282f2c00" 
 					border-color="#00B26A"></uni-countdown>
 				</view>
-				<view class="time" v-else>抢购已结束</view>
-				<view class="progress">
+				<view class="time" v-else :class="{'flashDone': progress.number == false}">抢购已结束</view>
+				<view class="progress" v-if="progress.number">
 					<ProgressBar 
 					class="ProgressBar" 
 					:Sold="progress.sold" 
@@ -435,7 +435,7 @@
 			stopPrevent() {},
 			// 计算百分比
 			percentage(number, sold) {
-				if (sold == 0) {
+				if (!sold) {
 					return 0;
 				}
 				return parseInt(sold / number * 100);
@@ -1058,6 +1058,11 @@
 				position: absolute;
 				bottom: 7rpx;
 				right: 10upx;
+			}
+			.flashDone{
+				font-size: 40rpx;
+				height: 90rpx;
+				line-height: 90rpx;
 			}
 		}
 	}
