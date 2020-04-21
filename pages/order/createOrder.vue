@@ -295,8 +295,8 @@
 				});
 
 				this.price = price.toFixed(2);
-				let total = this.total;
-
+				let total = price;
+				
 				// 检查当前优惠券是否满足使用条件
 				let couponList = this.couponList;
 				if (couponList) {
@@ -339,9 +339,10 @@
 							}
 						}
 					}
-					this.deliveryPrice = deliveryPrice;
+					this.deliveryPrice = deliveryPrice.toFixed(2);
 					total = total + deliveryPrice;
 				}
+				
 				this.total = total.toFixed(2);
 			}
 		}
