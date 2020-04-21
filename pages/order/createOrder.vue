@@ -290,22 +290,23 @@
 				let product = this.product;
 				
 				product.forEach(item=>{
-					price = parseFloat(item.sales_price) * item.number;
+					price = price + parseFloat(item.sales_price) * item.number;
 					number = number + item.number;
 				});
 
 				this.price = price.toFixed(2);
+				let total = this.total;
 
 				// 检查当前优惠券是否满足使用条件
 				let couponList = this.couponList;
 				if (couponList) {
 					if (this.useCouponIndex === false || this.price >= couponList[this.useCouponIndex].least) {
-						this.total = price - this.coupon_price;
+						total = price - this.coupon_price;
 					} else {
 						this.$api.msg('选中的优惠券不满足使用条件', 2000);
 						this.useCouponIndex = false; //取消选中的优惠券
 						this.coupon_price = 0; //设置优惠金额为0
-						this.total = price - this.coupon_price;
+						total = price - this.coupon_price;
 					}
 				}
 				
@@ -339,8 +340,9 @@
 						}
 					}
 					this.deliveryPrice = deliveryPrice;
-					this.total = this.total + deliveryPrice;
+					total = total + deliveryPrice;
 				}
+				this.total = total.toFixed(2);
 			}
 		}
 	}

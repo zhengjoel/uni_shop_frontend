@@ -243,7 +243,7 @@
 					}
 				})
 				this.allChoose = choose;
-				this.total = Number(total.toFixed(2));
+				this.total = total.toFixed(2);
 			},
 			//创建订单
 			createOrder() {
