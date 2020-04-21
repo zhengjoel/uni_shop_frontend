@@ -6,7 +6,7 @@
 
 			<!-- 产品列表 -->
 			<view v-for="(item, index) in favorite.list" :key="index" class="order-item">
-				<view class="info" @click="navToDetailPage(item.product.product_id)">
+				<view class="info" @click="navToDetailPage(item.product.product_id, item.status)">
 					<view class="image">
 						<image mode="aspectFill" :src="item.product.image"></image>
 					</view>
@@ -16,6 +16,8 @@
 							<view class="sales">￥{{item.product.sales_price}} </view>
 							<view class="market"> ￥{{item.product.market_price}}</view>
 						</view>
+						<view class="invalid" v-if="item.status == 0">失效</view>
+						<text class="del-btn yticon icon-lajitong" @click.stop="deleteFavorite(item.product.product_id,index)"></text>
 					</view>
 				</view>
 			</view>
@@ -96,11 +98,22 @@
 				}
 			},
 			// 商品详情页
-			navToDetailPage(product_id, flash_id = 0) {
+			navToDetailPage(product_id, status) {
+				if (status == 0) {
+					this.$api.msg('此商品已失效');
+					return;
+				}
 				uni.navigateTo({
-					url: `/pages/product/product?id=${product_id}&flash=${flash_id}`
+					url: `/pages/product/product?id=${product_id}&flash=0`
 				});
 			},
+			// 删除
+			async deleteFavorite(id, index) {
+				let data = await this.$api.request('/product/favorite?id='+id);
+				if (data) {
+					this.favorite.list.splice(index,1);
+				}
+			}
 		}
 	}
 </script>
@@ -182,6 +195,17 @@
 					border-radius: 4upx;
 					box-shadow: 2upx 2upx 8upx -2px #000;
 					font-size: 32rpx;
+				}
+				.invalid{
+					color: $base-color;
+					position: absolute;
+					right: 0;
+					bottom: 0;
+				}
+				.yticon{
+					position: absolute;
+					right: 0;
+					top: 20rpx;
 				}
 			}
 		}

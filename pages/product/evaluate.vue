@@ -5,7 +5,7 @@
 			<view class="eva-box" v-for="(item, index) in list" :key="index">
 				<image class="portrait" :src="item.avatar" mode="aspectFill"></image>
 				<view class="right">
-					<text class="name">{{item.username}}</text>
+					<text class="name">{{item.username || '游客'}}</text>
 					<text class="con">{{item.comment}}</text>
 					<view class="bot">
 						<text class="attr">购买类型：{{item.spec}}</text>
@@ -18,7 +18,6 @@
 </template>
 
 <script>
-
 	export default{
 		data(){
 			return {

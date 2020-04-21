@@ -48,7 +48,7 @@
 				</view>
 				<text class="cell-tit clamp">优惠券</text>
 				<text class="cell-tip active">
-					{{useCouponIndex !== false ? couponList[useCouponIndex].title : '选择优惠券'}}
+					{{useCouponIndex !== -1 ? couponList[useCouponIndex].title : '选择优惠券'}}
 				</text>
 				<text class="cell-more wanjia wanjia-gengduo-d"></text>
 			</view>
@@ -118,6 +118,7 @@
 					</view>
 					<text class="tips">限一张使用</text>
 				</view>
+				<button class="btn" @click="toggleMask">收起</button>
 			</view>
 		</view>
 	</view>
@@ -135,7 +136,7 @@
 				remark: '', //备注
 				payType: 1, //1微信 2支付宝
 				couponList: [],
-				useCouponIndex: false,
+				useCouponIndex: -1,
 				addressData: {},
 				product: [],
 				price: 0.00, //商品金额
@@ -196,7 +197,7 @@
 					this.coupon_price = this.couponList[index].value;
 					this.calcTotal();
 				} else {
-					this.useCouponIndex = false;
+					this.useCouponIndex = -1;
 				}
 			},
 			//获取创建订单信息
@@ -243,7 +244,7 @@
 					city_id: this.addressData.city_id,
 					address_id: this.addressData.id,
 					delivery_id: this.deliveryList[this.deliveryIndex].id ? this.deliveryList[this.deliveryIndex].id : '',
-					coupon_id: this.useCouponIndex && this.couponList[this.useCouponIndex].id ? this.couponList[this.useCouponIndex].id : '',
+					coupon_id: this.couponList[this.useCouponIndex] ? this.couponList[this.useCouponIndex].id : '',
 					remark: this.remark,
 					product_id: [],
 					spec:[],
@@ -298,15 +299,14 @@
 				let total = price;
 				
 				// 检查当前优惠券是否满足使用条件
-				let couponList = this.couponList;
-				if (couponList) {
-					if (this.useCouponIndex === false || this.price >= couponList[this.useCouponIndex].least) {
-						total = price - this.coupon_price;
+				if (this.couponList[this.useCouponIndex]) {
+					if (this.price >= this.couponList[this.useCouponIndex].least) {
+						total = total - this.coupon_price;
 					} else {
 						this.$api.msg('选中的优惠券不满足使用条件', 2000);
-						this.useCouponIndex = false; //取消选中的优惠券
+						this.useCouponIndex = -1; //取消选中的优惠券
 						this.coupon_price = 0; //设置优惠金额为0
-						total = price - this.coupon_price;
+						total = total - this.coupon_price;
 					}
 				}
 				

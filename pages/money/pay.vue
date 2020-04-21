@@ -117,7 +117,8 @@
 					    },
 					    fail: function (err) {
 					        //console.log('fail:' + JSON.stringify(err));
-							that.$api.msg('fail:' + JSON.stringify(err))
+							//that.$api.msg('fail:' + JSON.stringify(err))
+							that.$api.msg('支付失败');
 					    }
 					});
 				}

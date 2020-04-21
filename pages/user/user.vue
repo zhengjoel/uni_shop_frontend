@@ -13,15 +13,15 @@
 			</view>
 			<view class="vip-card-box">
 				<image class="card-bg" src="/static/vip-card-bg.png" mode=""></image>
-				<view class="b-btn">
+				<!-- <view class="b-btn">
 					立即开通
-				</view>
+				</view> -->
 				<view class="tit">
 					<text class="yticon icon-iLinkapp-"></text>
 					喂喂会员
 				</view>
 				<text class="e-m">uniShop</text> 
-				<text class="e-b">开通会员开发无bug 一测就上线</text>
+				<!-- <text class="e-b">开通会员开发无bug 一测就上线</text> -->
 			</view>
 		</view>
 		
