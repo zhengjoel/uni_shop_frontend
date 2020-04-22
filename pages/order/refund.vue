@@ -113,7 +113,7 @@
 					},
 					{
 						'value': 3,
-						'name':'选选择'
+						'name':'请选择'
 					}
 				],
 				serviceTypeIndex:3,
@@ -192,16 +192,24 @@
 					this.$api.msg('请选择货物状态');
 					return;
 				}
-				if (this.typeIndex == 3) {
-					this.$api.msg('请选择服务类型')
-					return;
-				}
-				if ((this.typeIndex == 0 || this.typeIndex == 1) && this.order.total_price > 0) {
+				
+				if ((this.serviceTypeIndex == 0 || this.serviceTypeIndex == 1) && parseFloat(this.order.total_price) > 0) {
 					if (!this.amount) {
 						this.$api.msg('请填写退货金额');
 						return;
 					}
+
+					if (parseFloat(this.amount) > parseFloat(this.order.total_price)) {
+						this.$api.msg('退款金额不得大于订单金额');
+						return;
+					}
 				}
+				
+				if (this.serviceTypeIndex == 3) {
+					this.$api.msg('请选择服务类型')
+					return;
+				}
+				
 				let data = await this.$api.request('/order/refund', 'POST', {
 					order_id: this.order_id,
 					amount: this.amount ? parseFloat(this.amount) : 0,

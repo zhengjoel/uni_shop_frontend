@@ -17,7 +17,7 @@
 					<view v-for="(item,index) in tabItem.orderList" :key="index" class="order-item" @click="navTo('/pages/order/orderDetail?order_id='+item.order_id)">
 						<view class="i-top b-b">
 							<text class="time">{{item.createtime}}</text>
-							<text class="state" :style="{color: item.stateTipColor}">{{item.stateTip + (item.refund_status_text && goodsItem.refund==false ? ':'+item.refund_status_text : '')}} </text>
+							<text class="state" :style="{color: item.stateTipColor}">{{item.stateTip + (item.refund_status_text ? ':'+item.refund_status_text : '')}} </text>
 							<text v-if="item.state===9" class="del-btn yticon icon-lajitong" @click.stop="deleteOrder(index)"></text>
 						</view>
 

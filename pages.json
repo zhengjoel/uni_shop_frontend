@@ -245,6 +245,13 @@
 				"enablePullDownRefresh": true,
 				"navigationBarTitleText": "评价"
 			}
+		},
+		{
+		    "path" : "pages/order/delivery",
+		    "style" : {
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "运费模板"
+			}
 		}
     ],
 	"globalStyle": {
@@ -310,6 +317,11 @@
 			{
 				"name":"userinfo",
 				"path":"pages/userinfo/userinfo",
+				"query":""
+			},
+			{
+				"name": "deliveryTemplate",
+				"path":"pages/order/delivery",
 				"query":""
 			}
 		]

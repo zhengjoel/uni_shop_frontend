@@ -72,7 +72,7 @@
 				<view class="cell-tip red">-￥{{coupon_price}}</view>
 			</view>
 			<view class="yt-list-cell b-b">
-				<view class="cell-tit clamp">配送方式<text style="color:red">（查看详情）</text></view>
+				<view class="cell-tit clamp">配送方式<!-- <text style="color:red" @click="deliveryTemplate">（查看详情）</text> --></view>
 				<view class="cell-tip">
 					<picker @change="deliveryChange" range-key="name" :value="deliveryIndex" :range="deliveryList">
 						<view class="uni-input">{{deliveryList[deliveryIndex].name}}</view>
@@ -344,6 +344,10 @@
 				}
 				
 				this.total = total.toFixed(2);
+			},
+			// 查看运费模板
+			deliveryTemplate() {
+				this.$api.navTo('/pages/order/delivery');
 			}
 		}
 	}
