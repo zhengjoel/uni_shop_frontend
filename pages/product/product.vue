@@ -150,7 +150,7 @@
 		<view class="popup spec" :class="couponClass" @touchmove.stop.prevent="stopPrevent" @click="toggleCoupon">
 			<!-- 遮罩层 -->
 			<view class="mask"></view>
-			<view class="layer attr-content" @click.stop="stopPrevent">
+			<view class="layer attr-content content-coupon" @click.stop="stopPrevent">
 				
 				<!-- 优惠券页面，仿mt -->
 				<view class="coupon-item" v-for="(item, index) in product.coupon" :key="index">
@@ -168,8 +168,8 @@
 					</view>
 					<text class="tips">限一张使用</text>
 				</view>
-				<button class="btn" @click="toggleCoupon">收起</button>
 			</view>
+			<button class="btn retract" @click="toggleCoupon">收起</button>
 		</view>
 
 		<!-- 规格-模态层弹窗 -->
@@ -384,7 +384,7 @@
 				 * 选择的规格存放在specSelected中
 				 */
 				this.specSelected = [];
-				console.log(list)
+				//console.log(list)
 				list.forEach(item => {
 					if (item.selected === true) {
 						this.specSelected.push(item.name);
@@ -1080,6 +1080,20 @@
 	
 	
 	/* 优惠券列表 */
+	.content-coupon{
+		padding-bottom: 100rpx;
+		max-height: 800rpx;
+		overflow: auto;
+	}
+	.retract{
+		position: fixed;
+		bottom: 0;
+		width: 700rpx;
+		z-index: 100;
+		margin: 20rpx 25rpx;
+		color:#ffffff;
+		background: #fa436a;
+	}
 	.coupon-item {
 		display: flex;
 		flex-direction: column;

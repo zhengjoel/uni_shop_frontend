@@ -8,7 +8,7 @@
 					<text class="name">{{item.username || '游客'}}</text>
 					<text class="con">{{item.comment}}</text>
 					<view class="bot">
-						<text class="attr">购买类型：{{item.spec}}</text>
+						<text class="attr" v-if="item.spec != ''">购买类型：{{item.spec}}</text>
 						<text class="time">{{item.createtime_text}}</text>
 					</view>
 				</view>

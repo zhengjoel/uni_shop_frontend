@@ -11,7 +11,7 @@
 			<view class="info">
 				<view v-if="order.express_number">快递编号：{{order.express_number}}</view>
 				<view>发货时候：{{order.deliveredtime}}</view>
-				<text class="yticon right icon-you"></text>
+				<!-- <text class="yticon right icon-you"></text> -->
 			</view>
 
 		</view>

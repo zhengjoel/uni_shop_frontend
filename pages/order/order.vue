@@ -240,7 +240,7 @@
 					}
 					return true;
 				}
-				this.$api.msg('取消失败');
+				//this.$api.msg('取消失败');
 				return false;
 			},
 			// 收货

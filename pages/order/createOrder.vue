@@ -72,7 +72,9 @@
 				<view class="cell-tip red">-￥{{coupon_price}}</view>
 			</view>
 			<view class="yt-list-cell b-b">
-				<view class="cell-tit clamp">配送方式<!-- <text style="color:red" @click="deliveryTemplate">（查看详情）</text> --></view>
+				<view class="cell-tit clamp">配送方式
+					<!-- <text style="color:red" @click="deliveryTemplate">（查看详情）</text> -->
+				</view>
 				<view class="cell-tip">
 					<picker @change="deliveryChange" range-key="name" :value="deliveryIndex" :range="deliveryList">
 						<view class="uni-input">{{deliveryList[deliveryIndex].name}}</view>
@@ -118,8 +120,8 @@
 					</view>
 					<text class="tips">限一张使用</text>
 				</view>
-				<button class="btn" @click="toggleMask">收起</button>
 			</view>
+			<button class="btn" @click="toggleMask">收起</button>
 		</view>
 	</view>
 </template>
@@ -145,7 +147,7 @@
 				deliveryList: [],
 				deliveryIndex: 0,
 				deliveryPrice: 0.00,
-				cart:[], // 购物车id
+				cart: [], // 购物车id
 				flash_id: 0, // 秒杀id
 			}
 		},
@@ -153,7 +155,7 @@
 			if (options.hasOwnProperty('flash_id')) {
 				this.flash_id = options.flash_id;
 			}
-			
+
 			if (options.hasOwnProperty('cart')) {
 				this.cart = options.cart;
 				// 从购物车进入 
@@ -194,16 +196,17 @@
 			useCoupon(index) {
 				if (this.useCouponIndex !== index) {
 					this.useCouponIndex = index;
-					this.coupon_price = this.couponList[index].value;
-					this.calcTotal();
+					//this.coupon_price = this.couponList[index].value;
 				} else {
 					this.useCouponIndex = -1;
+					// this.coupon_price = 0;
 				}
+				this.calcTotal();
 			},
 			//获取创建订单信息
 			async getOrderCreate(param) {
 				let that = this;
-				
+
 				let apiUrl = !param.flash_id || param.flash_id == 0 ? '/order/create' : '/flash/createOrder';
 				let data = await this.$api.request(apiUrl, 'POST', param);
 
@@ -218,7 +221,7 @@
 						that.$api.prePage().getDetail(param.id, param.flash_id);
 						uni.navigateBack();
 					}, 3000)
-				} 
+				}
 			},
 			//显示优惠券面板
 			toggleMask(type) {
@@ -240,25 +243,33 @@
 				}
 
 				this.$api.msg('提交中...', 20000);
+				let delivery_id = 0;
+				if (this.deliveryList && this.deliveryList[this.deliveryIndex] && this.deliveryList[this.deliveryIndex].id) {
+					delivery_id = this.deliveryList[this.deliveryIndex].id;
+				}
+				let coupon_id = 0;
+				if (this.couponList && this.couponList[this.useCouponIndex] && this.couponList[this.useCouponIndex].id) {
+					coupon_id = this.couponList[this.useCouponIndex].id;
+				} 
 				let data = {
 					city_id: this.addressData.city_id,
 					address_id: this.addressData.id,
-					delivery_id: this.deliveryList[this.deliveryIndex].id ? this.deliveryList[this.deliveryIndex].id : '',
-					coupon_id: this.couponList[this.useCouponIndex] ? this.couponList[this.useCouponIndex].id : '',
+					delivery_id: delivery_id,
+					coupon_id: coupon_id,
 					remark: this.remark,
 					product_id: [],
-					spec:[],
-					number:[],
+					spec: [],
+					number: [],
 					cart: this.cart,
 					flash_id: this.flash_id
-				};  
+				};
 
 				this.product.forEach((item, index) => {
-					data.product_id.push(item.id); 
+					data.product_id.push(item.id);
 					data.spec.push(item.spec.replace(/,/g, '|'));
 					data.number.push(item.number);
 				});
-				
+
 				let apiUrl = this.flash_id == 0 ? '/order/submit' : '/flash/submitOrder';
 
 				let result = await this.$api.request(apiUrl, 'POST', data);
@@ -289,17 +300,19 @@
 				let price = 0;
 				let number = 0; // 产品数量
 				let product = this.product;
-				
-				product.forEach(item=>{
+
+				product.forEach(item => {
 					price = price + parseFloat(item.sales_price) * item.number;
 					number = number + item.number;
 				});
 
 				this.price = price.toFixed(2);
 				let total = price;
-				
+
 				// 检查当前优惠券是否满足使用条件
-				if (this.couponList[this.useCouponIndex]) {
+				this.coupon_price = 0.00;
+				if (this.useCouponIndex != -1 && this.couponList && this.couponList[this.useCouponIndex]) {
+					this.coupon_price = this.couponList[this.useCouponIndex].value
 					if (this.price >= this.couponList[this.useCouponIndex].least) {
 						total = total - this.coupon_price;
 					} else {
@@ -309,7 +322,7 @@
 						total = total - this.coupon_price;
 					}
 				}
-				
+
 				// 计算当前运费模板
 				// id: 29 运费模板id
 				// name: "购买2件以上包邮"  标题
@@ -327,7 +340,7 @@
 							this.$api.msg('必须至少购买' + delivery.min + '件商品才能使用此配送方式', 6000)
 						}
 						// 如何为0就赋值1，不然下面的循环会死循环
-						delivery.first = delivery.first == 0 ? 1 :  delivery.first;
+						delivery.first = delivery.first == 0 ? 1 : delivery.first;
 						delivery.additional = delivery.additional == 0 ? 1 : delivery.additional;
 						for (let i = 0; i < number;) {
 							if (i === 0) {
@@ -342,7 +355,7 @@
 					this.deliveryPrice = deliveryPrice.toFixed(2);
 					total = total + deliveryPrice;
 				}
-				
+
 				this.total = total.toFixed(2);
 			},
 			// 查看运费模板
@@ -706,6 +719,17 @@
 			transform: translateY(100%);
 			transition: .3s;
 			overflow-y: scroll;
+			padding-bottom: 100rpx;
+		}
+
+		.btn {
+			background: #fa436a;
+			position: absolute;
+			bottom: 0;
+			width: 700rpx;
+			margin: 20rpx 25rpx;
+			color: #fff;
+			border-radius: 40rpx;
 		}
 
 		&.none {
