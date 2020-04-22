@@ -203,7 +203,7 @@
 					content: '确认删除 ' + list[index].title + '？' ,
 					success: async (e) => {
 						if (e.confirm) {
-							let result = await this.$api.request('/cart/delete?id='+id);
+							let result = await this.$api.request('/cart/delete?', 'POST', {id:id});
 							if (result) {
 								let tempCart = this.cartList.splice(index, 1);
 								this.calcTotal();
@@ -219,9 +219,16 @@
 					title: '确认清空购物车？'
 				});
 				if (res.confirm) {
-					this.cartList = [];
-					let data = this.$api.request('/');
-					
+					let id = [];
+					this.cartList.forEach(item=>{
+						id.push(item.cart_id);
+					});
+					let data = this.$api.request('/cart/delete', 'POST',{id:id});
+					if (data) {
+						this.state = 'load';
+						this.cartList = [];
+						this.getCart();
+					}
 				}
 			},
 			//计算总价
