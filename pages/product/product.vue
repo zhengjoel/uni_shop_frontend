@@ -1052,7 +1052,7 @@
 		}
 		.right{
 			height: 100%;
-			width: 280upx;
+			width: 300upx;
 			position: absolute;
 			right: 0;
 			padding: 4upx;

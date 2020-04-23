@@ -74,14 +74,14 @@
 	import uniRate from '@/components/uni-rate/uni-rate.vue'
 	export default {
 		computed: {
-			productIds(){
-				var product_id = [];
+			orderProductIds(){
+				var order_product_id = [];
 				this.order.products.forEach(item=>{
 					if (item.choose == 1) {
-						product_id.push(item.id);
+						order_product_id.push(item.order_product_id);
 					}
 				});
-				return product_id.join(',');
+				return order_product_id.join(',');
 			},
 			status() {
 				if (this.order.have_refunded == 0) {
@@ -217,7 +217,7 @@
 					receiving_status: this.receivingStatus[this.receivingStatusIndex].value,
 					reason_type: this.reasonType[this.reasonTypeIndex].name,
 					refund_explain: this.refundExplain,
-					product_id: this.productIds
+					order_product_id: this.orderProductIds
 				});
 				if (data) {
 					this.refundInfo();

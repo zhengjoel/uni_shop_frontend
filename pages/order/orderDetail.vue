@@ -61,6 +61,9 @@
 			<button class="action-btn" v-if="order.have_paid != 0 && order.have_received == 0" @click.stop="button('recerved')">确认收货</button>
 			<button class="action-btn" v-if="order.have_paid != 0" @click.stop="button('refund')">申请售后</button>
 		</view>
+		<view class="bottom" v-if="order.state == 9 && order.status == -1">
+			<button class="action-btn" v-if="order.have_paid != 0" @click.stop="button('refund')">查看售后</button>
+		</view>
 	</view>
 </template>
 

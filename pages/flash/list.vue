@@ -268,6 +268,9 @@
 				position: relative;
 				.title{
 					color: #303133;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
 				}
 				.introduction{
 					color: #999999;

@@ -51,6 +51,9 @@
 							<!-- <button class="action-btn" v-if="item.have_received != 0 && item.have_commented != 0">追加评价</button> -->
 							<button class="action-btn" v-if="item.have_paid != 0" @click.stop="button('refund', item)">申请售后</button>
 						</view>
+						<view class="action-box b-t" v-if="item.state == 9 && item.status == -1">
+							<button class="action-btn" v-if="item.have_paid != 0" @click.stop="button('refund', item)">查看售后</button>
+						</view>
 					</view>
 					<uni-load-more :status="tabItem.loadingType"></uni-load-more>
 				</scroll-view>

@@ -597,6 +597,10 @@
 			&.red {
 				color: $base-color;
 			}
+			picker{
+				max-width: 500rpx;
+				line-height: 50rpx;
+			}
 		}
 
 		&.desc-cell {

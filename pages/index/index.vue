@@ -14,7 +14,7 @@
 			<swiper class="carousel" circular @change="swiperChange">
 				<swiper-item v-for="(item, index) in carouselList" :key="index" class="carousel-item" @click="navToDetailPage({ product_id: item.product_id })">
 					<image mode="aspectFill" :src="item.image" />
-				</swiper-item> 
+				</swiper-item>
 			</swiper>
 			<!-- 自定义swiper指示器 -->
 			<view class="swiper-dots">
