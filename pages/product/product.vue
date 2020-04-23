@@ -18,7 +18,8 @@
 				<view class="sold" v-if="progress.number">秒{{progress.number}}件</view>
 			</view>
 			<view class="right">
-				<view class="time" v-if="countdown && progress.number != progress.sold">距结束
+				<view class="time" v-if="countdown && progress.number != progress.sold">
+					{{product.flash.text}}
 					<uni-countdown
 					:showDay="countdown.day > 0 ? true : false" 
 					:day="countdown.day" 
