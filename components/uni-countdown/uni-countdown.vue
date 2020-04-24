@@ -131,7 +131,11 @@
 			startData() {
 				this.seconds = this.toSeconds(this.day, this.hour, this.minute, this.second)
 				if (this.seconds <= 0) {
+					this.timeUp()
 					return
+				}
+				if (this.timer > 0){
+					return;
 				}
 				this.countDown()
 				this.timer = setInterval(() => {
@@ -142,6 +146,7 @@
 					}
 					this.countDown()
 				}, 1000)
+				//console.log('timer:' + this.timer);
 			},
 			changeFlag() {
 				if (!this.syncFlag) {

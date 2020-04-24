@@ -37,7 +37,7 @@
 				<!-- <text class="tip">{{(new Date(flashSale.starttime*1000)).getHours()}}点场</text> -->
 				<text class="tip" v-if="flashSale.countdown" >下一场倒计时</text>
 				<text class="tip" v-else>{{flashSale.title}}</text>
-				<uni-countdown v-if="flashSale.countdown" @timeup="timeup" :show-day="flashSale.countdown.day ? true : false" :day="flashSale.countdown.day" :hour="flashSale.countdown.hour" :minute="flashSale.countdown.minute" :second="flashSale.countdown.second" color="#FFFFFF" background-color="#00B26A" border-color="#00B26A" ></uni-countdown>
+				<uni-countdown ref="countd" v-if="flashSale.countdown" @timeup="timeup" :show-day="flashSale.countdown.day ? true : false" :day="flashSale.countdown.day" :hour="flashSale.countdown.hour" :minute="flashSale.countdown.minute" :second="flashSale.countdown.second" color="#FFFFFF" background-color="#00B26A" border-color="#00B26A" ></uni-countdown>
 				<text class="yticon icon-you"></text>
 			</view>
 			<scroll-view class="floor-list" scroll-x>
@@ -193,6 +193,7 @@
 </template>
 
 <script>
+var _self = this;
 import uniCountdown from '@/components/uni-countdown/uni-countdown.vue';
 export default {
 	components: {uniCountdown},
@@ -219,6 +220,8 @@ export default {
 		this.getProduct();
 	},
 	onPullDownRefresh() {
+		//console.log(this.$refs.countd);
+		//this.$refs.countd.timeUp();
 		this.goodsList = [];
 		this.page = 1;
 		this.loadData();
@@ -274,14 +277,12 @@ export default {
 			}
 		},
 		// 获取限时秒杀数据
-		getFlash() {
-			let that = this;
-			uni.request({
-				url: that.$unishow + '/flash/index',
-				success(res) {
-					that.flashSale = res.data.data;
-				}
-			})
+		async getFlash() {
+			let data = await this.$api.request('/flash/index');
+			if (data) {
+				this.flashSale = data;
+			}
+			//console.log(this.$refs)
 		},
 		//轮播图切换修改背景色
 		swiperChange(e) {
