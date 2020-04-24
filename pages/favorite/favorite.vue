@@ -175,8 +175,9 @@
 
 					.market {
 						vertical-align: bottom;
-						font-size: 25upx;
+						font-size: 25rpx;
 						text-decoration: line-through;
+						line-height: 60rpx;
 					}
 				}
 

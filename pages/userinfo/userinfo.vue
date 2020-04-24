@@ -13,8 +13,8 @@
 		<!-- #ifdef MP-WEIXIN -->
 		<view class="yt-list-cell">
 			<view class="cell-tit clamp">用户名
-				<input v-if="username" class="input" type="text" v-model="username" />
-				<button v-else class="input" open-type="getUserInfo" @getuserinfo="getUserInfo">授权获取微信用户名称</button>
+				<input class="input" type="text" v-model="username" />
+				<button class="input username" open-type="getUserInfo" @getuserinfo="getUserInfo">获取微信名称</button>
 			</view>
 		</view>
 		<view class="yt-list-cell">
@@ -192,8 +192,11 @@
 				line-height: 70rpx!important;
 				height: 70rpx!important;
 			}
-			button{
-				
+			.username{
+				width: 300rpx;
+				position: absolute;
+				right: 30rpx;
+				z-index: 100;
 			}
 		}
 	}

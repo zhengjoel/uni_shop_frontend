@@ -137,6 +137,7 @@
 			<navigator url="/pages/cart/cart" open-type="switchTab" class="p-b-btn">
 				<text class="yticon icon-gouwuche"></text>
 				<text>购物车</text>
+				<text class="cart-count" v-if="product.cart_num">{{product.cart_num}}</text>
 			</navigator>
 			<view class="p-b-btn" :class="{active: favorite}" @click="toFavorite">
 				<text class="yticon icon-shoucang"></text>
@@ -205,8 +206,6 @@
 				<button class="btn" @click="toggleSpec">完成</button>
 			</view>
 		</view>
-		
-		
 
 		<!-- 分享 -->
 		<!-- <share ref="share" :contentHeight="580" :shareList="shareList"></share> -->
@@ -987,6 +986,21 @@
 			color: $font-color-base;
 			width: 96upx;
 			height: 80upx;
+			position: relative;
+			
+			/* 购物车数量 */
+			.cart-count{
+				border: 4rpx solid #fa436a;
+				width: 40rpx;
+				height: 40rpx;
+				color: #fa436a;
+				text-align: center;
+				border-radius: 40rpx;
+				position: absolute;
+				background: #fff;
+				top: -10rpx;
+				right: 0;
+			}
 
 			.yticon {
 				font-size: 46upx;
@@ -1034,6 +1048,7 @@
 				background: transparent;
 			}
 		}
+		
 	}
 	.flash {
 		height: 100upx;

@@ -32,7 +32,7 @@
 						</view>
 						<text class="del-btn yticon icon-lajitong" @click.stop="deleteCartItem(index)"></text>
 						<text class="invalid" v-if="item.isset == false">失效</text>
-						<text class="invalid" v-if="item.stock == 0">库存不足</text>
+						<text class="invalid" v-if="item.stock == 0 && item.isset == true">库存不足</text>
 					</view>
 				</block>
 			</view>
