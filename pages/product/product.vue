@@ -282,7 +282,9 @@
 			};
 		},
 		onPullDownRefresh(){
-			this.$refs.countd.syncFlag = false;
+			if (this.$refs && this.$refs.countd) {
+				this.$refs.countd.syncFlag = false;
+			}
 			this.getDetail(this.id, this.flash?this.flash:0);
 		},
 		onShareAppMessage(e) {
@@ -302,7 +304,6 @@
 			// 为0时刷新页面
 			timeup(){
 			    this.getDetail(this.id, this.flash?this.flash:0);
-				
 			},
 			// 获取商品详情
 			async getDetail(id, flash_id) {
@@ -310,6 +311,7 @@
 				let product = await this.$api.request(apiUrl + `?id=${id}&flash_id=${flash_id}`, 'GET');
 				uni.stopPullDownRefresh();
 				if (!product) {
+					uni.navigateBack();
 					return;
 				}
 				this.product = product;

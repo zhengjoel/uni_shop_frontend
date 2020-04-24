@@ -44,7 +44,7 @@
 				mobile: '',
 				avatar: ''
 			};
-		},
+		}, 
 		computed: {
 			...mapState(['userInfo'])
 		},
@@ -78,7 +78,7 @@
 				if (this.username == this.userInfo.username 
 				&& this.mobile == this.userInfo.mobile 
 				&& this.avatar == this.userInfo.avatar) {
-					this.$api.msg('已修复');
+					this.$api.msg('已修改');
 					return;
 				}
 				let data = await this.$api.request('/user/edit', 'POST', {
