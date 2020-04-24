@@ -282,6 +282,7 @@
 			};
 		},
 		onPullDownRefresh(){
+			this.$refs.countd.syncFlag = false;
 			this.getDetail(this.id, this.flash?this.flash:0);
 		},
 		onShareAppMessage(e) {
@@ -299,9 +300,9 @@
 		},
 		methods: {
 			// 为0时刷新页面
-			async timeup(){
-			    await this.getDetail(this.id, this.flash?this.flash:0);
-				//this.$refs.countd.startData();
+			timeup(){
+			    this.getDetail(this.id, this.flash?this.flash:0);
+				
 			},
 			// 获取商品详情
 			async getDetail(id, flash_id) {

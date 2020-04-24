@@ -154,7 +154,7 @@
 					this.seconds = this.toSeconds(this.day, this.hour, this.minute, this.second)
 					this.startData();
 					this.syncFlag = true;
-				}
+				} 
 			}
 		}
 	}

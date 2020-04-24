@@ -37,7 +37,7 @@
 				<!-- <text class="tip">{{(new Date(flashSale.starttime*1000)).getHours()}}点场</text> -->
 				<text class="tip" v-if="flashSale.countdown" >下一场倒计时</text>
 				<text class="tip" v-else>{{flashSale.title}}</text>
-				<uni-countdown ref="countd" v-if="flashSale.countdown" @timeup="timeup" :show-day="flashSale.countdown.day ? true : false" :day="flashSale.countdown.day" :hour="flashSale.countdown.hour" :minute="flashSale.countdown.minute" :second="flashSale.countdown.second" color="#FFFFFF" background-color="#00B26A" border-color="#00B26A" ></uni-countdown>
+				<uni-countdown ref="countd" v-if="flashSale.countdown" @timeup="timeup" :show-day="flashSale.countdown.day ? true : false" :day="day" :hour="hour" :minute="minute" :second="second" color="#FFFFFF" background-color="#00B26A" border-color="#00B26A" ></uni-countdown>
 				<text class="yticon icon-you"></text>
 			</view>
 			<scroll-view class="floor-list" scroll-x>
@@ -207,7 +207,11 @@ export default {
 			menu:[],
 			flashSale: '',
 			page:1,
-			pageSize: 16
+			pageSize: 16,
+			day:0,
+			hour:0,
+			minute:0,
+			second:0
 		};
 	},
 	computed:{
@@ -220,8 +224,7 @@ export default {
 		this.getProduct();
 	},
 	onPullDownRefresh() {
-		//console.log(this.$refs.countd);
-		//this.$refs.countd.timeUp();
+		this.$refs.countd.syncFlag = false;
 		this.goodsList = [];
 		this.page = 1;
 		this.loadData();
@@ -281,6 +284,11 @@ export default {
 			let data = await this.$api.request('/flash/index');
 			if (data) {
 				this.flashSale = data;
+				this.day = data.countdown.day;
+				this.hour = data.countdown.hour;
+				this.minute = data.countdown.minute;
+				this.second = data.countdown.second;
+				//this.$refs.countd.update();
 			}
 			//console.log(this.$refs)
 		},
