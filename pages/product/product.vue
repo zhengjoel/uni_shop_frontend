@@ -21,6 +21,7 @@
 				<view class="time" v-if="countdown && progress.number != progress.sold">
 					{{product.flash.text}}
 					<uni-countdown
+					ref="countd"
 					:showDay="countdown.day > 0 ? true : false" 
 					:day="countdown.day" 
 					:hour="countdown.hour" 
@@ -298,8 +299,9 @@
 		},
 		methods: {
 			// 为0时刷新页面
-			timeup(){
-				this.getDetail(this.id, this.flash?this.flash:0);
+			async timeup(){
+			    await this.getDetail(this.id, this.flash?this.flash:0);
+				//this.$refs.countd.startData();
 			},
 			// 获取商品详情
 			async getDetail(id, flash_id) {

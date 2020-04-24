@@ -97,8 +97,9 @@
 			},
 			timeUp() {
 				clearInterval(this.timer)
+				this.timer = 0;
 				// 优化建议：提前1秒去请求
-				this.$emit('timeup')
+				this.$emit('timeup', this)
 			},
 			countDown() {
 				let seconds = this.seconds
