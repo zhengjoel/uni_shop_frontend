@@ -26,6 +26,7 @@
 					:hour="countdown.hour" 
 					:minute="countdown.minute"
 					:second="countdown.second" 
+					@timeup="timeup"
 					color="#fffa30" 
 					borderWidth="22rpx" 
 					splitorColor="#fffa30"  
@@ -296,6 +297,10 @@
 			this.getDetail(this.id, flash_id);
 		},
 		methods: {
+			// 为0时刷新页面
+			timeup(){
+				this.getDetail(this.id, this.flash?this.flash:0);
+			},
 			// 获取商品详情
 			async getDetail(id, flash_id) {
 				let apiUrl = flash_id == 0 ? '/product/detail' : '/flash/productDetail'
