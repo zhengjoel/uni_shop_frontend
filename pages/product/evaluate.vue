@@ -9,6 +9,7 @@
 					<text class="con">{{item.comment}}</text>
 					<view class="bot">
 						<text class="attr" v-if="item.spec != ''">购买类型：{{item.spec}}</text>
+						<text class="attr" v-else></text>
 						<text class="time">{{item.createtime_text}}</text>
 					</view>
 				</view>

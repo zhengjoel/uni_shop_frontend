@@ -224,7 +224,9 @@ export default {
 		this.getProduct();
 	},
 	onPullDownRefresh() {
-		this.$refs.countd.syncFlag = false;
+		if (this.$refs && this.$refs.countd) {
+			this.$refs.countd.syncFlag = false;
+		}
 		this.goodsList = [];
 		this.page = 1;
 		this.loadData();
