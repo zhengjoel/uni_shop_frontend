@@ -156,6 +156,11 @@
 
 				.title {
 					color: #303133;
+					width: 370rpx;
+					-webkit-line-clamp: 2;
+					overflow: hidden;
+					display: -webkit-box;
+					-webkit-box-orient: vertical;
 				}
 
 				.introduction {
