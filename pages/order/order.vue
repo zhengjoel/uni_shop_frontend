@@ -268,10 +268,12 @@
 						let position = that.navList[0].orderList.findIndex(val => val.order_id === item.order_id);
 						if (position !== -1) {
 							let item = that.navList[0].orderList[position];
+							console.log(item);
 							that.navList[0].orderList[position] = Object.assign(item, {
 								state: 4,
 								stateTip,
-								stateTipColor
+								stateTipColor,
+								have_received: 1
 							});
 						}
 				
