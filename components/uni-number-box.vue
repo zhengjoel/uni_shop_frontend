@@ -9,8 +9,8 @@
 			class="uni-numbox-value" 
 			type="number" 
 			:disabled="disabled"
-			:value="inputValue" 
-			
+			:value="inputValue"
+			@input="_onBlur"
 			@blur="_onBlur"
 		>
 		<view 
@@ -82,6 +82,7 @@
 					index: this.index
 				}
 				this.$emit('eventChange', data);
+				
 			}
 		},
 		methods: {
@@ -140,7 +141,7 @@
 				} else if (value < this.min) {
 					value = this.min
 				}
-
+				
 				this.inputValue = value
 			}
 		}

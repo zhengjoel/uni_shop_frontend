@@ -139,14 +139,18 @@
 				<text>购物车</text>
 				<text class="cart-count" v-if="product.cart_num">{{product.cart_num}}</text>
 			</navigator>
-			<view class="p-b-btn" :class="{active: favorite}" @click="toFavorite">
+			<view class="p-b-btn" :class="{active: favorite}" @click="toFavorite" v-if="!flash">
 				<text class="yticon icon-shoucang"></text>
 				<text>收藏</text>
 			</view>
+			<view class="p-b-btn" v-else>
+				<!-- 站位 -->
+				<text></text>
+			</view>
 
 			<view class="action-btn-group">
-				<button type="primary" class=" action-btn no-border buy-now-btn" @click="buy">立即购买</button>
-				<button type="primary" class=" action-btn no-border add-cart-btn" @click="addCart">加入购物车</button>
+				<button :class="{'only': flash}" type="primary" class=" action-btn no-border buy-now-btn" @click="buy">立即购买</button>
+				<button v-if="!flash" type="primary" class=" action-btn no-border add-cart-btn" @click="addCart">加入购物车</button>
 			</view>
 		</view>
 
@@ -310,7 +314,9 @@
 				let product = await this.$api.request(apiUrl + `?id=${id}&flash_id=${flash_id}`, 'GET');
 				uni.stopPullDownRefresh();
 				if (!product) {
-					uni.navigateBack();
+					setTimeout(function(){
+						uni.navigateBack();
+					}, 3000);
 					return;
 				}
 				this.product = product;
@@ -449,7 +455,10 @@
 					if(this.product.use_spec == 1) {
 						spec = this.specSelected.join(',');
 					}
-					await this.$api.request('/cart/add?id=' + this.product.product_id + '&spec='+ spec);
+					let data = await this.$api.request('/cart/add?id=' + this.product.product_id + '&spec='+ spec);
+					if (data) {
+						this.product.cart_num++;
+					}
 				}
 			},
 			stopPrevent() {},
@@ -1024,6 +1033,10 @@
 			background: linear-gradient(to right, #ffac30, #fa436a, #F56C6C);
 			margin-left: 20upx;
 			position: relative;
+			
+			.only {
+				width: 360rpx!important;
+			}
 
 			&:after {
 				content: '';

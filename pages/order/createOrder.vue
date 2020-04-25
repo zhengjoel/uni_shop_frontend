@@ -33,7 +33,7 @@
 					<view class="price-box">
 						<view class="price">￥{{item.sales_price}} <del class="market_price">￥{{item.market_price}}</del></view>
 						<!-- <text class="number">x 1</text> -->
-						<uni-number-box class="step" :min="1" :max="item.stock" :value="item.number" :isMax="item.stock === item.number?true:false"
+						<uni-number-box class="step" :min="1" :max="item.stock"  :disabled="item.number>=item.stock"  :value="item.number" :isMax="item.stock <= item.number?true:false"
 						 :isMin="item.number===1" :index="index" @eventChange="numberChange"></uni-number-box>
 					</view>
 				</view>

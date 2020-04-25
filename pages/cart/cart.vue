@@ -27,7 +27,7 @@
 							<text class="clamp title">{{item.title}}</text>
 							<text class="attr" v-if="item.spec">{{item.spec}}</text>
 							<text class="price">￥{{item.nowPrice}} <text style="color:red"> {{cartPrice(item.oldPrice, item.nowPrice)}}</text></text>
-							<uni-number-box class="step" :min="1" :max="item.stock" :value="cartList[index].number"
+							<uni-number-box class="step" :min="1" :max="item.stock" :disabled="item.number>=item.stock" :value="cartList[index].number"
 							 :isMax="item.number>=item.stock?true:false" :isMin="item.number===1" :index="index" @eventChange="numberChange"></uni-number-box>
 						</view>
 						<text class="del-btn yticon icon-lajitong" @click.stop="deleteCartItem(index)"></text>
@@ -195,11 +195,11 @@
 				
 			},
 			//删除
-			deleteCartItem(index) {
+			async deleteCartItem(index) {
 				let list = this.cartList;
 				let row = list[index];
 				let id = row.cart_id;
-				
+								
 				uni.showModal({
 					content: '确认删除 ' + list[index].title + '？' ,
 					success: async (e) => {
@@ -225,10 +225,13 @@
 						id.push(item.cart_id);
 					});
 					let data = this.$api.request('/cart/delete', 'POST',{id:id});
+					let that = this;
 					if (data) {
-						this.state = 'load';
-						this.cartList = [];
-						this.getCart();
+						setTimeout(function(){
+							that.state = 'load';
+							that.cartList = [];
+							that.getCart();
+						},300);
 					}
 				}
 			},
