@@ -3,7 +3,8 @@
 		<view class="uni-numbox-minus" 
 			@click="_calcValue('subtract')"
 		>
-			<text class="yticon icon-jianhao" :class="minDisabled?'uni-numbox-disabled': ''" ></text>
+			<text class="yticon icon-jianhao" :class="isMin?'uni-numbox-disabled': ''" ></text>
+			<!-- <text class="yticon icon-jianhao" :class="minDisabled?'uni-numbox-disabled': ''" ></text> -->
 		</view>
 		<input 
 			class="uni-numbox-value" 
@@ -17,7 +18,8 @@
 			class="uni-numbox-plus" 
 			@click="_calcValue('add')"
 		>
-			<text class="yticon icon-jiahao" :class="maxDisabled?'uni-numbox-disabled': ''" ></text>
+			<text class="yticon icon-jiahao" :class="isMax?'uni-numbox-disabled': ''" ></text>
+			<!-- <text class="yticon icon-jiahao" :class="maxDisabled?'uni-numbox-disabled': ''" ></text> -->
 		</view>
 	</view>
 </template>
@@ -82,7 +84,6 @@
 					index: this.index
 				}
 				this.$emit('eventChange', data);
-				
 			}
 		},
 		methods: {
@@ -141,7 +142,7 @@
 				} else if (value < this.min) {
 					value = this.min
 				}
-				
+
 				this.inputValue = value
 			}
 		}
