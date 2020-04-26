@@ -75,6 +75,12 @@
 				if (res.confirm) {
 					let data = await this.$api.request('/address/delete?id=' + id);
 					if (data) {
+						if (this.$api.prePage().addressData && this.$api.prePage().addressData.id) {
+							if (this.$api.prePage().addressData.id == this.addressList[index].id) {
+								this.$api.prePage().addressData = {};
+							}
+						}
+						
 						this.addressList.splice(index, 1);
 					}
 				}
