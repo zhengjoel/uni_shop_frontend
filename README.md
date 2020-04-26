@@ -7,7 +7,10 @@
 ![微信小程序](https://images.gitee.com/uploads/images/2020/0415/215327_77d28dac_1588098.jpeg "微信小程序")
 
 #### 后台演示
-1.  地址 [后端地址](http://demo.shop.weivee.com/admin) http://demo.shop.weivee.com/admin
+1.  后端演示地址 [后端地址](http://demo.shop.weivee.com/admin) http://demo.shop.weivee.com/admin
+
+#### 后台源码
+1.  后端源码地址 [源码地址](https://www.fastadmin.net/store/unishop.html) https://www.fastadmin.net/store/unishop.html 
 
 #### 安装教程
 
