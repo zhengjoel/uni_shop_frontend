@@ -9,10 +9,20 @@
 				{{desc}}
 			</view>
 			<view class="input-content">
+				<view class="input-item" v-if="event == 'register'">
+					<text class="tit">用户名</text>
+					<input 
+						type="text" 
+						:value="username" 
+						placeholder="请输入用户名"
+						data-key="username"
+						@input="inputChange"
+					/>
+				</view>
 				<view class="input-item">
 					<text class="tit">手机号码</text>
 					<input 
-						type="text" 
+						type="number" 
 						:value="mobile" 
 						placeholder="请输入手机号码"
 						data-key="mobile"
@@ -22,15 +32,15 @@
 				<view class="input-item">
 					<text class="tit">密码</text>
 					<input 
-						type="mobile" 
+						type="text" 
 						value="" 
 						placeholder="6-18位不含特殊字符的数字、字母组合"
 						placeholder-class="input-empty"
 						maxlength="20"
 						password 
 						data-key="password"
-						@input="inputChange"
 						@confirm="toLogin"
+						@input="inputChange"
 					/>
 				</view>
 				<view class="input-item">
@@ -63,77 +73,79 @@
 	export default{
 		data(){
 			return {
+				username: '',
 				mobile: '',
 				password: '',
 				captcha:'',
 				logining: false,
 				status: '',
 				desc: '',
-				get_captcha: '获取验证码'
+				get_captcha: '获取验证码',
+				event: ''
 			}
 		},
-		onLoad(action = 'register'){
-			if(action == 'register'){
+		onLoad(options){
+			if(options.event == 'register'){
 				this.status = '立即注册';
 				this.desc = '注册账号'
 			}else{
 				this.status = '确认修改';
 				this.desc = '修改密码'
 			}
+			this.event = options.event;
 		},
 		methods: {
 			...mapMutations(['login']),
-			getCaptcha(){
+			async getCaptcha(){
 				let that = this;
 				let num = 60;
-				that.get_captcha = num + ' S';
-				let intervalId = setInterval(function(){
-					num--;
+				
+				if (this.mobile == '') {
+					this.$api.msg('请输入手机号码');
+					return;
+				}
+				
+				let data = await this.$api.request('/sms/send', 'POST', {
+					mobile: this.mobile,
+					event: this.event
+				});
+				if (data) {
 					that.get_captcha = num + ' S';
-					if(num == 0){
-						that.get_captcha = '获取验证码'
-						clearInterval(intervalId);
-					}
-				}, 1000);
-			},
-			inputChange(e){
-				const key = e.currentTarget.dataset.key;
-				this[key] = e.detail.value;
+					let intervalId = setInterval(function(){
+						num--;
+						that.get_captcha = num + ' S';
+						if (num == 0) {
+							that.get_captcha = '获取验证码'
+							clearInterval(intervalId);
+						}
+					}, 1000);
+				}
+				
 			},
 			navBack(){
 				uni.navigateBack();
 			},
+			inputChange (e) {
+				const key = e.currentTarget.dataset.key;
+				this[key] = e.detail.value;
+			},
 			async toLogin(){
-				this.logining = true;
-				const {mobile, password} = this;
-
-				const account = mobile;
-				const sendData = {
-					account,
-					password
-				};
-				var that = this;
-				//const result = await this.$api.json('userInfo');
-				uni.request({
-					url: that.$URL + "/workers/login", 
-					method:'POST',
-					data:sendData,
-					header:{ 
-						'content-type': 'application/x-www-form-urlencoded'
-					}
-				}).then(data => {//data为一个数组，数组第一项为错误信息，第二项为返回数据
-					var [error, res]  = data; 
-					console.log(res.data);
-					//登陆成功
-					if(res.data.code == 1){
-						that.login(res.data.data.userinfo);
-						uni.navigateBack(); 
-					}else{
-						that.$api.msg(res.data.msg);
-						that.logining = false;
-					}
-				})
+				this.logining = true; // 按钮锁
 				
+				
+				let data =  await this.$api.request('/user/register', 'POST', {
+					mobile: this.mobile,
+					password: this.password,
+					username: this.username,
+					captcha: this.captcha,
+					event: this.event
+				});
+				if (data) {
+					this.login(data.userinfo);
+					uni.navigateBack(); 
+				} else {
+					this.logining = false;
+				}
 			},
 			forget(){
 				uni.navigateTo({
@@ -155,7 +167,7 @@
 		background: #fff;
 	}
 	.container{
-		padding-top: 115px;
+		padding-top: 80rpx;
 		position:relative;
 		width: 100vw;
 		height: 100vh;

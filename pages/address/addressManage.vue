@@ -59,10 +59,11 @@
 				
 				title = '编辑收货地址'
 			} else {
-				this.$refs.mpvueCityPicker.created(this.pickerValueDefault);
+
+				this.$refs.mpvueCityPicker.creat(this.pickerValueDefault);
 			}
 			this.manageType = option.type;
-			uni.setNavigationBarTitle({
+			uni.setNavigationBarTitle({ 
 				title
 			})
 		},
@@ -80,7 +81,7 @@
 					pickerValueDefault.push(addressData.area_id);
 					this.pickerValueDefault = pickerValueDefault;
 					
-					this.$refs.mpvueCityPicker.created(pickerValueDefault);
+					this.$refs.mpvueCityPicker.creat(pickerValueDefault);
 				}
 			},
 			// 城市选择器
@@ -98,7 +99,7 @@
 			},
 			// 城市选择器确定
 			onConfirm(e) {
-				console.log(e);
+				//console.log(e);
 				this.cityLebel = e.label;
 				this.pickerValueDefault = e.value;
 				

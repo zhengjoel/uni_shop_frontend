@@ -128,6 +128,7 @@
 		position: relative;
 		line-height: 0;
 		font-size: 0;
+		display: inline-block;
 	}
 
 	.uni-rate__icon-on {

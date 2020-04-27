@@ -41,7 +41,7 @@
 			</view>
 			<button class="confirm-btn" @click="toLogin" :disabled="logining">登录</button>
 			<view class="forget-section">
-				<view><label @click="register('forget')">忘记密码</label> - <label @click="register('register')">立马注册</label></view>
+				<view><label @click="register('resetpwd')">忘记密码</label> - <label @click="register('register')">立马注册</label></view>
 			</view>
 			<!-- #endif -->
 		</view>
@@ -91,9 +91,9 @@
 				}
 				
 			},
-			register(action){
+			register(event){
 				uni.navigateTo({
-					url:'./register?action='+action
+					url:'./register?event='+event
 				})
 			},
 			// #ifdef MP-WEIXIN

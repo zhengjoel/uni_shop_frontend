@@ -17,7 +17,7 @@
 			</view>
 		</view>
 		
-		<view class="yt-list-cell" v-if="order.refund_status == 2 || order.refund.express_number">
+		<view class="yt-list-cell" v-if=" (order.refund_status && order.refund_status == 2) || (order.refund && order.refund.express_number)">
 			<view class="cell-tit clamp">快递编号
 				<input style="max-width: 350rpx;" class="input" type="text" v-model="expressNumber" placeholder="请填写快递编号" placeholder-class="placeholder" />
 			</view>

@@ -41,7 +41,8 @@
 		data() {
 			return {
 				favorite: {
-					list:[]
+					list:[],
+					loadingType: 'more'
 				},
 				page: 1,
 				pageSize: 20
@@ -81,7 +82,7 @@
 					page: this.page,
 					pagesize: this.pageSize
 				});
-				if (list) {
+				if (list && list.length > 0) {
 					if (list.length >= this.pageSize) {
 						//判断是否还有数据， 有改为 more， 没有改为noMore
 						favorite.loadingType = 'more';
@@ -95,6 +96,8 @@
 						favorite.list.push(item);
 					});
 
+				} else {
+					favorite.loadingType = 'noMore';
 				}
 			},
 			// 商品详情页

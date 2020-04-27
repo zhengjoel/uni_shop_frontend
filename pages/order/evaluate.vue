@@ -121,6 +121,7 @@
 			vertical-align: text-bottom;
 			padding-bottom: 10rpx; 
 			width: 550rpx;
+			padding-left:20rpx;
 			.title{
 				color: #707277;
 				font-size: 33rpx;

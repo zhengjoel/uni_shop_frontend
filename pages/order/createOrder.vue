@@ -4,7 +4,7 @@
 		<navigator url="/pages/address/address?source=1" class="address-section">
 			<view class="order-content">
 				<text class="yticon icon-shouhuodizhi"></text>
-				<view class="cen" v-if="addressData.name">
+				<view class="cen" v-if="addressData && addressData.name">
 					<view class="top">
 						<text class="name">{{addressData.name}}</text>
 						<text class="mobile">{{addressData.mobile}}</text>
@@ -162,7 +162,8 @@
 				deliveryPrice: 0.00,
 				cart: [], // 购物车id
 				flash_id: 0, // 秒杀id
-				progress:{}
+				progress:{},
+				submitLock:false // 提交按钮锁
 			}
 		},
 		onLoad(options) {
@@ -261,6 +262,7 @@
 				this.payType = type;
 			},
 			async submit() {
+				
 				// 如果没有地址则提示先加地址
 				if (!this.addressData || !this.addressData.hasOwnProperty('city_id')) {
 					this.$api.msg('请选择收货地址');
@@ -295,15 +297,20 @@
 					data.number.push(item.number);
 				});
 
+				if (this.submitLock) {
+					return;
+				}
+				this.submitLock = true; // 提交锁
 				let apiUrl = this.flash_id == 0 ? '/order/submit' : '/flash/submitOrder';
-
 				let result = await this.$api.request(apiUrl, 'POST', data);
 				if (result) {
-					this.$api.msg('已提交', 2000);
+					this.submitLock = false; // 解除锁
+					this.$api.msg('已提交', 2000); 
 					uni.redirectTo({
 						url: `/pages/money/pay?order_id=${result.order_id}&total=${this.total}`
 					});
-				}
+				} 
+				this.submitLock = false; // 解除锁
 			},
 			stopPrevent() {},
 			//数量

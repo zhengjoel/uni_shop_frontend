@@ -374,6 +374,7 @@ export default {
 		background: rgba(255, 255, 255, 0.6);
 	}
 }
+/* #endif */
 page {
 	.cate-section {
 		position: relative;
@@ -398,7 +399,7 @@ page {
 		}
 	}
 }
-/* #endif */
+
 
 page {
 	background: #f5f5f5;
