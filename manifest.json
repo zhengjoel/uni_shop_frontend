@@ -63,8 +63,8 @@
         "permission" : {}
     },
     "h5" : {
-        "title" : "uni商城",
-        "domain" : "t.unishop.com",
+        "title" : "喂喂商城",
+        "domain" : "shop.weivee.com",
         "router" : {
             "base" : "/h5/"
         },

@@ -53,7 +53,7 @@
 				<text class="price-tip">¥</text>
 				<text class="price">{{specProduct.sales_price}}</text>
 				<text class="m-price" v-if="specProduct.market_price">¥{{specProduct.market_price}}</text>
-				<text class="coupon-tip" v-if="specProduct.market_price">{{(specProduct.sales_price/specProduct.market_price*10).toFixed(1)}}折</text>
+				<text class="coupon-tip" v-if="specProduct.market_price > 0">{{(specProduct.sales_price/specProduct.market_price*10).toFixed(1)}}折</text>
 			</view>
 			<view class="bot-row">
 				<text>销量: {{product.sales}}</text>

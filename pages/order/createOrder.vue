@@ -704,7 +704,7 @@
 		justify-content: space-between;
 		font-size: 30upx;
 		background-color: #fff;
-		z-index: 998;
+		z-index: 99;
 		color: $font-color-base;
 		box-shadow: 0 -1px 5px rgba(0, 0, 0, .1);
 
@@ -744,7 +744,7 @@
 		bottom: 0;
 		width: 100%;
 		background: rgba(0, 0, 0, 0);
-		z-index: 9995;
+		z-index: 100;
 		transition: .3s;
 
 		.mask-content {

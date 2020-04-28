@@ -132,8 +132,9 @@
 			async toLogin(){
 				this.logining = true; // 按钮锁
 				
+				let url = this.event == 'register' ? '/user/register' : '/user/resetpwd';
 				
-				let data =  await this.$api.request('/user/register', 'POST', {
+				let data =  await this.$api.request(url, 'POST', {
 					mobile: this.mobile,
 					password: this.password,
 					username: this.username,
@@ -142,7 +143,9 @@
 				});
 				if (data) {
 					this.login(data.userinfo);
-					uni.navigateBack(); 
+					setTimeout(function(){
+						uni.navigateBack(); 
+					}, 3000);
 				} else {
 					this.logining = false;
 				}
@@ -243,6 +246,7 @@
 			text-align: center;
 			line-height: 76upx;
 			border-radius: 50upx;
+			z-index: 100;
 		}
 	}
 

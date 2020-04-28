@@ -9,10 +9,7 @@
 			<view class="welcome">
 				欢迎回来！
 			</view>
-			<!-- #ifdef MP-WEIXIN -->
-			<button class="confirm-btn" @click="login">小程序一键登录</button>
-			<!-- #endif -->
-			<!-- #ifndef MP -->
+			
 			<view class="input-content">
 				<view class="input-item">
 					<text class="tit">手机号码</text>
@@ -40,10 +37,15 @@
 				</view>
 			</view>
 			<button class="confirm-btn" @click="toLogin" :disabled="logining">登录</button>
+			<!-- #ifdef MP-WEIXIN -->
+			<button class="confirm-btn" open-type="getPhoneNumber" @getphonenumber="loginForWechatMini">授权微信绑定电话号码一键登录</button>
+			<!-- #endif -->
+			
 			<view class="forget-section">
 				<view><label @click="register('resetpwd')">忘记密码</label> - <label @click="register('register')">立马注册</label></view>
 			</view>
-			<!-- #endif -->
+			
+			
 		</view>
 	</view>
 </template>
@@ -75,17 +77,19 @@
 			},
 			async toLogin(){
 				this.logining = true;
-				const {mobile, password} = this;
-				const account = mobile;
-				const sendData = {
-					account,
-					password
-				};
-				let res = await this.$api.request('/user/login', 'POST', sendData)
-				if (res) {
-					this.login(res.userinfo);
+				let data = await this.$api.request('/user/login', 'POST', {
+					mobile: this.mobile,
+					password: this.password
+				})
+				if (data) {
+					this.$store.commit('login', data)
+					
 					this.logining = true;
-					uni.navigateBack();
+					
+					setTimeout(function(){
+						uni.navigateBack();
+					}, 2000)
+					
 				} else {
 					this.logining = false;
 				}
@@ -97,13 +101,20 @@
 				})
 			},
 			// #ifdef MP-WEIXIN
-			async login(){
-				let data = await this.$wechatMiniLogin();
-				if (data) {
-					this.$api.msg('登录成功');
-					setTimeout(function() {
-						uni.navigateBack();
-					},2000);
+			async loginForWechatMini(e) {
+				if (e.hasOwnProperty('detail')) {
+					let data = await this.$api.request('/user/loginForWechatMini', 'POST',{
+						encryptedData: e.detail.encryptedData,
+						iv: e.detail.iv
+					});
+					
+					if (data) {
+						this.$store.commit('login', data);
+						this.$api.msg('登录成功');
+						setTimeout(function() {
+							uni.navigateBack();
+						},2000);
+					}
 				}
 			},
 			// #endif
@@ -117,7 +128,7 @@
 		background: #fff;
 	}
 	.container{
-		padding-top: 115px;
+		padding-top: 160rpx;
 		position:relative;
 		width: 100vw;
 		height: 100vh;
