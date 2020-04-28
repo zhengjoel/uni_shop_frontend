@@ -54,7 +54,7 @@
 		</view>
 
 		<!-- 优惠明细 -->
-		<view class="yt-list" v-if="couponList.length">
+		<view class="yt-list" v-if="couponList && couponList.length">
 			<view class="yt-list-cell b-b" @click="toggleMask('show')">
 				<view class="cell-icon">
 					券
@@ -80,7 +80,7 @@
 				<view class="cell-tit clamp">总共合计</view>
 				<view class="cell-tip">￥{{price}}</view>
 			</view>
-			<view class="yt-list-cell b-b" v-if="couponList.length">
+			<view class="yt-list-cell b-b" v-if="couponList && couponList.length">
 				<view class="cell-tit clamp">优惠金额</view>
 				<view class="cell-tip red">-￥{{coupon_price}}</view>
 			</view>
@@ -88,7 +88,7 @@
 				<view class="cell-tit clamp">配送方式
 					<!-- <text style="color:red" @click="deliveryTemplate">（查看详情）</text> -->
 				</view>
-				<view class="cell-tip">
+				<view class="cell-tip" v-if="deliveryList && deliveryList.length > 0">
 					<picker @change="deliveryChange" range-key="name" :value="deliveryIndex" :range="deliveryList">
 						<view class="uni-input">{{deliveryList[deliveryIndex].name}}</view>
 					</picker>
