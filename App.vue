@@ -55,7 +55,7 @@
 	  font-family: 'unishop';  
 	  font-weight: normal;
 	  font-style: normal;
-	  src: url('//at.alicdn.com/t/font_1729059_llr8d2acjac.ttf') format('truetype');
+	  src: url('https://at.alicdn.com/t/font_1729059_llr8d2acjac.ttf') format('truetype');
 	}
 	
 	.yticon {
