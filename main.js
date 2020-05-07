@@ -5,7 +5,7 @@ import App from './App'
 // 后端api地址
 Vue.prototype.$unishow = "http://unishop:8888/addons/unishop";
 //Vue.prototype.$unishow = "http://t.fastadmin-ceshi.com:8888/addons/unishop";
-//Vue.prototype.$unishow = "http://shop.weivee.com/addons/unishop";
+Vue.prototype.$unishow = "http://shop.weivee.com/addons/unishop";
 
 // 为了方便每次上传的时候忘记修改上面的参数
 uni.getSystemInfo({
@@ -125,7 +125,9 @@ const request = async (url, method = 'GET', data = {}, showMsg = true) => {
 		data: data,
 		timeout: 5000
 	});
-	
+	if (url == '/pay/submit'){
+		console.log(res);
+	}
 	return new Promise(function(revolve){
 		if (error) {
 			showMsg && msg(JSON.stringify(res));

@@ -307,7 +307,7 @@
 					this.submitLock = false; // 解除锁
 					this.$api.msg('已提交', 2000); 
 					uni.redirectTo({
-						url: `/pages/money/pay?order_id=${result.order_id}&total=${this.total}`
+						url: `/pages/money/pay?order_id=${result.order_id}&total=${this.total}&out_trade_no=${result.out_trade_no}`
 					});
 				} 
 				this.submitLock = false; // 解除锁

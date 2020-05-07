@@ -5,6 +5,7 @@
 </template>
 
 <script>
+	
 	export default {
 		data() {
 			return {
@@ -18,6 +19,14 @@
 			switch (options.type) {
 				case 'kd':
 					this.url = "https://m.kuaidi100.com/result.jsp?nu=" + options.number;
+					break;
+				case 'MWEB':
+					uni.setNavigationBarTitle({
+						title: '微信支付'
+					});
+
+					
+
 					break;
 			}
 		}
