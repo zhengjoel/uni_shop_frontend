@@ -105,11 +105,9 @@
 				}
 			},
 			async alipay() {
-				let url = 'https://shop.weivee.com/addons/epay/api/submit?out_trade_no=' + this.out_trade_no +
-					'&title=ceshi&amount=1000&type=alipay';
+				
 				// #ifdef H5
-				//location.href = url;
-				window.open(url);
+				window.open(this.$unishow + '/pay/alipay?order_id='+this.orderId);
 				
 				setTimeout(function() {
 					uni.showModal({
@@ -134,17 +132,14 @@
 				// #endif
 
 				// #ifdef APP-PLUS
-				let orderInfo = await this.$api.request('/pay/submit', 'POST',{
-					out_trade_no : this.out_trade_no,
-					title : 'ceshi',
-					amount : this.total,
-					type : "alipay",
-					method: 'app'
+				let orderInfo = await this.$api.request('/pay/alipay', 'POST',{
+					order_id : this.orderId
 				});
 				if (orderInfo) {
+					//console.log(orderInfo);
 					uni.requestPayment({
 						provider: 'alipay',
-						orderInfo: "app_id=2016102400750248&method=alipay.trade.app.pay&format=JSON&charset=UTF-8&sign_type=RSA2&version=1.0&return_url=&notify_url=&timestamp=2020-05-07+22%3A00%3A23&sign=hEbW0yBe6Kq415wdxk9xmdwikR2HcsOv8B9m%2F9e2iXsbm2M73SLdA%2BdJ0nsH5QBnA3FqBTQ7nbtDAP4iPkXMlMBABa%2BJXQNErWVukSCxRGxgFNTNxMAUxuCX%2B1yMdjD5Nj17SO3d7YdyTRa90h%2BoHTuxum%2FFzP9nj2%2FupEj39hE2adCwFgyEkg8mIc%2BQX3WEetQx2ow82RRxAvJjrmkzYrQmv1wOKCZ%2FwUcyxRF9s6qfrl7v6mzVoA3Q8QXkGBB6AiOVVrZZJEKUKOeelezpFO73XOR4J3RwmD0EBizRoUYYbyrkInfw9dFhn%2Fn%2BMo%2BTzIHcXqW%2Bc1hKXpQQrv8sgQ%3D%3D&biz_content=%7B%22out_trade_no%22%3A%2220200507220023985078%22%2C%22total_amount%22%3A%22100%22%2C%22subject%22%3A%22ceshi%22%2C%22product_code%22%3A%22QUICK_MSECURITY_PAY%22%7D", 
+						orderInfo: orderInfo,
 						success: function (res) {
 							console.log('success:' + JSON.stringify(res));
 							uni.redirectTo({
