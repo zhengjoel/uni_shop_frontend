@@ -6,7 +6,7 @@
 		</view>
 
 		<view class="pay-type-list">
-			<view class="type-item b-b" @click="changePayType(1)" v-if="payTypeList.wxpay">
+			<view class="type-item b-b" @click="changePayType(1)" v-if="payTypeList.wxpay && total > 0">
 				<text class="icon yticon icon-wxpay"></text>
 				<view class="con">
 					<text class="tit">微信支付</text>
@@ -16,7 +16,7 @@
 					</radio>
 				</label>
 			</view>
-			<view class="type-item b-b" @click="changePayType(2)" v-if="payTypeList.alipay">
+			<view class="type-item b-b" @click="changePayType(2)" v-if="payTypeList.alipay && total > 0">
 				<text class="icon yticon icon-alipay"></text>
 				<view class="con">
 					<text class="tit">支付宝支付</text>

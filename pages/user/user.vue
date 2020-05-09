@@ -67,6 +67,7 @@
 				</view>
 				<view class="order-item" @click="$api.navTo('/pages/order/order?state=5')" hover-class="common-hover"  :hover-stay-time="50">
 					<text class="yticon icon-shouhou"></text>
+					<text class="num" v-if="orderNum.refund > 0">{{orderNum.refund}}</text>
 					<text>退款/售后</text>
 				</view>
 			</view>
@@ -115,7 +116,8 @@
 					unpaid: 0,
 					undelivered: 0,
 					unreceived: 0,
-					uncomment: 0
+					uncomment: 0,
+					refund: 0
 				}
 			}
 		},
@@ -197,7 +199,8 @@
 						unpaid: data.unpaid ? data.unpaid : 0,
 						undelivered: data.undelivered ? data.undelivered : 0,
 						unreceived: data.unreceived ? data.unreceived : 0,
-						uncomment: data.uncomment ? data.uncomment : 0
+						uncomment: data.uncomment ? data.uncomment : 0,
+						refund: data.refund ? data.refund : 0
 					};
 				}
 			}

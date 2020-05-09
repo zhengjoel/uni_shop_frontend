@@ -24,6 +24,18 @@
 			</view>
 		</view>
 		<!-- #endif -->
+		<!-- #ifndef MP-WEIXIN -->
+		<view class="yt-list-cell">
+			<view class="cell-tit clamp">用户名
+				<input class="input" type="text" v-model="username" />
+			</view>
+		</view>
+		<view class="yt-list-cell">
+			<view class="cell-tit clamp">手机号码
+				<input v-if="mobile" disabled="true" class="input" type="text" v-model="mobile" />
+			</view>
+		</view>
+		<!-- #endif -->
 
 		<view class="yt-list-cell">
 			<button type="primary" @click="submit">提交保存</button>
@@ -44,7 +56,7 @@
 				mobile: '',
 				avatar: ''
 			};
-		}, 
+		},
 		computed: {
 			...mapState(['userInfo'])
 		},
@@ -62,7 +74,7 @@
 				this.username = e.detail.userInfo.nickName;
 			},
 			async getPhoneNumber(e) {
-				let data = await this.$api.request('/user/decryptData', 'POST',{
+				let data = await this.$api.request('/user/decryptData', 'POST', {
 					encryptedData: e.detail.encryptedData,
 					iv: e.detail.iv
 				});
@@ -70,21 +82,21 @@
 					this.mobile = data.phoneNumber;
 				}
 			},
-			async submit(){
+			async submit() {
 				if (this.username == '') {
 					this.$api.msg('用户名称不能为空');
 					return;
 				}
-				if (this.username == this.userInfo.username 
-				&& this.mobile == this.userInfo.mobile 
-				&& this.avatar == this.userInfo.avatar) {
+				if (this.username == this.userInfo.username &&
+					this.mobile == this.userInfo.mobile &&
+					this.avatar == this.userInfo.avatar) {
 					this.$api.msg('已修改');
 					return;
 				}
 				let data = await this.$api.request('/user/edit', 'POST', {
-					username : this.username,
-					mobile : this.mobile,
-					avatar : this.avatar
+					username: this.username,
+					mobile: this.mobile,
+					avatar: this.avatar
 				});
 				if (data) {
 					let userInfo = this.userInfo;
@@ -128,8 +140,8 @@
 			border-radius: 50%;
 			position: relative;
 			z-index: 2;
-			
-			.button{
+
+			.button {
 				position: absolute;
 				width: 100%;
 				height: 100%;
@@ -189,10 +201,11 @@
 				margin-left: 20rpx;
 				width: 550rpx;
 				float: right;
-				line-height: 70rpx!important;
-				height: 70rpx!important;
+				line-height: 70rpx !important;
+				height: 70rpx !important;
 			}
-			.username{
+
+			.username {
 				width: 300rpx;
 				position: absolute;
 				right: 30rpx;
