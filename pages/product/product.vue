@@ -122,6 +122,22 @@
 			</view>
 		</view>
 
+		<view class="business" v-if="business">
+			<view class="logo">
+				<image class="image" mode="aspectFill" src="http://cdn.shop.weivee.com/shop/20200504/40dd0cb5379d848b6c31d52be153af75.jpg"></image>
+			</view>
+			<view class="title">
+				<view>喂喂官方商城</view>
+				<view class="star">综合体验 
+					<uni-rate class="start" active-color="#F56C6C" margin="-2" size="10" :value="4"></uni-rate>
+				</view>
+			</view>
+			<view class="button">
+				<view class="btn1" @click="insideStore">全部宝贝</view>
+				<view class="btn2" @click="insideStore">进店逛逛</view>
+			</view>
+		</view>
+
 		<view class="detail-desc" v-if="product.desc">
 			<view class="d-header">
 				<text>图文详情</text>
@@ -224,12 +240,13 @@
 	import share from '@/components/share';
 	import ProgressBar from '@/components/Progress-Bar/Progress-Bar';
 	import uniCountdown from '@/components/uni-countdown/uni-countdown.vue';
-
+	import uniRate from '@/components/uni-rate/uni-rate.vue';
 	export default {
 		components: {
 			share,
 			ProgressBar,
-			uniCountdown
+			uniCountdown,
+			uniRate
 		},
 		computed: {
 			...mapGetters(['userInfo', 'hasLogin']),
@@ -282,7 +299,8 @@
 				progress:{
 					sold:1,
 					number:1
-				}
+				},
+				business: true // 多商家
 			};
 		},
 		onPullDownRefresh(){
@@ -478,6 +496,11 @@
 					indicator:"number",
 					loop: true
 				})
+			},
+			// 进入店铺
+			insideStore() {
+				let id = 0;
+				this.$api.navTo("/pages/business/index?id="+id, false);
 			}
 		},
 
@@ -757,6 +780,62 @@
 				justify-content: space-between;
 				font-size: $font-sm;
 				color: $font-color-light;
+			}
+		}
+	}
+
+	.business {
+		background: #fff;
+		margin-top: 16upx;
+		
+		padding: 30upx;
+		.logo {
+			display: inline-block;
+			padding: 0 10upx 0 0;
+			.image{
+				width: 100upx;
+				height: 100upx;
+				border-radius: 6upx;
+			}
+		}
+		.title {
+			font-size: 30upx;
+			display: inline-block;
+			vertical-align: top;
+			.star{
+				font-size: 20upx;
+				background: #c9c8cb;
+				color: #ffffff;
+				padding: 4upx 8upx;
+				border-radius: 20upx;
+				line-height: 20upx;
+				.start{
+					display: inline-block;
+				}
+			}
+		}
+		.button{
+			display: inline-block;
+			font-size: 27upx;
+			line-height: 90upx;
+			float: right;
+			.btn1 {
+				display: inline-block;
+				border-radius: 30upx;
+				border: 1upx solid #ffac30;
+				color: #F56C6C;
+				padding: 10upx 20upx;
+				margin-right: 10upx;
+				line-height: 30upx;
+			}
+			
+			.btn2 {
+				display: inline-block;
+				background: linear-gradient(to right, #ffac30, #fa436a, #F56C6C);
+				border-radius: 30upx;
+				color: #ffffff;
+				padding: 10upx 20upx;
+				line-height: 30upx;
 			}
 		}
 	}

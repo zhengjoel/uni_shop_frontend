@@ -243,6 +243,13 @@
 				"enablePullDownRefresh": false,
 				"navigationBarTitleText": "运费模板"
 			}
+		},
+		{
+		    "path" : "pages/business/index",
+		    "style" : {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "店铺"
+			}
 		}
     ],
 	"globalStyle": {
