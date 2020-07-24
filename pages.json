@@ -248,7 +248,13 @@
 		    "path" : "pages/business/index",
 		    "style" : {
 				"enablePullDownRefresh": true,
-				"navigationBarTitleText": "店铺"
+				"navigationBarTitleText": "店铺",
+				"app-plus": {
+					"bounce": "none",
+					"titleNView": {
+						"type": "transparent"
+					}
+				}
 			}
 		}
     ],

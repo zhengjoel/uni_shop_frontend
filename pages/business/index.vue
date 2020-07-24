@@ -80,8 +80,8 @@
 
 	.business {
 		position:relative;
-		margin-top: 16upx;
 		
+		text-align: center;
 		padding: 30upx;
 
 		.title {
@@ -110,7 +110,7 @@
 			display: inline-block;
 			font-size: 27upx;
 			line-height: 90upx;
-			float: left;
+			/* float: right; */
 
 			.btn1 {
 				display: inline-block;

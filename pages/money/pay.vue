@@ -37,7 +37,6 @@
 				</label>
 			</view>
 		</view>
-
 		<text class="mix-btn" @click="confirm">确认支付</text>
 	</view>
 </template>
@@ -257,6 +256,27 @@
 							}
 						});
 						// #endif
+					} else if (data.trade_type == 'APP') { 
+						console.log('app支付');
+						console.log(data);
+						//App端，微信支付 orderInfo 为 Object 类型。
+						
+						uni.requestPayment({
+							provider:'wxpay',
+							orderInfo:data.orderInfo,
+							success (res) {
+								//console.log('支付成功');
+								//console.log(res);
+								uni.redirectTo({
+									url: '/pages/money/paySuccess'
+								})
+							},
+							fail(res){
+								//console.log('支付失败');
+								//console.log(res)
+								that.$api.msg('支付失败');
+							},
+						});
 					}
 				}
 			},
