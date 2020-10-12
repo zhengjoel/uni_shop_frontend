@@ -30,6 +30,9 @@
 			plus.screen.lockOrientation('portrait-primary');
 			// #endif
 			
+		},
+		onShow: function() {
+			console.log('App Show')
 			// 检查用户登录情况
 			// #ifdef H5
 			this.checkLogin();
@@ -37,11 +40,6 @@
 			// #ifdef MP-WEIXIN
 			this.$wechatMiniLogin();
 			// #endif
-		
-		},
-		onShow: function() {
-			console.log('App Show')
-			
 		},
 		onHide: function() {
 			console.log('App Hide')
